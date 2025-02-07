@@ -1,3 +1,4 @@
+import { useAuthStore } from '../../../stores/authStore';
 import '../../../styles/components/sidebar.css';
 
 interface SidebarProps {
@@ -5,6 +6,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ onNavigate }: SidebarProps) => {
+  const user = useAuthStore((state) => state.user);
+
   return (
     <aside className="sidebar">
       {/* 로고 */}
@@ -15,11 +18,11 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
 
       {/* 사용자 프로필 */}
       <div className="sidebar-profile">
-        <div className="profile-avatar">홍</div>
+        <div className="profile-avatar">{user?.name?.[0] || '홍'}</div>
         <div className="profile-info">
-          <div className="profile-name">홍길동</div>
-          <div className="profile-school">한국고등학교 2학년</div>
-          <div className="profile-date">D-322 남았습니다</div>
+          <div className="profile-name">{user?.name || '홍길동'}</div>
+          <div className="profile-school">{user?.school || '한국고등학교 2학년'}</div>
+          <div className="profile-date">{user?.dDay || 'D-322 남았습니다'}</div>
         </div>
       </div>
 

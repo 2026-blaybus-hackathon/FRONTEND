@@ -452,3 +452,12 @@
     padding: 60px 24px;
   }
 }
+
+/* Placeholder 페이지 스타일 */
+.placeholder-content {
+  padding: 80px 24px;
+  text-align: center;
+  color: #9CA3AF;
+  font-size: 18px;
+  font-weight: 500;
+}

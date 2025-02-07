@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import DashboardLayout from '../../components/feature/layout/DashboardLayout';
 import AddTaskModal from '../../components/feature/dashboard/AddTaskModal';
 import EditTaskModal from '../../components/feature/dashboard/EditTaskModal';
@@ -31,7 +31,7 @@ interface TaskDetail {
 }
 
 const DashboardPage = () => {
-  const [selectedDate, setSelectedDate] = useState(6);
+  const [selectedDate, setSelectedDate] = useState(new Date().getDate());
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -40,15 +40,75 @@ const DashboardPage = () => {
   const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const weekDays = [
-    { day: '월', date: 3, hasTask: false },
-    { day: '화', date: 4, hasTask: true },
-    { day: '수', date: 5, hasTask: true },
-    { day: '목', date: 6, hasTask: true },
-    { day: '금', date: 7, hasTask: false },
-    { day: '토', date: 8, hasTask: false },
-    { day: '일', date: 9, hasTask: false },
-  ];
+  // 현재 주의 날짜 계산
+  const weekDays = useMemo(() => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0(일) ~ 6(토)
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (currentDay === 0 ? 6 : currentDay - 1));
+
+    const days = ['월', '화', '수', '목', '금', '토', '일'];
+    return days.map((day, index) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + index);
+      const dateNum = date.getDate();
+      const hasTask = tasks.some(task => {
+        const taskDate = new Date(task.date);
+        return taskDate.getDate() === dateNum;
+      });
+      return { day, date: dateNum, hasTask };
+    });
+  }, [tasks]);
+
+  // 현재 선택된 날짜 정보
+  const selectedDateInfo = useMemo(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const dayIndex = weekDays.findIndex(d => d.date === selectedDate);
+    const dayName = dayIndex >= 0 ? weekDays[dayIndex].day : '';
+    return { year, month, date: selectedDate, dayName };
+  }, [selectedDate, weekDays]);
+
+  // 오늘의 학습 시간 계산
+  const todayFocus = useMemo(() => {
+    const today = new Date().getDate();
+    const todayTasks = tasks.filter(task => {
+      const taskDate = new Date(task.date);
+      return taskDate.getDate() === today && task.status === 'completed';
+    });
+    const totalMinutes = todayTasks.reduce((sum, task) => {
+      return sum + (task.studyHours || 0) * 60 + (task.studyMinutes || 0);
+    }, 0);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return { hours, minutes };
+  }, [tasks]);
+
+  // 주간 점수 계산 (완료된 과제 비율)
+  const weeklyScore = useMemo(() => {
+    const thisWeek = tasks.filter(task => {
+      const taskDate = new Date(task.date);
+      const dateNum = taskDate.getDate();
+      return weekDays.some(d => d.date === dateNum);
+    });
+    const completed = thisWeek.filter(t => t.status === 'completed').length;
+    const total = thisWeek.length;
+    if (total === 0) return 0;
+    const score = Math.round((completed / total) * 3); // 0~3점
+    return score;
+  }, [tasks, weekDays]);
+
+  // 피드백 개수 (임시로 0, 추후 API 연동)
+  const feedbackCount = 0;
+
+  // 날짜별 과제 개수
+  const taskCountByDate = useMemo(() => {
+    return tasks.filter(task => {
+      const taskDate = new Date(task.date);
+      return taskDate.getDate() === selectedDate;
+    }).length;
+  }, [tasks, selectedDate]);
 
   const filters = ['전체', '국어', '수학', '영어'];
 
@@ -117,7 +177,7 @@ const DashboardPage = () => {
             <div className="header-left">
               <div className="header-title">
                 <span className="pin-icon">📌</span>
-                <h1>1월 6일 화요일</h1>
+                <h1>{selectedDateInfo.month}월 {selectedDateInfo.date}일 {selectedDateInfo.dayName}요일</h1>
               </div>
               <p className="header-subtitle">오늘 계획된 학습을 완료하고 있습니다.</p>
             </div>
@@ -125,14 +185,14 @@ const DashboardPage = () => {
             <div className="header-stats">
               <div className="stat-item">
                 <span className="stat-label">TODAY'S FOCUS</span>
-                <span className="stat-value focus">0시간 0분</span>
+                <span className="stat-value focus">{todayFocus.hours}시간 {todayFocus.minutes}분</span>
               </div>
               <div className="stat-item">
                 <span className="stat-label">WEEKLY SCORE</span>
                 <div className="score-dots">
-                  <span className="dot"></span>
-                  <span className="dot"></span>
-                  <span className="dot"></span>
+                  {[0, 1, 2].map((index) => (
+                    <span key={index} className={`dot ${index < weeklyScore ? 'active' : ''}`}></span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -149,7 +209,7 @@ const DashboardPage = () => {
               </svg>
             </div>
             <div className="notification-content">
-              <h3>새로운 피드백 0개가 도착했습니다!</h3>
+              <h3>새로운 피드백 {feedbackCount}개가 도착했습니다!</h3>
               <p>멘토님의 과제물을 확인하고 학습을 완료하세요.</p>
             </div>
             <button className="notification-arrow">
@@ -200,7 +260,7 @@ const DashboardPage = () => {
             <div className="filter-right">
               <button className="today-btn">TODAY</button>
               <button className="sort-btn">
-                날짜 과제 <span className="badge">0</span>
+                날짜 과제 <span className="badge">{taskCountByDate}</span>
               </button>
             </div>
           </div>
