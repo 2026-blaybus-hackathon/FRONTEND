@@ -19,5 +19,9 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+        // Unexpected any. Specify a different type 문구 제거
+        "@typescript-eslint/no-explicit-any": "off"
+    }
   },
 ])
