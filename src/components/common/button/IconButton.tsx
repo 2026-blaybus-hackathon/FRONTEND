@@ -4,7 +4,7 @@ import { cn } from '../../../libs/utils';
 import type { LucideIcon } from 'lucide-react';
 
 type IconButtonVariant = "transparent-gray" | "transparent-primary"
-type IconButtonSize = "md";
+type IconButtonSize = "md" | "sm";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     Icon: LucideIcon;
@@ -44,17 +44,19 @@ const IconButton = ({
     // size pixel
     const sizePixel: Record<IconButtonSize, number> = {
         md: 36,
+        sm: 24
     }
 
     // size 스타일 클래스
     const sizeClasses: Record<IconButtonSize, string> = {
         md: "p-3 rounded-full",
+        sm: "p-1 rounded-full"
     }
 
     return (
         <button
             className={cn(
-                "border-2 font-medium transition-colors duration-200 whitespace-nowrap",
+                "border-2 font-medium transition-colors duration-200 whitespace-nowrap w-fit h-fit",
                 variantClasses[variant],
                 sizeClasses[size],
                 disabled && disabledClasses[variant],

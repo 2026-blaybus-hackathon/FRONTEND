@@ -20,7 +20,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = ({
     variant = "primary",
-    size = "md",
+    size = "lg",
     width = "auto",
     children,
     onClick = () => {},
@@ -52,7 +52,7 @@ const Button = ({
 
     // width 스타일 클래스
     const widthClasses: Record<ButtonWidth, string> = {
-        auto: "w-auto",
+        auto: "w-fit",
         full: "w-full",
     }
 
