@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import React from 'react';
 import Button from '../components/common/button/Button';
+import { Camera } from 'lucide-react';
 import '../App.css';
 
 const meta = {
@@ -46,5 +48,14 @@ export const Small: Story = {
     variant: "primary",
     ariaLabel: 'Small Button',
     children: "Small Button",
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+    variant: "primary",
+    ariaLabel: 'Disabled Button',
+    children: "Disabled Button",
   },
 };
