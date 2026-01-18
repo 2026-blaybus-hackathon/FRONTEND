@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import React from 'react';
 import Button from '../components/common/button/Button';
-import { Camera } from 'lucide-react';
 import '../App.css';
 
 const meta = {
