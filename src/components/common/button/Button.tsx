@@ -33,8 +33,8 @@ const Button = ({
 
     // variant 스타일 클래스
     const variantClasses: Record<ButtonVariant, string> = {
-        "primary": "bg-primary hover:brightness-50 text-white border-transparent",
-        "outlined": "bg-white hover:brightness-50 text-primary border-primary",
+        "primary": "bg-primary hover:bg-primary-dark text-white border-transparent",
+        "outlined": "bg-white hover:bg-primary-light text-primary border-primary",
     }
 
     // disabled variant 스타일 클래스
