@@ -177,3 +177,99 @@ export const Password: Story = {
     );
   }
 };
+
+export const TextWithButton: Story = {
+  args: {
+    value: "",
+    onChange: () => {},
+    ariaLabel: "text input form",
+    title: "Default",
+    type: "text",
+    error: "",
+    success: "",
+    button: {
+      text: "Submit",
+      onClick: () => alert("Button clicked!"),
+      variant: "primary"
+    }
+  },
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [value, setValue] = useState<string>("");
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+    };
+
+    return (
+      <InputForm
+        {...args}
+        value={value}
+        onChange={handleInput}
+      />
+    );
+  }
+};
+
+export const EmailWithButton: Story = {
+  args: {
+    value: "",
+    onChange: () => {},
+    ariaLabel: "email input form",
+    title: "Email",
+    type: "email",
+    error: "",
+    success: "",
+    button: {
+      text: "Send Code",
+      onClick: () => alert("Code sent!"),
+      variant: "primary"
+    }
+  },
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [value, setValue] = useState<string>("");
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+    };
+
+    return (
+      <InputForm
+        {...args}
+        value={value}
+        onChange={handleInput}
+      />
+    );
+  }
+};
+
+export const TextWithButtonOutlined: Story = {
+  args: {
+    value: "",
+    onChange: () => {},
+    ariaLabel: "text input form",
+    title: "Default",
+    type: "text",
+    error: "",
+    success: "",
+    button: {
+      text: "Cancel",
+      onClick: () => alert("Cancelled!"),
+      variant: "outlined"
+    }
+  },
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [value, setValue] = useState<string>("");
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+    };
+
+    return (
+      <InputForm
+        {...args}
+        value={value}
+        onChange={handleInput}
+      />
+    );
+  }
+};
