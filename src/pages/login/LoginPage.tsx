@@ -33,6 +33,10 @@ const LoginPage = () => {
         setError(null);
     };
 
+    const handleSignupClick = () => {
+        navigate("/signup")
+    }
+
     const handleLogin = () => {
         // 로그인 로직 처리 후 에러 발생 시
         apiCall<LoginResponse>('/auth/login/email', 'POST', {
@@ -90,11 +94,19 @@ const LoginPage = () => {
                 >
                     로그인
                 </Button>
+                <Button
+                    variant="outlined"
+                    onClick={handleSignupClick}
+                    width="full"
+                    ariaLabel={"회원가입 버튼"}
+                >
+                    회원가입
+                </Button>
             </div>
 
             <div className="mt-4 mb-6 flex justify-center items-center gap-3">
                 <div className="w-30 h-[1px] bg-gray-2" />
-                <span>or</span>
+                <span className="text-gray-3">or</span>
                 <div className="w-30 h-[1px] bg-gray-2" />
             </div>
 
