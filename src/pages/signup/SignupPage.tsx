@@ -36,7 +36,7 @@ const SignupPage = () => {
     // onClick 함수
     // 코드 전송
     const sendCode = () => {
-        codeApiCall("/auth/email/send", "POST", { email }).then(response => {
+        codeApiCall("/auth/email/send", "POST", { email: email.value }).then(response => {
             if (response.status === 200) {
                 setEmail(prev => ({ ...prev, success: "코드가 발송되었습니다. 이메일을 확인해주세요." }))
                 setEmailOver(true);
@@ -48,7 +48,7 @@ const SignupPage = () => {
 
     // 코드 검증
     const validateCode = () => {
-        codeApiCall<VerifyCodeResponse>("/auth/email/verify", "POST", { email, code }).then(response => {
+        codeApiCall<VerifyCodeResponse>("/auth/email/verify", "POST", { email: email.value, code: code.value }).then(response => {
             if (response.status === 200) {
                 if (response.data && response.data.emailVerifyToken) {
                     setEmailVerifyToken(response.data.emailVerifyToken as string);
@@ -64,7 +64,7 @@ const SignupPage = () => {
 
     // 닉네임 검증
     const validateNickName = () => {
-        nicknameApiCall<ValidateNicknameResponse>("/auth/validate/nickname", "POST", { nickname }).then(response => {
+        nicknameApiCall<ValidateNicknameResponse>("/auth/validate/nickname", "POST", { nickname: nickname.value }).then(response => {
             if (response.status === 200 && response.data?.available === true) {
                 setNickname(prev => ({ ...prev, error: "", success: "사용 가능한 닉네임입니다." }));
             } else {
@@ -75,9 +75,9 @@ const SignupPage = () => {
 
     // 회원가입
     const signup = () => {
-        signupApiCall("/auth/signup/email", "POST", { emailVerifyToken, nickname, password, name }).then(response => {
+        signupApiCall("/auth/signup/email", "POST", { emailVerifyToken, nickname: nickname.value, password: password.value, name: name.value }).then(response => {
             if (response.status === 201 || response.status === 200) {
-                signupApiCall<LoginResponse>("/auth/login/email", "POST", { email: email, password: password }).then(response => {
+                signupApiCall<LoginResponse>("/auth/login/email", "POST", { email: email.value, password: password.value }).then(response => {
                     if (response.status === 200 && response.data?.accessToken && response.data?.nickname) {
                         login(response.data?.accessToken as string, response.data?.nickname as string);
                     }
