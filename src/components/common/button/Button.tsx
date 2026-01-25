@@ -33,8 +33,13 @@ const Button = ({
 
     // variant 스타일 클래스
     const variantClasses: Record<ButtonVariant, string> = {
-        "primary": "bg-primary hover:bg-primary-dark text-white border-transparent",
-        "outlined": "bg-white hover:bg-primary-light text-primary border-primary",
+        "primary": "bg-primary text-white border-transparent",
+        "outlined": "bg-white text-primary border-primary",
+    }
+
+    const hoverClasses: Record<ButtonVariant, string> = {
+        "primary": "hover:bg-primary-dark",
+        "outlined": "hover:bg-primary-light",
     }
 
     // disabled variant 스타일 클래스
@@ -63,7 +68,7 @@ const Button = ({
                 variantClasses[variant],
                 sizeClasses[size],
                 widthClasses[width],
-                disabled && disabledClasses[variant],
+                disabled ? disabledClasses[variant] : hoverClasses[variant],
                 className,
             )}
             onClick={onClick}

@@ -31,8 +31,13 @@ const IconButton = ({
 
     // variant 스타일 클래스
     const variantClasses: Record<IconButtonVariant, string> = {
-        "transparent-gray": "border-transparent text-gray-3 bg-transparent hover:bg-gray-1",
-        "transparent-primary": "border-transparent text-primary bg-transparent hover:bg-primary-light",
+        "transparent-gray": "border-transparent text-gray-3 bg-transparent",
+        "transparent-primary": "border-transparent text-primary bg-transparent",
+    }
+
+    const hoverClasses: Record<IconButtonVariant, string> = {
+        "transparent-gray": "hover:bg-gray-1",
+        "transparent-primary": "hover:bg-primary-light",
     }
 
     // disabled variant 스타일 클래스
@@ -59,7 +64,7 @@ const IconButton = ({
                 "border-2 font-medium transition-colors duration-200 whitespace-nowrap w-fit h-fit",
                 variantClasses[variant],
                 sizeClasses[size],
-                disabled && disabledClasses[variant],
+                disabled ? disabledClasses[variant] : hoverClasses[variant],
                 className,
             )}
             onClick={onClick}
