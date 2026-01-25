@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/login/LoginPage";
 import Layout from './Layout';
 import SignupPage from './pages/signup/SignupPage';
-import OAuthGoogleCallbackPage from './pages/signup/OAuthGoogleCallbackPage';
+import OAuthCallbackPage from './pages/signup/OAuthCallbackPage';
 import OAuthSignupPage from './pages/signup/OAuthSignupPage';
 import MainPage from './pages/MainPage';
 
@@ -16,7 +16,7 @@ function App() {
           {/* auth */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/oauth2/callback" element={<OAuthGoogleCallbackPage />} />
+          <Route path="/oauth2/callback" element={<OAuthCallbackPage />} />
           <Route path="/oauth2/signup" element={<OAuthSignupPage />} />
         </Route>
       </Routes>

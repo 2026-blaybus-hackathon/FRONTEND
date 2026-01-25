@@ -1,15 +1,15 @@
 import { useEffect, useRef } from "react";
 import { useApi } from "../../hooks/useApi";
 import useAuthStore from "../../stores/authStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import type { OAuthLoginResponse } from "../../libs/types/apiResponse";
 
 const OAuthCallbackPage = () => {
   const { apiCall, isLoading } = useApi();
   const navigate = useNavigate();
   const { login } = useAuthStore();
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get("code");
+  const [params] = useSearchParams();
+  const code = params.get("code");
 
   const isCalled = useRef(false);
 
@@ -20,11 +20,12 @@ const OAuthCallbackPage = () => {
     // redirect
     if (!code) {
       navigate("/login", { replace: true });
+      return;
     }
 
     apiCall<OAuthLoginResponse>("/auth/login/google", "POST", {
       code: code,
-      socialType: "GOOGLE",
+      provider: "GOOGLE",
     }).then((response) => {
       if (response.status === 200 && response.data && typeof response.data === 'object' && 'nickname' in response.data) {
         // 로그인 처리
