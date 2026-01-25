@@ -16,8 +16,8 @@ function App() {
           {/* auth */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/oauth/callback/google" element={<OAuthGoogleCallbackPage />} />
-          <Route path="/oauth/signup" element={<OAuthSignupPage />} />
+          <Route path="/oauth2/callback" element={<OAuthGoogleCallbackPage />} />
+          <Route path="/oauth2/signup" element={<OAuthSignupPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

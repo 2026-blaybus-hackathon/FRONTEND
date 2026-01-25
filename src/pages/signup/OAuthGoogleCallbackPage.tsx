@@ -38,7 +38,7 @@ const OAuthCallbackPage = () => {
         const token = data.accessToken || data.socialSignUpToken || data.signUpToken || data.token;
         if (token) {
           // router로 전달
-          navigate("/signup/oauth2", { replace: true, state: { socialSignUpToken: token } });
+          navigate("/oauth2/signup", { replace: true, state: { socialSignUpToken: token } });
         } else {
           navigate("/login", { replace: true });
         }
