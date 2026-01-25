@@ -37,7 +37,7 @@ const SignupPage = () => {
     // 코드 전송
     const sendCode = () => {
         codeApiCall("/auth/email/send", "POST", { email: email.value }).then(response => {
-            if (response.status === 200) {
+            if (response.status === 204) {
                 setEmail(prev => ({ ...prev, success: "코드가 발송되었습니다. 이메일을 확인해주세요." }))
                 setEmailOver(true);
             } else {
