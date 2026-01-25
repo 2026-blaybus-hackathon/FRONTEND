@@ -5,13 +5,14 @@ import Layout from './Layout';
 import SignupPage from './pages/signup/SignupPage';
 import OAuthGoogleCallbackPage from './pages/signup/OAuthGoogleCallbackPage';
 import OAuthSignupPage from './pages/signup/OAuthSignupPage';
+import MainPage from './pages/MainPage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" />
+          <Route path="/" element={<MainPage />} />
           {/* auth */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
