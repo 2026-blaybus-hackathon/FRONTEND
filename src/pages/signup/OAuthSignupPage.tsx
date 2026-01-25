@@ -41,10 +41,10 @@ const OAuthSignupPage = () => {
 
     const handleSubmit = () => {
         if (!socialSignUpToken) return;
-        submitApiCall<OAuthSignupResponse>("/auth/signup/oauth2", "POST", { socialSignUpToken, nickname: nickname.value }).then((response) => {
+        submitApiCall<OAuthSignupResponse>("/auth/signup/google", "POST", { socialSignUpToken, nickname: nickname.value }).then((response) => {
             if ((response.status === 200 || response.status === 201) && response.data?.accessToken && response.data?.nickname) {
                 login(response.data.accessToken, response.data.nickname);
-                navigate("/signup/complete", { state: { from: "/signup/oauth2" } });
+                navigate("/");
             } else {
                 navigate("/login");
             }
