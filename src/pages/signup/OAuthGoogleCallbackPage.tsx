@@ -20,7 +20,6 @@ const OAuthCallbackPage = () => {
     // redirect
     if (!code) {
       navigate("/login", { replace: true });
-      return;
     }
 
     apiCall<OAuthLoginResponse>("/auth/login/google", "POST", {
