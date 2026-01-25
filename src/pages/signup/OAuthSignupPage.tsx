@@ -21,6 +21,8 @@ const OAuthSignupPage = () => {
     }, [socialSignUpToken, navigate]);
 
     const [nickname, setNickname] = useState({ value: "", error: "", success: "" });
+    const [errorMessage, setErrorMessage] = useState("");
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     const { apiCall: nicknameValidateApiCall, isLoading: nicknameValidateIsLoading } = useApi();
     const { apiCall: submitApiCall, isLoading: submitIsLoading } = useApi();
@@ -45,6 +47,12 @@ const OAuthSignupPage = () => {
             if ((response.status === 200 || response.status === 201) && response.data?.accessToken && response.data?.nickname) {
                 login(response.data.accessToken, response.data.nickname);
                 navigate("/");
+            } else if (response.status === 409) {
+                setErrorMessage("이미 존재하는 이메일입니다. 로그인 화면으로 돌아갑니다...");
+                setIsButtonDisabled(true);
+                setTimeout(() => {
+                    navigate("/login");
+                }, 5000);
             } else {
                 navigate("/login");
             }
@@ -52,12 +60,15 @@ const OAuthSignupPage = () => {
     };
 
     const nicknameValid = nickname.value.length > 0 && !nickname.error && nickname.success;
-    const canSubmit = nicknameValid && !nicknameValidateIsLoading && !submitIsLoading;
+    const canSubmit = nicknameValid && !nicknameValidateIsLoading && !submitIsLoading && !isButtonDisabled;
 
     return (
         <div className="flex flex-col justify-center items-center w-100 m-auto">
             <h1 className="mb-4 w-full text-center">회원가입</h1>
             <p className="w-full text-center text-gray-5 body-small mb-2">소셜 계정이 인증되었습니다. 아래 정보를 입력해주세요.</p>
+            {errorMessage && (
+                <p className="w-full text-center text-red-500 body-small mb-2">{errorMessage}</p>
+            )}
             <div className="flex flex-col gap-0.5 w-full my-8">
                 <InputForm
                     title="닉네임"
@@ -74,16 +85,15 @@ const OAuthSignupPage = () => {
                         disabled: nickname.value.length === 0 || nicknameValidateIsLoading || submitIsLoading,
                     }}
                 />
-
-                <Button
-                    onClick={handleSubmit}
-                    ariaLabel="signup"
-                    width="full"
-                    disabled={!canSubmit}
-                >
-                    회원가입
-                </Button>
             </div>
+            <Button
+                onClick={handleSubmit}
+                ariaLabel="signup"
+                width="full"
+                disabled={!canSubmit}
+            >
+                회원가입
+            </Button>
         </div>
     );
 };
