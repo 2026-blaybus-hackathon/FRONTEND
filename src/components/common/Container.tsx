@@ -17,7 +17,7 @@ interface ContainerProps {
  */
 export const Container: React.FC<ContainerProps> = ({ 
   children, 
-  className = '', 
+  className,
   as: Component = 'div' 
 }) => {
   return (
