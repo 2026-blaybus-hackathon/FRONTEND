@@ -1,44 +1,56 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #FF6B2C;
-  --color-primary-light: #FFF1EB;
-  --color-primary-dark: #E65C24;
-  --color-gray-1: #F2F2F2;
-  --color-gray-2: #D9D9D9;
-  --color-gray-3: #888888;
-  --color-gray-4: #666666;
-  --color-gray-5: #444444;
-  --color-gray-6: #111111;
-  --color-error: #FF3B30;
-  --color-success: #34A853;
+/* Import design system styles */
+@import "./styles/tokens.css";
+@import "./styles/layout.css";
+@import "./styles/components.css";
+
+/* Legacy color variables - mapped to new tokens for backward compatibility */
+:root {
+  --color-primary: var(--color-primary-main);
+  --color-primary-light: var(--color-surface-subtle);
+  --color-primary-dark: var(--color-primary-main);
+  --color-gray-1: var(--color-bg);
+  --color-gray-2: var(--color-border);
+  --color-gray-3: var(--color-text-muted);
+  --color-gray-4: var(--color-text-muted);
+  --color-gray-5: var(--color-text);
+  --color-gray-6: var(--color-text);
+  --color-error: var(--color-danger);
+  --color-success: var(--color-success);
 }
 
+/* Typography - using design tokens */
 h1 {
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
 }
 
 h2 {
-  font-size: 18px;
-  line-height: 24px;
-  font-weight: 600;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
 }
 
 p {
-  font-size: 16px;
-  line-height: 26px;
-  font-weight: 400;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text);
 }
 
 .caption {
-  font-size: 14px;
-  line-height: 18px;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
 }
 
 #root {
   min-width: 100vw;
   min-height: 100vh;
+  background-color: var(--color-bg);
 }
