@@ -17,7 +17,7 @@
   --color-gray-5: var(--color-text);
   --color-gray-6: var(--color-text);
   --color-error: var(--color-danger);
-  --color-success: #34A853;
+  --color-success: var(--color-success);
 }
 
 /* Typography - using design tokens */
