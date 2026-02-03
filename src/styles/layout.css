@@ -1,6 +1,6 @@
 /* Layout Styles */
 
-/* Container */
+/* Container Component Styles */
 .container {
   width: 100%;
   max-width: var(--container-max-width);
@@ -8,9 +8,26 @@
   padding: 0 var(--spacing-4);
 }
 
+/* Container variants for better visibility */
+.container-debug {
+  border: 2px dashed var(--color-border);
+  background: rgba(37, 99, 235, 0.02);
+}
+
+.container-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-6);
+}
+
 @media (min-width: 768px) {
   .container {
     padding: 0 var(--spacing-6);
+  }
+  
+  .container-card {
+    padding: var(--spacing-8);
   }
 }
 
