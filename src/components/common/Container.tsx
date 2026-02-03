@@ -21,7 +21,7 @@ export const Container: React.FC<ContainerProps> = ({
   as: Component = 'div' 
 }) => {
   return (
-    <Component className={`container ${className}`.trim()}>
+    <Component className={clsx('container', className)}>
       {children}
     </Component>
   );
