@@ -244,7 +244,7 @@
 .form-input:focus {
   outline: none;
   border-color: var(--color-primary-main);
-  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+  box-shadow: 0 0 0 3px rgb(from var(--color-primary-main) r g b / 0.1);
 }
 
 .form-input.error {
