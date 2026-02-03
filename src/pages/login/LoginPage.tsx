@@ -64,7 +64,7 @@ const LoginPage = () => {
     return (
         <div className="flex flex-col justify-center items-center w-80 m-auto">
             <div className="flex flex-col gap-2 w-full">
-                <h1 className="mb-4 w-full text-center">
+                <h1 className="mb-4 w-full text-center text-primary">
                     로그인
                 </h1>
                 <div className="flex flex-col gap-2">
@@ -83,7 +83,7 @@ const LoginPage = () => {
                         width="full"
                         ariaLabel="로그인 비밀번호란"
                     />
-                    {error && <p className="caption text-error">{error}</p>}
+                    {error && <p className="caption text-danger">{error}</p>}
                 </div>
 
                 <Button
@@ -103,34 +103,8 @@ const LoginPage = () => {
                     회원가입
                 </Button>
             </div>
-
-            <div className="mt-4 mb-6 flex justify-center items-center gap-3">
-                <div className="w-30 h-[1px] bg-gray-2" />
-                <span className="text-gray-3">or</span>
-                <div className="w-30 h-[1px] bg-gray-2" />
-            </div>
-
-            <GoogleButton />
         </div>
     );
 };
-
-
-const GoogleButton = () => {
-    const OAuthLoginUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
-        `client_id=${encodeURIComponent(import.meta.env.VITE_PUBLIC_GOOGLE_CLIENT_ID)}` +
-        `&redirect_uri=${encodeURIComponent(import.meta.env.VITE_PUBLIC_GOOGLE_REDIRECT_URI)}` +
-        "&response_type=code" + "&scope=email%20openid%20profile" + "&access_type=offline" + "&prompt=select_account";
-
-    const handleGoogleLogin = () => {
-        window.location.href = OAuthLoginUrl;
-    }
-
-    return (
-        <button className="my-0 mx-auto border-none bg-transparent cursor-pointer w-45" onClick={handleGoogleLogin}>
-            <img src="/googleSignupButton.png" alt="google" />
-        </button>       
-    );
-}
 
 export default LoginPage;
