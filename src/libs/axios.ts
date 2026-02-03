@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import useAuthStore from "../stores/authStore";
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_PUBLIC_API_BASE_URL,
@@ -39,30 +40,24 @@ axiosInstance.interceptors.response.use(
         if (error.response?.status === 401 && config.url === '/auth/login/email') {
             return Promise.reject(error);
         }
-        
-        // 401 Unauthorized 에러 처리 - 토큰 갱신 시도
-        if (error.response?.status === 401 && !config._retry) {
+
+        // 403 Forbidden / 401 Unauthorized → _retry 기준 refetch 후 실패 시 로그아웃
+        const shouldRetry = (error.response?.status === 401 || error.response?.status === 403) && !config._retry;
+        if (shouldRetry) {
             config._retry = true;
-            
+
             try {
-                // /auth/refresh에 Bearer refreshToken을 헤더에 붙여서 요청
                 return axios.post('/auth/refresh', {}, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     withCredentials: true,
                     baseURL: import.meta.env.VITE_PUBLIC_API_BASE_URL
                 }).then(response => {
-                    // refresh 성공 시 새로운 access token을 쿠키에 저장
                     const newAccessToken = response.data.accessToken;
                     Cookies.set('access_token', newAccessToken);
-                    
-                    // 새로운 access token으로 원래 요청 재시도
                     config.headers.Authorization = `Bearer ${newAccessToken}`;
                     return axiosInstance(config);
                 }).catch(refreshError => {
-                    // refresh 요청도 401이면 로그아웃
-                    if (refreshError.response?.status === 401) {
+                    if (refreshError.response?.status === 401 || refreshError.response?.status === 403) {
                         handleLogout();
                     }
                     return Promise.reject(refreshError);
@@ -88,7 +83,8 @@ async function handleLogout() {
     }).then(() => {
         Cookies.remove('access_token');
         Cookies.remove('refresh_token');
-        window.location.href = '/';
+        useAuthStore.getState().logout();
+        window.location.reload(); // 재진입 시 SessionGuard의 refreshSession → 401 → 리다이렉트
     }).catch(refreshError => {
         // refresh 요청도 401이면 로그아웃
         if (refreshError.response?.status === 401) {
