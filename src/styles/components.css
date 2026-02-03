@@ -71,7 +71,7 @@
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1D4ED8; /* Darker blue */
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -82,7 +82,7 @@
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #DC2626; /* Darker red */
+  background: var(--color-danger-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
