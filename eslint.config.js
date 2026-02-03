@@ -27,4 +27,14 @@ export default defineConfig([
         "@typescript-eslint/no-explicit-any": "off"
     }
   },
+  // Storybook 파일에 대한 설정 추가
+  {
+    files: ['**/*.stories.@(js|jsx|ts|tsx)'],
+    plugins: {
+      storybook: storybook,
+    },
+    rules: {
+      ...storybook.configs.recommended.rules,
+    },
+  },
 ])
