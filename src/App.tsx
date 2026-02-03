@@ -4,6 +4,8 @@ import LoginPage from "./pages/login/LoginPage";
 import Layout from './Layout';
 import MainPage from './pages/MainPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import MenteeLayout from './components/feature/layout/MenteeLayout';
+import MentorLayout from './components/feature/layout/MentorLayout';
 
 const queryClient = new QueryClient()
 
@@ -21,14 +23,14 @@ function App() {
             </Route>
 
             {/* mentee */}
-            <Route path="/mentee" element={<></>}>
+            <Route path="/mentee" element={<MenteeLayout />}>
               <Route path="planner" element={<></>}/>
               <Route path="me" element={<></>} />
               <Route path="feedback/:taskId" element={<></>} />
             </Route>
 
             {/* mentor */}
-            <Route path="/mentor" element={<></>}>
+            <Route path="/mentor" element={<MentorLayout />}>
               <Route path="mentee">
                 <Route index element={<></>} />
                 <Route path=":menteeId" element={<></>} />
