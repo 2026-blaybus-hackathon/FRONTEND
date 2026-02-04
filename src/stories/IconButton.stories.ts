@@ -15,18 +15,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const TransparentPrimary: Story = {
+export const Primary: Story = {
   args: {
-    variant: "transparent-primary",
-    ariaLabel: 'Transparent Primary Button',
-    Icon: ArrowLeft
-  },
-};
-
-export const TransparentGray: Story = {
-  args: {
-    variant: "transparent-gray",
-    ariaLabel: 'Transparent Gray Button',
+    variant: "primary",
+    ariaLabel: 'Primary Button',
     Icon: ArrowLeft
   },
 };
@@ -34,7 +26,7 @@ export const TransparentGray: Story = {
 export const Disabled: Story = {
   args: {
     disabled: true,
-    variant: "transparent-gray",
+    variant: "primary",
     ariaLabel: 'Disabled Button',
     Icon: ArrowLeft
   },
