@@ -3,7 +3,7 @@ import React from 'react';
 import { cn } from '../../../libs/utils';
 import type { LucideIcon } from 'lucide-react';
 
-type IconButtonVariant = "primary"
+type IconButtonVariant = "primary" | "gray-line"
 type IconButtonSize = "md" | "sm";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -32,15 +32,18 @@ const IconButton = ({
     // variant 스타일 클래스
     const variantClasses: Record<IconButtonVariant, string> = {
         "primary": "text-white bg-primary",
+        "gray-line": "text-gray-300 bg-white border-none",
     }
 
     const hoverClasses: Record<IconButtonVariant, string> = {
         "primary": "hover:bg-primary-light",
+        "gray-line": "hover:bg-gray-50 border-none",
     }
 
     // disabled variant 스타일 클래스
     const disabledClasses: Record<IconButtonVariant, string> = {
         "primary": "border-transparent text-white bg-gray-200 hover:bg-gray-200 cursor-not-allowed",
+        "gray-line": "text-gray-500 bg-gray-100 hover:bg-gray-100 cursor-not-allowed border-none",
     }
 
     // size pixel

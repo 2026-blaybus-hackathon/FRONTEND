@@ -24,6 +24,7 @@ const PasswordInput = (props: PasswordInputProps) => {
             />
             <div className="absolute h-full flex flex-column items-center bottom-0 right-2 w-fit h-fit">
                 <IconButton
+                    variant="gray-line"
                     Icon={visible ? Eye : EyeOff}
                     size="sm"
                     ariaLabel={visible ? "passwordVisible" : "passwordInvisible"}
