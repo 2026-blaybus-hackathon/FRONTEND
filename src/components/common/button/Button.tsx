@@ -1,7 +1,7 @@
 // Button.tsx
 import React from 'react';
 
-export type ButtonVariant = "primary" | "outlined";
+export type ButtonVariant = "primary" | "secondary";
 export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonWidth = "auto" | "full";
 
