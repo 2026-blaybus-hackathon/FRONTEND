@@ -1,5 +1,6 @@
 // Button.tsx
 import React from 'react';
+import { cn } from '../../../libs/utils';
 
 export type ButtonVariant = "primary" | "secondary";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -49,17 +50,14 @@ const Button = ({
         full: "w-full",
     }
 
-    // 클래스 조합
-    const buttonClasses = [
-        variantClasses[variant],
-        sizeClasses[size],
-        widthClasses[width],
-        className
-    ].filter(cls => cls).join(' ');
-
     return (
         <button
-            className={buttonClasses}
+            className={cn(
+                variantClasses[variant],
+                sizeClasses[size],
+                widthClasses[width],
+                className
+            )}
             onClick={onClick}
             disabled={disabled || isLoading}
             aria-label={ariaLabel}
