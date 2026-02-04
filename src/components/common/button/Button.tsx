@@ -30,10 +30,10 @@ const Button = ({
     ...props
 }: ButtonProps) => {
 
-    // 우리의 디자인 토큰 시스템 사용 - outlined를 secondary로 매핑
+    // 우리의 디자인 토큰 시스템 사용
     const variantClasses: Record<ButtonVariant, string> = {
         "primary": "btn btn-primary",
-        "outlined": "btn btn-secondary", // outlined를 secondary로 매핑
+        "secondary": "btn btn-secondary",
     }
 
     // size 스타일 클래스 (디자인 토큰 시스템과 통합)

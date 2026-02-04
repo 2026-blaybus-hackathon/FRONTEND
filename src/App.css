@@ -55,32 +55,11 @@ p {
   background-color: var(--color-bg);
 }
 
-/* Force button styles to override Tailwind */
-.btn-primary {
-  background-color: #2563EB !important;
-  color: #FFFFFF !important;
-  border: none !important;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #1D4ED8 !important;
-}
-
-.btn-secondary {
-  background-color: #E5E7EB !important;
-  color: #111827 !important;
-  border: none !important;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background-color: #D1D5DB !important;
-}
-
-/* Force text colors */
+/* Text utility classes */
 .text-primary {
-  color: #2563EB !important;
+  color: var(--color-primary-main);
 }
 
 .text-danger {
-  color: #EF4444 !important;
+  color: var(--color-danger);
 }

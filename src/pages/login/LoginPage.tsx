@@ -95,7 +95,7 @@ const LoginPage = () => {
                     로그인
                 </Button>
                 <Button
-                    variant="outlined"
+                    variant="secondary"
                     onClick={handleSignupClick}
                     width="full"
                     ariaLabel={"회원가입 버튼"}

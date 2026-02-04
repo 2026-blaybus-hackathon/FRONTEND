@@ -22,47 +22,47 @@
 }
 
 .btn-primary {
-  background: #2563EB !important;
-  color: #FFFFFF !important;
-  border: none !important;
+  background: var(--color-primary-main);
+  color: var(--color-white);
+  border: none;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1D4ED8 !important;
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .btn-danger {
-  background: #EF4444 !important;
-  color: #FFFFFF !important;
-  border: none !important;
+  background: var(--color-danger);
+  color: var(--color-white);
+  border: none;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #DC2626 !important;
+  background: var(--color-danger-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-  background: #E5E7EB !important;
-  color: #111827 !important;
-  border: none !important;
+  background: var(--color-border);
+  color: var(--color-text);
+  border: none;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #D1D5DB !important;
+  background: var(--color-border-hover);
 }
 
 .btn-ghost {
-  background: transparent !important;
-  color: #111827 !important;
-  border: none !important;
+  background: transparent;
+  color: var(--color-text);
+  border: none;
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background: #F9FAFB !important;
+  background: var(--color-bg);
 }
 
 /* Button Sizes */
