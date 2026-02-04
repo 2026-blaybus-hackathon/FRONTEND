@@ -31,7 +31,7 @@
   background: var(--color-gray-200);
 }
 
-.btn-danger {
+/* .btn-danger {
   background: var(--color-danger);
   color: var(--color-white);
   border: none;
@@ -41,7 +41,7 @@
   background: var(--color-danger-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
-}
+} */
 
 .btn-secondary {
   background: var(--color-white);
@@ -60,7 +60,25 @@
   background: var(--color-primary-50);
 }
 
-.btn-ghost {
+.btn-outlined {
+  background: var(--color-white);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.btn-outlined:disabled {
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+  border: 2px solid var(--color-gray-600);
+  cursor: not-allowed;
+}
+
+
+.btn-outlined:hover:not(:disabled) {
+  background: var(--color-primary-50);
+}
+
+/* .btn-ghost {
   background: transparent;
   color: var(--color-text);
   border: none;
@@ -68,7 +86,7 @@
 
 .btn-ghost:hover:not(:disabled) {
   background: var(--color-bg);
-}
+} */
 
 /* Button Sizes */
 .btn-sm {
