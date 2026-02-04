@@ -2,9 +2,12 @@
 :root {
   /* Colors */
   --color-primary-main: #2563EB;
+  --color-primary-dark: #1D4ED8;
   --color-danger: #EF4444;
+  --color-danger-dark: #DC2626;
   --color-surface-subtle: #EFF6FF;
   --color-border: #E5E7EB;
+  --color-border-hover: #D1D5DB;
   --color-bg: #F9FAFB;
   --color-text: #111827;
   --color-text-muted: #6B7280;

@@ -24,10 +24,11 @@
 .btn-primary {
   background: var(--color-primary-main);
   color: var(--color-white);
+  border: none;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1D4ED8; /* Darker blue */
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -35,28 +36,29 @@
 .btn-danger {
   background: var(--color-danger);
   color: var(--color-white);
+  border: none;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #DC2626; /* Darker red */
+  background: var(--color-danger-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-  background: var(--color-white);
+  background: var(--color-border);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
+  border: none;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--color-bg);
-  border-color: var(--color-primary-main);
+  background: var(--color-border-hover);
 }
 
 .btn-ghost {
   background: transparent;
   color: var(--color-text);
+  border: none;
 }
 
 .btn-ghost:hover:not(:disabled) {

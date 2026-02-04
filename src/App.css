@@ -54,3 +54,12 @@ p {
   min-height: 100vh;
   background-color: var(--color-bg);
 }
+
+/* Text utility classes */
+.text-primary {
+  color: var(--color-primary-main);
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
