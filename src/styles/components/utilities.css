@@ -20,14 +20,6 @@
   color: var(--color-text-muted);
 }
 
-.bg-primary {
-  background-color: var(--color-primary-main);
-}
-
-.bg-surface {
-  background-color: var(--color-surface-subtle);
-}
-
 .rounded {
   border-radius: var(--radius-md);
 }
