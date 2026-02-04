@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '../../libs/utils';
 
 interface ContainerProps {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ export const Container: React.FC<ContainerProps> = ({
   as: Component = 'div' 
 }) => {
   return (
-    <Component className={clsx('container', className)}>
+    <Component className={cn('container', className)}>
       {children}
     </Component>
   );
