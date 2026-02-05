@@ -23,6 +23,14 @@ export const Primary: Story = {
   },
 };
 
+export const Secondary: Story = {
+  args: {
+    variant: "secondary",
+    ariaLabel: 'Secondary Button',
+    children: "Secondary Button",
+  },
+};
+
 export const Outlined: Story = {
   args: {
     variant: "outlined",

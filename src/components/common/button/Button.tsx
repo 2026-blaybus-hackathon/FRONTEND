@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '../../../libs/utils';
 
-export type ButtonVariant = "primary" | "secondary";
+export type ButtonVariant = "primary" | "secondary" | "outlined";
 export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonWidth = "auto" | "full";
 
@@ -35,6 +35,7 @@ const Button = ({
     const variantClasses: Record<ButtonVariant, string> = {
         "primary": "btn btn-primary",
         "secondary": "btn btn-secondary",
+        "outlined": "btn btn-outlined",
     }
 
     // size 스타일 클래스 (디자인 토큰 시스템과 통합)

@@ -35,7 +35,7 @@ const Input = ({
 }: InputProps) => {
     // variant 스타일 클래스
     const variantClasses: Record<InputVariant, string> = {
-        "outlined": "text-gray-5 border-2 border-gray-3 bg-white"
+        "outlined": "text-gray-700 border-2 border-gray-300 bg-white"
     }
 
     // variant focus 스타일 클래스
@@ -61,7 +61,7 @@ const Input = ({
                 widthClass,
                 isError && "border-error",
                 readOnly ?
-                    "bg-gray-1 border-gray-3 text-gray-3" :
+                    "bg-gray-100 border-gray-300 text-gray-500" :
                     variantFocusClasses[variant],
                 className
             )}
