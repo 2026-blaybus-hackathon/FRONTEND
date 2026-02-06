@@ -1,24 +1,27 @@
-import { NavLink } from "react-router-dom";
-import { Home, Calendar, FileText, User } from "lucide-react";
+// import { NavLink } from "react-router-dom";
+// import { Home, Calendar, FileText, User } from "lucide-react";
+import openedBook from "../../../assets/opened-book.svg";
 
-const navItems = [
-  { to: "/", label: "홈", icon: Home },
-  { to: "/planner", label: "플래너", icon: Calendar },
-  { to: "/report", label: "리포트", icon: FileText },
-  { to: "/my", label: "마이", icon: User },
-];
+// const navItems = [
+//   { to: "/", label: "홈", icon: Home },
+//   { to: "/planner", label: "플래너", icon: Calendar },
+//   { to: "/report", label: "리포트", icon: FileText },
+//   { to: "/my", label: "마이", icon: User },
+// ];
 
-const Nav = () => {
+const Nav = ({ children }: { children?: React.ReactNode }) => {
   return (
     <nav className="layout-nav">
       <div className="layout-nav__top">
         <div className="layout-nav__brand">
-          <span className="layout-nav__brand-name">Seolstudy</span>
-          <span className="layout-nav__brand-sub">학습 코칭 플랫폼</span>
+          <img src={openedBook} alt="Seolstudy" />
+          <span className="layout-nav__brand-name heading-3">Seolstudy</span>
         </div>
       </div>
 
-      <ul className="layout-nav__menu">
+      {children}
+
+      {/* <ul className="layout-nav__menu">
         {navItems.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <NavLink
@@ -35,15 +38,7 @@ const Nav = () => {
             </NavLink>
           </li>
         ))}
-      </ul>
-
-      <div className="layout-nav__user">
-        <div className="layout-nav__avatar">홍</div>
-        <div className="layout-nav__user-info">
-          <span className="layout-nav__user-name">홍길동</span>
-          <span className="layout-nav__user-meta">고2, 블브고등학교</span>
-        </div>
-      </div>
+      </ul> */}
     </nav>
   );
 };

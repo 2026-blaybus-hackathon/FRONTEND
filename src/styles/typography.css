@@ -1,3 +1,5 @@
+/* Typography */
+/* Heading */
 .heading-1 {
     font-size: var(--size-typography-font-size-600);
     line-height: var(--size-typography-line-height-600);
@@ -40,6 +42,7 @@
     letter-spacing: var(--size-typography-letter-spacing-100);
 }
 
+/* Subtitle */
 .subtitle-1 {
     font-size: var(--size-typography-font-size-075);
     line-height: var(--size-typography-line-height-075);
@@ -54,6 +57,7 @@
     letter-spacing: var(--size-typography-letter-spacing-100);
 }
 
+/* Body */
 .body-1 {
     font-size: var(--size-typography-font-size-100);
     line-height: var(--size-typography-line-height-100);
