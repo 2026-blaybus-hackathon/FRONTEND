@@ -4,6 +4,7 @@
 @import "./styles/tokens.css";
 @import "./styles/layout.css";
 @import "./styles/components.css";
+@import "./styles/typography.css";
 
 /* tailwind에서 쓸 수 있도록 token 매핑 */
 @theme {
