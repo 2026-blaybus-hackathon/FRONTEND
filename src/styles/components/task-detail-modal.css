@@ -1,0 +1,211 @@
+.task-detail-modal {
+  max-width: 560px;
+}
+
+/* 과제 정보 헤더 */
+.task-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.task-subject-badge-large {
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.task-date {
+  font-size: 14px;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+.task-title-large {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 24px 0;
+}
+
+/* 시간 선택기 */
+.time-picker {
+  display: flex;
+  gap: 16px;
+  background: #F9FAFB;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.time-input-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.time-input {
+  width: 60px;
+  padding: 12px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  background: white;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: #6366F1;
+}
+
+/* 숫자 입력 스피너 제거 */
+.time-input::-webkit-inner-spin-button,
+.time-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.time-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.time-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.time-arrow-btn {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.time-arrow-btn:hover {
+  background-color: #F3F4F6;
+  border-color: #6366F1;
+  color: #6366F1;
+}
+
+.time-unit {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B7280;
+}
+
+/* 텍스트 영역 */
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111827;
+  transition: all 0.2s;
+  background: #F9FAFB;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #6366F1;
+  background: white;
+}
+
+.form-textarea::placeholder {
+  color: #9CA3AF;
+}
+
+/* 이미지 업로드 */
+.image-upload-area {
+  border: 2px dashed #D1D5DB;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  background: #F9FAFB;
+  transition: all 0.2s;
+}
+
+.image-upload-area:hover {
+  border-color: #6366F1;
+  background: #EEF2FF;
+}
+
+.image-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.image-upload-label p {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0;
+}
+
+.image-upload-input {
+  display: none;
+}
+
+.uploaded-image {
+  position: relative;
+  max-width: 100%;
+}
+
+.uploaded-image img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-image-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.required {
+  color: #EF4444;
+}
+
+/* 반응형 */
+@media (max-width: 640px) {
+  .time-picker {
+    flex-direction: column;
+  }
+
+  .time-input-group {
+    justify-content: center;
+  }
+}

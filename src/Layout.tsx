@@ -1,22 +1,10 @@
-import DesktopLayout from "./components/feature/layout/DesktopLayout";
-import MobileLayout from "./components/feature/layout/MobileLayout";
+import { Outlet } from "react-router-dom";
 
 /**
- * 721px 기준으로 데스크톱/모바일 레이아웃 분기 했습니다.
- * - 데스크톱: Nav + Header + main(Outlet)
- * - 모바일: Header + main(Outlet) + TabBar
+ * 기본 레이아웃 - 각 페이지에서 자체 레이아웃 관리
  */
 const Layout = () => {
-  return (
-    <>
-      <div className="layout-desktop-wrapper">
-        <DesktopLayout />
-      </div>
-      <div className="layout-mobile-wrapper">
-        <MobileLayout />
-      </div>
-    </>
-  );
+  return <Outlet />;
 };
 
 export default Layout;
