@@ -39,6 +39,14 @@ export const Outlined: Story = {
   },
 };
 
+export const Ghost: Story = {
+  args: {
+    variant: "ghost",
+    ariaLabel: 'Ghost Button',
+    children: "Ghost Button",
+  },
+};
+
 export const Large: Story = {
   args: {
     size: 'lg',
