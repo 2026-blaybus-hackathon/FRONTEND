@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import Nav from "./Nav";
-import Header from "./Header";
+import MenteeNav from "./MenteeNav";
+// import Header from "./Header";
 
 /**
  * 데스크톱 전용 레이아웃: Nav + Header + main(Outlet)
@@ -8,9 +8,9 @@ import Header from "./Header";
 const DesktopLayout = () => {
   return (
     <div className="layout-desktop">
-      <Nav />
+      <MenteeNav />
       <div className="layout-desktop__main">
-        <Header />
+        {/* <Header /> */}
         <main className="layout-desktop__content">
           <Outlet />
         </main>

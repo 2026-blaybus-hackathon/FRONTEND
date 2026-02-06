@@ -4,6 +4,7 @@
 @import "./styles/tokens.css";
 @import "./styles/layout.css";
 @import "./styles/components.css";
+@import "./styles/typography.css";
 
 /* tailwind에서 쓸 수 있도록 token 매핑 */
 @theme {
@@ -45,8 +46,142 @@
   --color-blue-100: var(--color-blue-100);
   --color-blue-50: var(--color-blue-50);
 
+  /* Functional colors */
+  --color-primary-main: var(--color-primary-main);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-danger: var(--color-danger);
+  --color-danger-dark: var(--color-danger-dark);
+  --color-surface-subtle: var(--color-surface-subtle);
+  --color-border: var(--color-border);
+  --color-border-hover: var(--color-border-hover);
+  --color-bg: var(--color-bg);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+
   --color-error: var(--color-red-500);
   --color-success: var(--color-lime-500);
+
+  /* Spacing scale */
+  --spacing-1: var(--spacing-1);
+  --spacing-2: var(--spacing-2);
+  --spacing-3: var(--spacing-3);
+  --spacing-4: var(--spacing-4);
+  --spacing-6: var(--spacing-6);
+  --spacing-8: var(--spacing-8);
+  --spacing-12: var(--spacing-12);
+  --spacing-16: var(--spacing-16);
+
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  /* Shadows */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  /* Layout dimensions */
+  --header-height: var(--header-height);
+  --tabbar-height: var(--tabbar-height);
+  --sidebar-width: var(--sidebar-width);
+  --container-max-width: var(--container-max-width);
+
+  /* Breakpoints */
+  --breakpoint-mobile: var(--breakpoint-mobile);
+  --breakpoint-desktop: var(--breakpoint-desktop);
+
+  /* Typography scale */
+  --font-size-sm: var(--font-size-sm);
+  --font-size-base: var(--font-size-base);
+  --font-size-lg: var(--font-size-lg);
+  --font-size-xl: var(--font-size-xl);
+  --font-size-2xl: var(--font-size-2xl);
+
+  --line-height-tight: var(--line-height-tight);
+  --line-height-normal: var(--line-height-normal);
+  --line-height-relaxed: var(--line-height-relaxed);
+
+  --font-weight-normal: var(--font-weight-normal);
+  --font-weight-medium: var(--font-weight-medium);
+  --font-weight-semibold: var(--font-weight-semibold);
+  --font-weight-bold: var(--font-weight-bold);
+
+  /* Design System – Tailwind에서 사용 (rounded-*, text-*, font-*, leading-*, tracking-*, p/m/gap 등) */
+  /* Border Radius → rounded-* */
+  --radius-0: var(--size-border-radius-000);
+  --radius-50: var(--size-border-radius-050);
+  --radius-100: var(--size-border-radius-100);
+  --radius-200: var(--size-border-radius-200);
+  --radius-300: var(--size-border-radius-300);
+  --radius-400: var(--size-border-radius-400);
+  --radius-500: var(--size-border-radius-500);
+  --radius-600: var(--size-border-radius-600);
+  --radius-700: var(--size-border-radius-700);
+  --radius-800: var(--size-border-radius-800);
+  --radius-900: var(--size-border-radius-900);
+
+  /* Typography font size → text-* */
+  --font-size-25: var(--size-typography-font-size-025);
+  --font-size-50: var(--size-typography-font-size-050);
+  --font-size-75: var(--size-typography-font-size-075);
+  --font-size-100: var(--size-typography-font-size-100);
+  --font-size-200: var(--size-typography-font-size-200);
+  --font-size-300: var(--size-typography-font-size-300);
+  --font-size-400: var(--size-typography-font-size-400);
+  --font-size-500: var(--size-typography-font-size-500);
+  --font-size-600: var(--size-typography-font-size-600);
+  --font-size-700: var(--size-typography-font-size-700);
+  --font-size-800: var(--size-typography-font-size-800);
+  --font-size-900: var(--size-typography-font-size-900);
+
+  /* Font weight → font-* */
+  --font-weight-400: var(--size-typography-font-weight-400);
+  --font-weight-500: var(--size-typography-font-weight-500);
+  --font-weight-600: var(--size-typography-font-weight-600);
+  --font-weight-700: var(--size-typography-font-weight-700);
+  --font-weight-800: var(--size-typography-font-weight-800);
+
+  /* Line height → leading-* */
+  --line-height-25: var(--size-typography-line-height-025);
+  --line-height-50: var(--size-typography-line-height-050);
+  --line-height-75: var(--size-typography-line-height-075);
+  --line-height-100: var(--size-typography-line-height-100);
+  --line-height-200: var(--size-typography-line-height-200);
+  --line-height-300: var(--size-typography-line-height-300);
+  --line-height-400: var(--size-typography-line-height-400);
+  --line-height-500: var(--size-typography-line-height-500);
+  --line-height-600: var(--size-typography-line-height-600);
+  --line-height-700: var(--size-typography-line-height-700);
+  --line-height-800: var(--size-typography-line-height-800);
+  --line-height-900: var(--size-typography-line-height-900);
+
+  /* Letter spacing → tracking-* */
+  --letter-spacing-0: var(--size-typography-letter-spacing-000);
+  --letter-spacing-100: var(--size-typography-letter-spacing-100);
+  --letter-spacing-200: var(--size-typography-letter-spacing-200);
+  --letter-spacing-300: var(--size-typography-letter-spacing-300);
+  --letter-spacing-400: var(--size-typography-letter-spacing-400);
+
+  /* Space → p-*, m-*, gap-* 등 spacing 유틸리티 */
+  --spacing-0: var(--size-space-000);
+  --spacing-25: var(--size-space-025);
+  --spacing-50: var(--size-space-050);
+  --spacing-75: var(--size-space-075);
+  --spacing-100: var(--size-space-100);
+  --spacing-150: var(--size-space-150);
+  --spacing-175: var(--size-space-175);
+  --spacing-200: var(--size-space-200);
+  --spacing-225: var(--size-space-225);
+  --spacing-250: var(--size-space-250);
+  --spacing-300: var(--size-space-300);
+  --spacing-400: var(--size-space-400);
+  --spacing-500: var(--size-space-500);
+  --spacing-600: var(--size-space-600);
+  --spacing-700: var(--size-space-700);
+  --spacing-800: var(--size-space-800);
+  --spacing-900: var(--size-space-900);
 }
 
 /* Typography - using design tokens */
@@ -54,34 +189,25 @@ h1 {
   font-size: var(--font-size-2xl);
   line-height: var(--line-height-tight);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text);
 }
 
 h2 {
   font-size: var(--font-size-lg);
   line-height: var(--line-height-normal);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
-}
-
-p {
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
-  font-weight: var(--font-weight-normal);
-  color: var(--color-text);
 }
 
 .caption {
   font-size: var(--font-size-sm);
   line-height: var(--line-height-tight);
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-muted);
 }
 
 #root {
   min-width: 100vw;
   min-height: 100vh;
   background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 /* Text utility classes */

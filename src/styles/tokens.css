@@ -97,4 +97,80 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+
+  /* Vapor */
+
+  /* border Radius */
+  --size-border-radius-000: 0px;
+  --size-border-radius-050: 2px;
+  --size-border-radius-100: 4px;
+  --size-border-radius-200: 6px;
+  --size-border-radius-300: 8px;
+  --size-border-radius-400: 12px;
+  --size-border-radius-500: 16px;
+  --size-border-radius-600: 20px;
+  --size-border-radius-700: 24px;
+  --size-border-radius-800: 32px;
+  --size-border-radius-900: 40px;
+
+  /* typography font size */
+  --size-typography-font-size-025: 10px;
+  --size-typography-font-size-050: 12px;
+  --size-typography-font-size-075: 14px;
+  --size-typography-font-size-100: 16px;
+  --size-typography-font-size-200: 18px;
+  --size-typography-font-size-300: 20px;
+  --size-typography-font-size-400: 24px;
+  --size-typography-font-size-500: 32px;
+  --size-typography-font-size-600: 38px;
+  --size-typography-font-size-700: 48px;
+  --size-typography-font-size-800: 64px;
+  --size-typography-font-size-900: 80px;
+
+  /* font weight */
+  --size-typography-font-weight-400: 400;
+  --size-typography-font-weight-500: 500;
+  --size-typography-font-weight-600: 600;
+  --size-typography-font-weight-700: 700;
+  --size-typography-font-weight-800: 800;
+
+  /* line height */
+  --size-typography-line-height-025: 14px;
+  --size-typography-line-height-050: 18px;
+  --size-typography-line-height-075: 22px;
+  --size-typography-line-height-100: 24px;
+  --size-typography-line-height-200: 26px;
+  --size-typography-line-height-300: 30px;
+  --size-typography-line-height-400: 36px;
+  --size-typography-line-height-500: 48px;
+  --size-typography-line-height-600: 56px;
+  --size-typography-line-height-700: 62px;
+  --size-typography-line-height-800: 84px;
+  --size-typography-line-height-900: 104px;
+
+  /* Letter spacing */
+  --size-typography-letter-spacing-000: 0px;
+  --size-typography-letter-spacing-100: -0.1px;
+  --size-typography-letter-spacing-200: -0.2px;
+  --size-typography-letter-spacing-300: -0.3px;
+  --size-typography-letter-spacing-400: -0.4px;
+
+  /* space */
+  --size-space-000: 0px;
+  --size-space-025: 2px;
+  --size-space-050: 4px;
+  --size-space-075: 6px;
+  --size-space-100: 8px;
+  --size-space-150: 12px;
+  --size-space-175: 14px;
+  --size-space-200: 16px;
+  --size-space-225: 18px;
+  --size-space-250: 20px;
+  --size-space-300: 24px;
+  --size-space-400: 32px;
+  --size-space-500: 40px;
+  --size-space-600: 48px;
+  --size-space-700: 56px;
+  --size-space-800: 64px;
+  --size-space-900: 80px;
 }
