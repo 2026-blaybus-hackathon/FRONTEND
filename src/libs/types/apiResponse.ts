@@ -9,9 +9,14 @@ interface OAuthLogin303Response {
     accessToken: string;
 }
 
+import type { UserRole } from "./user";
+
 export interface LoginResponse {
     accessToken: string;
     nickname: string;
+    role: UserRole;
+    name?: string;
+    email?: string;
 }
 
 export interface OAuthSignupResponse {
