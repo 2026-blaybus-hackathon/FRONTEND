@@ -4,31 +4,9 @@ import AddTaskModal from '../../components/feature/dashboard/AddTaskModal';
 import EditTaskModal from '../../components/feature/dashboard/EditTaskModal';
 import TaskDetailModal from '../../components/feature/dashboard/TaskDetailModal';
 import TaskCard from '../../components/feature/dashboard/TaskCard';
+import type { Task, TaskData, TaskDetail } from '../../types';
+import { FILTERS } from '../../static/subjects';
 import '../../styles/pages/dashboard.css';
-
-interface TaskData {
-  title: string;
-  subject: string;
-  date: string;
-}
-
-interface Task extends TaskData {
-  id: number;
-  status?: 'pending' | 'completed';
-  dueTime?: string;
-  studyHours?: number;
-  studyMinutes?: number;
-  description?: string;
-  imageUrl?: string;
-}
-
-interface TaskDetail {
-  id: number;
-  studyHours: number;
-  studyMinutes: number;
-  description: string;
-  imageUrl?: string;
-}
 
 const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().getDate());
@@ -110,7 +88,7 @@ const DashboardPage = () => {
     }).length;
   }, [tasks, selectedDate]);
 
-  const filters = ['전체', '국어', '수학', '영어'];
+  const filters = FILTERS;
 
   const handleAddTask = (task: TaskData) => {
     const newTask: Task = {

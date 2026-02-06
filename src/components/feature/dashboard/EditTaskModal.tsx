@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '../../common/button/Button';
+import type { Task } from '../../../types';
+import { SUBJECTS } from '../../../static/subjects';
 import '../../../styles/components/modal.css';
 
 interface EditTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (task: TaskData) => void;
-  task: TaskData | null;
-}
-
-interface TaskData {
-  id: number;
-  title: string;
-  subject: string;
-  date: string;
+  onSubmit: (task: Task) => void;
+  task: Task | null;
 }
 
 const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onSubmit, task }) => {
@@ -21,7 +16,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onSubmit
   const [subject, setSubject] = useState('');
   const [date, setDate] = useState('');
 
-  const subjects = ['국어', '수학', '영어'];
+  const subjects = SUBJECTS;
 
   useEffect(() => {
     if (task) {

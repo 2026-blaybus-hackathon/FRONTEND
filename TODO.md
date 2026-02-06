@@ -2,6 +2,11 @@
 
 ## 🔴 높은 우선순위
 
+### 달력 라이브러리 교체
+- [ ] react-datepicker 또는 date-fns 사용
+- [ ] 브라우저 간 일관된 UI 제공
+- [ ] 한국어 로케일 설정
+
 ### 접근성 개선
 - [ ] 모든 버튼에 aria-label 추가
   - [ ] 모달 닫기 버튼
@@ -29,8 +34,9 @@
 
 ### 상수 분리
 - [x] SUBJECTS, FILTERS 상수 파일로 분리 (완료)
-- [ ] AddTaskModal, EditTaskModal, DashboardPage에서 constants.ts 사용
-- [ ] TaskCard, TaskDetailModal에서 SUBJECT_COLORS 사용
+- [x] static 폴더로 이동 (완료)
+- [x] AddTaskModal, EditTaskModal, DashboardPage에서 사용 (완료)
+- [x] TaskCard, TaskDetailModal에서 SUBJECT_COLORS 사용 (완료)
 
 ### 이미지 업로드
 - [ ] 실제 이미지 업로드 API 연동
@@ -72,4 +78,8 @@
 - [x] Sidebar 사용자 정보 동적 처리
 - [x] authStore User 타입 추가
 - [x] PlaceholderPage 인라인 스타일 제거
-- [x] 상수 파일 생성 (constants.ts)
+- [x] 상수 파일 생성 및 static 폴더로 이동
+- [x] 타입 분리 (types 폴더)
+  - [x] Task, TaskData, TaskDetail 타입 분리
+  - [x] types/index.ts 생성
+  - [x] 모든 컴포넌트에서 타입 import 수정

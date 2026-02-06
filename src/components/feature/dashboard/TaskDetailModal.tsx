@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '../../common/button/Button';
+import type { Task, TaskDetail } from '../../../types';
+import { SUBJECT_COLORS } from '../../../static/subjects';
 import '../../../styles/components/task-detail-modal.css';
 
 interface TaskDetailModalProps {
@@ -9,36 +11,11 @@ interface TaskDetailModalProps {
   task: Task | null;
 }
 
-interface Task {
-  id: number;
-  title: string;
-  subject: string;
-  date: string;
-  studyHours?: number;
-  studyMinutes?: number;
-  description?: string;
-  imageUrl?: string;
-}
-
-interface TaskDetail {
-  id: number;
-  studyHours: number;
-  studyMinutes: number;
-  description: string;
-  imageUrl?: string;
-}
-
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ isOpen, onClose, onSubmit, task }) => {
   const [studyHours, setStudyHours] = useState(1);
   const [studyMinutes, setStudyMinutes] = useState(0);
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-
-  const subjectColors: Record<string, string> = {
-    '국어': '#EF4444',
-    '수학': '#3B82F6',
-    '영어': '#10B981',
-  };
 
   useEffect(() => {
     if (task) {
@@ -80,7 +57,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ isOpen, onClose, onSu
 
   if (!isOpen || !task) return null;
 
-  const subjectColor = subjectColors[task.subject] || '#6B7280';
+  const subjectColor = SUBJECT_COLORS[task.subject] || '#6B7280';
 
   return (
     <div className="modal-overlay" onClick={handleClose}>

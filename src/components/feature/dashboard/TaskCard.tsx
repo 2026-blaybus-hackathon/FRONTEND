@@ -1,4 +1,4 @@
-import React from 'react';
+import { SUBJECT_COLORS } from '../../../static/subjects';
 import '../../../styles/components/task-card.css';
 
 interface TaskCardProps {
@@ -21,13 +21,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onDelete,
   onDetail,
 }) => {
-  const subjectColors: Record<string, string> = {
-    '국어': '#EF4444',
-    '수학': '#3B82F6',
-    '영어': '#10B981',
-  };
-
-  const subjectColor = subjectColors[subject] || '#6B7280';
+  const subjectColor = SUBJECT_COLORS[subject] || '#6B7280';
 
   return (
     <div className="task-card">

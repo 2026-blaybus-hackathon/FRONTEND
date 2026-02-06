@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Button from '../../common/button/Button';
+import type { TaskData } from '../../../types';
+import { SUBJECTS } from '../../../static/subjects';
 import '../../../styles/components/modal.css';
 
 interface AddTaskModalProps {
@@ -8,18 +10,12 @@ interface AddTaskModalProps {
   onSubmit: (task: TaskData) => void;
 }
 
-interface TaskData {
-  title: string;
-  subject: string;
-  date: string;
-}
-
 const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [date, setDate] = useState('');
 
-  const subjects = ['국어', '수학', '영어'];
+  const subjects = SUBJECTS;
 
   const handleSubmit = () => {
     if (title && subject && date) {
