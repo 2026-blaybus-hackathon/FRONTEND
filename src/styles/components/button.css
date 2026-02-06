@@ -27,7 +27,7 @@
 }
 
 .btn-primary:disabled {
-  color: var(--color-gray-900);
+  color: var(--color-gray-800);
   background: var(--color-gray-200);
 }
 
@@ -78,13 +78,13 @@
   background: var(--color-primary-50);
 }
 
-/* .btn-ghost {
+.btn-ghost {
   background: transparent;
-  color: var(--color-text);
+  color: var(--color-gray-800);
   border: none;
 }
 
-.btn-ghost:hover:not(:disabled) {
+/* .btn-ghost:hover:not(:disabled) {
   background: var(--color-bg);
 } */
 
