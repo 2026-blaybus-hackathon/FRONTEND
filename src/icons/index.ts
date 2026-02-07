@@ -10,3 +10,5 @@ export { OpenedBookBookmark } from "./OpenedBookBookmark";
 export { StarShield } from "./StarShield";
 export { User } from "./User";
 export { Users } from "./Users";
+export { Play } from "./Play";
+export { PlayReverse } from "./PlayReverse";

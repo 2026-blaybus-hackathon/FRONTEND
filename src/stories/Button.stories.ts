@@ -47,6 +47,14 @@ export const Ghost: Story = {
   },
 };
 
+export const Gray: Story = {
+  args: {
+    variant: "gray",
+    ariaLabel: 'Gray Button',
+    children: "Gray Button",
+  },
+};
+
 export const Large: Story = {
   args: {
     size: 'lg',

@@ -81,6 +81,7 @@
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
+  --shadow-100: var(--size-shadow-100);
 
   /* Layout dimensions */
   --header-height: var(--header-height);
@@ -122,19 +123,19 @@
   --radius-800: var(--size-border-radius-800);
   --radius-900: var(--size-border-radius-900);
 
-  /* Typography font size → text-* */
-  --font-size-25: var(--size-typography-font-size-025);
-  --font-size-50: var(--size-typography-font-size-050);
-  --font-size-75: var(--size-typography-font-size-075);
-  --font-size-100: var(--size-typography-font-size-100);
-  --font-size-200: var(--size-typography-font-size-200);
-  --font-size-300: var(--size-typography-font-size-300);
-  --font-size-400: var(--size-typography-font-size-400);
-  --font-size-500: var(--size-typography-font-size-500);
-  --font-size-600: var(--size-typography-font-size-600);
-  --font-size-700: var(--size-typography-font-size-700);
-  --font-size-800: var(--size-typography-font-size-800);
-  --font-size-900: var(--size-typography-font-size-900);
+  /* Font size utilities: text-25, text-50, text-100, ... (Tailwind v4는 --text-* 만 text 유틸리티로 생성) */
+  --text-25: var(--size-typography-font-size-025);
+  --text-50: var(--size-typography-font-size-050);
+  --text-75: var(--size-typography-font-size-075);
+  --text-100: var(--size-typography-font-size-100);
+  --text-200: var(--size-typography-font-size-200);
+  --text-300: var(--size-typography-font-size-300);
+  --text-400: var(--size-typography-font-size-400);
+  --text-500: var(--size-typography-font-size-500);
+  --text-600: var(--size-typography-font-size-600);
+  --text-700: var(--size-typography-font-size-700);
+  --text-800: var(--size-typography-font-size-800);
+  --text-900: var(--size-typography-font-size-900);
 
   /* Font weight → font-* */
   --font-weight-400: var(--size-typography-font-weight-400);
@@ -218,3 +219,10 @@ h2 {
 .text-danger {
   color: var(--color-danger);
 }
+
+/* Font weight utility classes */
+.font-weight-400 { font-weight: var(--font-weight-400); }
+.font-weight-500 { font-weight: var(--font-weight-500); }
+.font-weight-600 { font-weight: var(--font-weight-600); }
+.font-weight-700 { font-weight: var(--font-weight-700); }
+.font-weight-800 { font-weight: var(--font-weight-800); }

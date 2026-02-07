@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '../../../libs/utils';
 
-export type ButtonVariant = "primary" | "secondary" | "outlined" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "outlined" | "ghost" | "gray";
 export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonWidth = "auto" | "full";
 
@@ -20,7 +20,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = ({
     variant = "primary",
-    size = "lg",
+    size = "md",
     width = "auto",
     children,
     onClick = () => {},
@@ -37,6 +37,7 @@ const Button = ({
         "secondary": "btn btn-secondary",
         "outlined": "btn btn-outlined",
         "ghost": "btn btn-ghost",
+        "gray": "btn btn-gray",
     }
 
     // size 스타일 클래스 (디자인 토큰 시스템과 통합)
@@ -55,6 +56,7 @@ const Button = ({
     return (
         <button
             className={cn(
+                "font-weight-500",
                 variantClasses[variant],
                 sizeClasses[size],
                 widthClasses[width],
