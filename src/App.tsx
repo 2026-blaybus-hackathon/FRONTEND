@@ -2,8 +2,6 @@ import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/login/LoginPage";
 import SignupPage from './pages/signup/SignupPage';
-import OAuthCallbackPage from './pages/signup/OAuthCallbackPage';
-import OAuthSignupPage from './pages/signup/OAuthSignupPage';
 import MainPage from './pages/MainPage';
 import MentorDashboardPage from './pages/dashboard/MentorDashboardPage';
 import ReviewPage from './pages/review/ReviewPage';
@@ -26,8 +24,6 @@ function App() {
           {/* 인증 페이지 (사이드바 없음) */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/oauth2/callback" element={<OAuthCallbackPage />} />
-          <Route path="/oauth2/signup" element={<OAuthSignupPage />} />
           
           {/* 로그인 후 페이지들 (사이드바 있음) */}
           <Route path="/mentor-dashboard" element={<MentorDashboardPage />} />
