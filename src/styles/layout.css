@@ -181,9 +181,14 @@
   flex: 1;
   max-height: 100%;
   max-height: 100vh;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: var(--size-space-700) var(--size-space-900);
   background: var(--color-violet-50);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.layout-desktop__content::-webkit-scrollbar {
+  display: none;
 }
 
 /* ----- 모바일 레이아웃: 헤더 + 본문 + 하단 탭 ----- */
