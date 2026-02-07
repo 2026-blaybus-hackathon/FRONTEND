@@ -156,7 +156,7 @@ const MentorFeedbackPage = () => {
       <div className="w-full h-full flex flex-1 gap-300 overflow-hidden">
         <div className="w-fit flex flex-col gap-300 overflow-y-auto scrollbar-hide">
             {TodayAssignmentsExample.map((assignment) => (
-              <MenteeAssignmentCard key={assignment.title} {...assignment} onClick={() => {}} />
+              <MenteeAssignmentCard key={assignment.title + assignment.date} {...assignment} onClick={() => {}} />
             ))}
         </div>
         <div className="flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-7">
