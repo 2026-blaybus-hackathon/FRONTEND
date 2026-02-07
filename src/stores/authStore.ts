@@ -22,7 +22,7 @@ const useAuthStore = create<AuthStore>((set) => ({
     isLoggedIn: false,
     nickname: "",
     user: null,
-    role: "MENTOR",
+    role: null,
     login: (accessToken, nickname) => {
         Cookies.set('access_token', accessToken);
         Cookies.set('nickname', nickname);
