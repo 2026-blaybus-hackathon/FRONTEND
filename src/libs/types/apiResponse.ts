@@ -9,18 +9,22 @@ interface OAuthLogin303Response {
     accessToken: string;
 }
 
-import type { UserRole } from "./user";
-
 export type UserRole = 'MENTOR' | 'MENTEE';
 
 export interface LoginResponse {
     accessToken: string;
     nickname: string;
-    role: UserRole;
+    role?: UserRole;
     name?: string;
     email?: string;
-    role?: UserRole;
+    schoolName?: string;
+    grade?: string | null;
+    targetSchool?: string | null;
+    targetDate?: number | null;
 }
+
+/** 로그인 응답에서 accessToken 제외한 프로필 (localStorage 저장용) */
+export type LoginProfile = Omit<LoginResponse, 'accessToken'>;
 
 export interface OAuthSignupResponse {
     accessToken: string;

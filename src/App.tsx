@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/login/LoginPage";
@@ -9,10 +10,17 @@ import DashboardRedirect from './components/feature/DashboardRedirect';
 import ReviewPage from './pages/review/ReviewPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import useAuthStore from './stores/authStore';
 
 const queryClient = new QueryClient()
 
 function App() {
+  const checkLogin = useAuthStore((state) => state.checkLogin)
+
+  useEffect(() => {
+    checkLogin()
+  }, [checkLogin])
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>

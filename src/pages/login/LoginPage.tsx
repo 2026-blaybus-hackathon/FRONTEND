@@ -48,14 +48,25 @@ const LoginPage = () => {
         })
         .then((response) => {
             if (response.status === 200 && response.data?.accessToken) {
-                const { accessToken, nickname, role } = response.data;
-                const userRole = role ?? 'MENTEE';
+                const data = response.data;
+                const { accessToken } = data;
+                const profile = {
+                    nickname: data.nickname,
+                    role: data.role,
+                    name: data.name,
+                    email: data.email,
+                    schoolName: data.schoolName,
+                    grade: data.grade,
+                    targetSchool: data.targetSchool,
+                    targetDate: data.targetDate,
+                };
+                const userRole = data.role ?? 'MENTEE';
                 if (userRole === 'MENTOR') {
-                    console.log('[로그인] 멘토로 로그인되었습니다.', { role: userRole, email: response.data });
+                    console.log('[로그인] 멘토로 로그인되었습니다.', { role: userRole, email: data });
                 } else {
-                    console.log('[로그인] 멘티로 로그인되었습니다.', { role: userRole, email: response.data });
+                    console.log('[로그인] 멘티로 로그인되었습니다.', { role: userRole, email: data });
                 }
-                login(accessToken, nickname, userRole);
+                login(accessToken, profile);
                 const dashboardPath = userRole === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
                 navigate(dashboardPath);
             } else if (response.status === 401) {

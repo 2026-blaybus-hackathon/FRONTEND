@@ -9,6 +9,7 @@ import {
 } from "../../../icons";
 import { cn } from "../../../libs/utils";
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../../stores/authStore";
 
 // path 수정 필요
 const manageSchedule = [
@@ -49,23 +50,27 @@ const myInfo = [
 
 const MenteeNav = () => {
     const navigate = useNavigate();
+    const user = useAuthStore((state) => state.user);
+    const nickname = useAuthStore((state) => state.nickname);
+    const displayName = user?.name || nickname || '-';
     const isActive = (path: string) => {
         return path === window.location.pathname;
     }
   return (
     <Nav>
-      {/* mentee card */}
       <div className="flex flex-col w-60 bg-gray-800 rounded-400 py-300 px-250 border border-gray-600 gap-100">
         <div className="flex gap-150 items-center">
           <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center">
-            <p className="heading-4 font-weight-bold text-white">홍</p>
+            <p className="heading-4 font-weight-bold text-white">{displayName[0] || '-'}</p>
           </div>
           <div className="flex flex-col">
-            <p className="heading-4 font-weight-bold text-white">홍길동</p>
-            <p className="heading-6 text-gray-300">한국고등학교 2학년</p>
+            <p className="heading-4 font-weight-bold text-white">{displayName}</p>
+            <p className="heading-6 text-gray-300">{user?.school || '학교를 설정해주세요'}</p>
           </div>
         </div>
-        <p className="subtitle-2 text-gray-500 h-[19px]">D- 312 | 서울대학교</p>
+        <p className="subtitle-2 text-gray-500 h-[19px]">
+          {[user?.dDay, user?.targetSchool].filter(Boolean).join(' | ') || '-'}
+        </p>
       </div>
 
       {/* manage schedule */}

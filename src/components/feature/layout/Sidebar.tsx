@@ -8,9 +8,10 @@ interface SidebarProps {
 
 const Sidebar = ({ onNavigate }: SidebarProps) => {
   const user = useAuthStore((state) => state.user);
+  const nickname = useAuthStore((state) => state.nickname);
   const role = useAuthStore((state) => state.role);
   const location = useLocation();
-
+  const displayName = user?.name || nickname || '';
   const isMentor = role === 'MENTOR';
   const dashboardPath = isMentor ? '/mentor-dashboard' : '/mentee-dashboard';
   const dashboardLabel = isMentor ? '멘티 목록' : '오늘의 학습';
@@ -24,13 +25,12 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
         <span className="logo-text">SeolStudy</span>
       </div>
 
-      {/* 사용자 프로필 */}
       <div className="sidebar-profile">
-        <div className="profile-avatar">{user?.name?.[0] || '홍'}</div>
+        <div className="profile-avatar">{displayName?.[0] || '-'}</div>
         <div className="profile-info">
-          <div className="profile-name">{user?.name || '홍길동'}</div>
-          <div className="profile-school">{user?.school || '한국고등학교 2학년'}</div>
-          <div className="profile-date">{user?.dDay || 'D-322 남았습니다'}</div>
+          <div className="profile-name">{displayName || '-'}</div>
+          <div className="profile-school">{user?.school || '학교를 설정해주세요'}</div>
+          <div className="profile-date">{user?.dDay ? `${user.dDay} 남았습니다` : 'D-day를 설정해주세요'}</div>
         </div>
       </div>
 

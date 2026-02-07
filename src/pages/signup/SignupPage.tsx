@@ -80,9 +80,19 @@ const SignupPage = () => {
             if (response.status === 201 || response.status === 200) {
                 signupApiCall<LoginResponse>("/auth/login/email", "POST", { email: email.value, password: password.value }).then(loginResponse => {
                     if (loginResponse.status === 200 && loginResponse.data?.accessToken && loginResponse.data?.nickname) {
-                        const userRole = loginResponse.data.role ?? (role === 'mentor' ? 'MENTOR' : 'MENTEE');
-                        login(loginResponse.data.accessToken, loginResponse.data.nickname, userRole);
-                        const dashboardPath = userRole === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+                        const data = loginResponse.data;
+                        const profile = {
+                            nickname: data.nickname,
+                            role: data.role ?? (role === 'mentor' ? 'MENTOR' : 'MENTEE'),
+                            name: data.name,
+                            email: data.email,
+                            schoolName: data.schoolName,
+                            grade: data.grade,
+                            targetSchool: data.targetSchool,
+                            targetDate: data.targetDate,
+                        };
+                        login(data.accessToken, profile);
+                        const dashboardPath = profile.role === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
                         navigate(dashboardPath);
                     }
                 });
