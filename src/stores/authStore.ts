@@ -11,6 +11,7 @@ interface AuthStore {
     isLoggedIn: boolean;
     nickname: string;
     user: User | null;
+    role: "MENTEE" | "MENTOR" | null;
     login: (accessToken: string, nickname: string) => void;
     logout: () => void;
     checkLogin: () => void;
@@ -21,6 +22,7 @@ const useAuthStore = create<AuthStore>((set) => ({
     isLoggedIn: false,
     nickname: "",
     user: null,
+    role: "MENTOR",
     login: (accessToken, nickname) => {
         Cookies.set('access_token', accessToken);
         Cookies.set('nickname', nickname);

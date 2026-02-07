@@ -79,8 +79,8 @@
   --container-max-width: 1200px;
   
   /* Breakpoints */
-  --breakpoint-mobile: 768px;
-  --breakpoint-desktop: 1024px;
+  --breakpoint-mobile: 360px;
+  --breakpoint-desktop: 1440px;
   
   /* Typography */
   --font-size-sm: 14px;

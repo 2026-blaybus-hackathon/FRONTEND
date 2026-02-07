@@ -88,9 +88,9 @@
   --sidebar-width: var(--sidebar-width);
   --container-max-width: var(--container-max-width);
 
-  /* Breakpoints */
+  /* Breakpoints (Tailwind v4는 rem 단위 권장, 1440px = 90rem) */
   --breakpoint-mobile: var(--breakpoint-mobile);
-  --breakpoint-desktop: var(--breakpoint-desktop);
+  --breakpoint-desktop: 90rem; /* 1440px - variant 정렬을 위해 rem 사용 */
 
   /* Typography scale */
   --font-size-sm: var(--font-size-sm);

@@ -170,8 +170,8 @@
 .layout-desktop__content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-6);
-  background: var(--color-bg);
+  padding: var(--size-space-700) var(--size-space-900);
+  background: var(--color-violet-50);
 }
 
 /* ----- 모바일 레이아웃: 헤더 + 본문 + 하단 탭 ----- */
