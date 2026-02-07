@@ -35,8 +35,8 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
         <div className="section-title">학습 관리</div>
         <nav className="sidebar-nav">
           <Link 
-            to="/mentor-dashboard" 
-            className={`nav-item ${isActive('/mentor-dashboard') || isActive('/dashboard') ? 'active' : ''}`}
+            to="/mentee-dashboard" 
+            className={`nav-item ${isActive('/mentee-dashboard') || isActive('/dashboard') ? 'active' : ''}`}
             onClick={onNavigate}
           >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
