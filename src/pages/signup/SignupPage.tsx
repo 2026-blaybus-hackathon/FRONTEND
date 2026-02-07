@@ -83,7 +83,7 @@ const SignupPage = () => {
                         login(response.data?.accessToken as string, response.data?.nickname as string);
                     }
                 }).then(() => {
-                    navigate("/mentor-dashboard");
+                    navigate("/mentee-dashboard");
                 });
             }
         })
