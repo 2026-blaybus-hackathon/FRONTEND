@@ -5,9 +5,8 @@ import MenteeNav from "./MenteeNav";
 import MentorNav from "./MentorNav";
 // import MobileLayout from "./MobileLayout";
 import { Outlet, useLocation } from "react-router-dom";
-import Menu from "../../../icons/Menu";
-import openedBook from "../../../assets/opened-book.svg";
 // import TabBar from "./TabBar";
+import MobileHeader from "./MobileHeader";
 
 const Layout = () => {
   // 테스트를 위해 pathname을 사용하고 있습니다.
@@ -32,10 +31,6 @@ const Layout = () => {
     return () => document.body.classList.remove("layout-dashboard-body");
   }, []);
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
-  };
-
   const Nav = useMemo(() => {
     if (pathname.startsWith("/mentee")) {
       return <MenteeNav isOpen={isMobileMenuOpen} />;
@@ -48,23 +43,7 @@ const Layout = () => {
   return (
     <>
       <div className="layout-dashboard-root">
-        <div className="layout-dashboard-header w-100vw lg:hidden">
-          <div className="flex justify-between items-center px-400 py-200">
-            <div className="layout-nav__brand">
-              <img src={openedBook} alt="Seolstudy" />
-              <span className="layout-nav__brand-name heading-3">Seolstudy</span>
-            </div>
-            <MobileMenuToggle onClick={toggleMobileMenu} />
-          </div>
-        </div>
-
-        {/* 사이드바 오버레이 (모바일) */}
-        {isMobileMenuOpen && (
-          <div
-            className="sidebar-overlay"
-            onClick={toggleMobileMenu}
-          />
-        )}
+        <MobileHeader isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
 
         <div className="layout-dashboard-wrap">
           {Nav}
@@ -77,18 +56,5 @@ const Layout = () => {
     </>
   )
 }
-
-const MobileMenuToggle = ({ onClick }: { onClick: () => void }) => {
-  return (
-    <button 
-      className="hamburger-btn"
-      onClick={onClick}
-      aria-label="메뉴 열기"
-    >
-      <Menu />
-    </button>
-  );
-};
-
 
 export default Layout;

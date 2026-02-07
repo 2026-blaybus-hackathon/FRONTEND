@@ -285,6 +285,7 @@
 
   .layout-dashboard-header {
     flex-shrink: 0;
+    background: var(--color-gray-900);
   }
 
   .layout-dashboard-wrap {

@@ -12,26 +12,45 @@
   padding: 0;
 }
 
-/* 모바일 헤더 */
-.mobile-header {
-  display: none;
+/* 모바일 헤더 (MobileHeader.tsx) */
+.mobile-header-root {
+  width: 100vw;
+}
+
+@media (min-width: 1024px) {
+  .mobile-header-root {
+    display: none;
+  }
+}
+
+.mobile-header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--size-space-200) var(--size-space-400);
 }
 
 .hamburger-btn {
   background: none;
   border: none;
-  padding: 8px;
+  outline: none;
+  padding: var(--size-space-100);
   cursor: pointer;
-  color: #111827;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+  border-radius: var(--size-border-radius-200);
+  color: var(--color-primary-300);
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .hamburger-btn:hover {
-  background-color: #F3F4F6;
+  background-color: var(--color-gray-700);
+}
+
+/* 레거시: 기존 .mobile-header (미사용 시 제거 가능) */
+.mobile-header {
+  display: none;
 }
 
 .mobile-logo {
