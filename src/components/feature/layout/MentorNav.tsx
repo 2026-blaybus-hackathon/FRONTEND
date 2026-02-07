@@ -1,6 +1,6 @@
 import Nav from "./Nav";
 import { Users, Calendar, FoldedDocument, Folder, BarChart, Clock } from "../../../icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "../../../libs/utils";
 
 const mentoMenu = [
@@ -37,10 +37,10 @@ const mentoMenu = [
 ]
 
 const MentorNav = () => {
-
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => {
-    return path === window.location.pathname;
+    return path === pathname;
   }
 
   return (

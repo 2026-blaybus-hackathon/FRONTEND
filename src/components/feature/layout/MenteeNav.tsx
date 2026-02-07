@@ -8,7 +8,7 @@ import {
   User,
 } from "../../../icons";
 import { cn } from "../../../libs/utils";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // path 수정 필요
 const manageSchedule = [
@@ -49,8 +49,9 @@ const myInfo = [
 
 const MenteeNav = () => {
     const navigate = useNavigate();
+    const { pathname } = useLocation();
     const isActive = (path: string) => {
-        return path === window.location.pathname;
+        return path === pathname;
     }
   return (
     <Nav>
