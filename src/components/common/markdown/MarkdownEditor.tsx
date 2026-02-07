@@ -12,7 +12,6 @@ interface MarkdownEditorProps {
 const MarkdownEditor = ({ value, setValue, height = "100%", customStyle }: MarkdownEditorProps) => {
   return (
     <div
-      className="markdown-editor-container"
       style={{
         display: "flex",
         flexDirection: "column",

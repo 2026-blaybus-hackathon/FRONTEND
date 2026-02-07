@@ -4,7 +4,8 @@ import { cn } from "../../libs/utils";
 import { Play, PlayReverse } from "../../icons";
 import IconButton from "../../components/common/button/IconButton";
 import Button from "../../components/common/button/Button";
-import MarkdownEditor from "../../components/common/MarkdownEditor";
+import MarkdownEditor from "../../components/common/markdown/MarkdownEditor";
+import MarkdownRenderer from "../../components/common/markdown/MarkdownRenderer";
 
 interface Mentee {
   id: number;
@@ -127,6 +128,7 @@ const MentorFeedbackPage = () => {
   const [selectedMentee, setSelectedMentee] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(3);
+  const [feedbackSaved, setFeedbackSaved] = useState(false);
 
   useEffect(() => {
     const mqXl = window.matchMedia("(min-width: 1640px)");
@@ -182,13 +184,24 @@ const MentorFeedbackPage = () => {
             <p className="heading-6 font-weight-700 text-gray-800">종합 피드백</p>
             <p className="body-3 font-weight-500 text-gray-500">오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요.</p>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 h-full min-h-0">
             {/* 에디터 */}
-            <MarkdownEditor value={feedback} setValue={setFeedback} />
+            {
+              feedbackSaved ?
+              <MarkdownRenderer markdown={feedback} /> :
+              <MarkdownEditor value={feedback} setValue={setFeedback} />
+            }
           </div>
           <div className="w-full flex justify-end gap-100 h-fit">
-            <Button variant="gray" onClick={() => {}} ariaLabel="임시 저장">임시 저장</Button>
-            <Button onClick={() => {}} ariaLabel="피드백 등록" className="font-weight-700">피드백 등록</Button>
+            {!feedbackSaved && <Button variant="gray" onClick={() => {}} ariaLabel="임시 저장">임시 저장</Button>}
+            <Button
+              onClick={() => {setFeedbackSaved(prev => !prev)}}
+              ariaLabel="피드백 등록"
+              className="font-weight-700"
+              disabled={!feedback}
+            >
+              {feedbackSaved ? "피드백 수정" : "피드백 등록"}
+            </Button>
           </div>
         </div>
       </div>
