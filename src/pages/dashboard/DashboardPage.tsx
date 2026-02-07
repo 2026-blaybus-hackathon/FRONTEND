@@ -8,7 +8,7 @@ import type { Task, TaskData, TaskDetail } from '../../types';
 import { FILTERS } from '../../static/subjects';
 import '../../styles/pages/dashboard.css';
 
-const MentorDashboardPage = () => {
+const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().getDate());
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -316,4 +316,4 @@ const MentorDashboardPage = () => {
   );
 };
 
-export default MentorDashboardPage;
+export default DashboardPage;
