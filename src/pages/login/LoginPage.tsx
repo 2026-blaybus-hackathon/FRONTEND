@@ -6,12 +6,8 @@ import PasswordInput from "../../components/common/input/PasswordInput";
 import { useApi } from "../../hooks/useApi";
 import useAuthStore from "../../stores/authStore";
 import Container from "../../components/common/Container";
+import type { LoginResponse } from "../../libs/types/apiResponse";
 import '../../styles/pages/auth.css';
-
-interface LoginResponse {
-    accessToken: string;
-    nickname: string;
-}
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -25,17 +21,17 @@ const LoginPage = () => {
     const { apiCall, isLoading } = useApi();
     const { isLoggedIn, login } = useAuthStore();
 
-    const isLoginValid = email !== "" && password !== "";
+  const isLoginValid = email !== "" && password !== "";
 
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
-        setError(null);
-    };
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setError(null);
+  };
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
-        setError(null);
-    };
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setError(null);
+  };
 
     const handleSignupClick = () => {
         navigate(`/signup${role ? `?role=${role}` : ''}`);
@@ -52,8 +48,27 @@ const LoginPage = () => {
         })
         .then((response) => {
             if (response.status === 200 && response.data?.accessToken) {
-                login(response.data.accessToken, response.data.nickname);
-                navigate("/mentee-dashboard");
+                const data = response.data;
+                const { accessToken } = data;
+                const profile = {
+                    nickname: data.nickname,
+                    role: data.role,
+                    name: data.name,
+                    email: data.email,
+                    schoolName: data.schoolName,
+                    grade: data.grade,
+                    targetSchool: data.targetSchool,
+                    targetDate: data.targetDate,
+                };
+                const userRole = data.role ?? 'MENTEE';
+                if (userRole === 'MENTOR') {
+                    console.log('[로그인] 멘토로 로그인되었습니다.', { role: userRole, email: data });
+                } else {
+                    console.log('[로그인] 멘티로 로그인되었습니다.', { role: userRole, email: data });
+                }
+                login(accessToken, profile);
+                const dashboardPath = userRole === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+                navigate(dashboardPath);
             } else if (response.status === 401) {
                 setError("이메일 또는 비밀번호가 잘못되었습니다.");
             } else {
@@ -64,7 +79,9 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            navigate("/mentee-dashboard");
+            const { role } = useAuthStore.getState();
+            const dashboardPath = role === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+            navigate(dashboardPath);
         }
     }, [isLoggedIn, navigate]);
 

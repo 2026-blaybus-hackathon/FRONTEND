@@ -8,8 +8,13 @@ interface SidebarProps {
 
 const Sidebar = ({ onNavigate }: SidebarProps) => {
   const user = useAuthStore((state) => state.user);
+  const nickname = useAuthStore((state) => state.nickname);
+  const role = useAuthStore((state) => state.role);
   const location = useLocation();
-
+  const displayName = user?.name || nickname || '';
+  const isMentor = role === 'MENTOR';
+  const dashboardPath = isMentor ? '/mentor-dashboard' : '/mentee-dashboard';
+  const dashboardLabel = isMentor ? '멘티 목록' : '오늘의 학습';
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -20,13 +25,12 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
         <span className="logo-text">SeolStudy</span>
       </div>
 
-      {/* 사용자 프로필 */}
       <div className="sidebar-profile">
-        <div className="profile-avatar">{user?.name?.[0] || '홍'}</div>
+        <div className="profile-avatar">{displayName?.[0] || '-'}</div>
         <div className="profile-info">
-          <div className="profile-name">{user?.name || '홍길동'}</div>
-          <div className="profile-school">{user?.school || '한국고등학교 2학년'}</div>
-          <div className="profile-date">{user?.dDay || 'D-322 남았습니다'}</div>
+          <div className="profile-name">{displayName || '-'}</div>
+          <div className="profile-school">{user?.school || '학교를 설정해주세요'}</div>
+          <div className="profile-date">{user?.dDay ? `${user.dDay} 남았습니다` : 'D-day를 설정해주세요'}</div>
         </div>
       </div>
 
@@ -35,8 +39,8 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
         <div className="section-title">학습 관리</div>
         <nav className="sidebar-nav">
           <Link 
-            to="/mentee-dashboard" 
-            className={`nav-item ${isActive('/mentee-dashboard') || isActive('/dashboard') ? 'active' : ''}`}
+            to={dashboardPath} 
+            className={`nav-item ${isActive('/mentee-dashboard') || isActive('/mentor-dashboard') || isActive('/dashboard') ? 'active' : ''}`}
             onClick={onNavigate}
           >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -44,7 +48,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
               <line x1="3" y1="8" x2="17" y2="8" stroke="currentColor" strokeWidth="1.5"/>
               <line x1="8" y1="8" x2="8" y2="17" stroke="currentColor" strokeWidth="1.5"/>
             </svg>
-            <span className="nav-text">오늘의 학습</span>
+            <span className="nav-text">{dashboardLabel}</span>
           </Link>
           <Link 
             to="/submission" 
