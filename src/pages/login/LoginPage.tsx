@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/common/button/Button";
 import EmailInput from "../../components/common/input/EmailInput";
 import PasswordInput from "../../components/common/input/PasswordInput";
 import { useApi } from "../../hooks/useApi";
-import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../stores/authStore";
+import Container from "../../components/common/Container";
+import '../../styles/pages/auth.css';
 
 interface LoginResponse {
     accessToken: string;
@@ -13,13 +15,15 @@ interface LoginResponse {
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const role = searchParams.get('role'); // mentee or mentor
+    
     const [email, setEmail] = useState("");
-    const { apiCall, isLoading } = useApi();
     const [password, setPassword] = useState("");
-    const { isLoggedIn, login } = useAuthStore();
-
-    // 에러를 key로 저장
     const [error, setError] = useState<null | string>(null);
+    
+    const { apiCall, isLoading } = useApi();
+    const { isLoggedIn, login } = useAuthStore();
 
     const isLoginValid = email !== "" && password !== "";
 
@@ -34,11 +38,14 @@ const LoginPage = () => {
     };
 
     const handleSignupClick = () => {
-        navigate("/signup")
-    }
+        navigate(`/signup${role ? `?role=${role}` : ''}`);
+    };
+
+    const handleBackClick = () => {
+        navigate('/main');
+    };
 
     const handleLogin = () => {
-        // 로그인 로직 처리 후 에러 발생 시
         apiCall<LoginResponse>('/auth/login/email', 'POST', {
             email,
             password
@@ -46,7 +53,7 @@ const LoginPage = () => {
         .then((response) => {
             if (response.status === 200 && response.data?.accessToken) {
                 login(response.data.accessToken, response.data.nickname);
-                navigate("/");
+                navigate("/mentee-dashboard");
             } else if (response.status === 401) {
                 setError("이메일 또는 비밀번호가 잘못되었습니다.");
             } else {
@@ -57,53 +64,63 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            navigate("/");
+            navigate("/mentee-dashboard");
         }
     }, [isLoggedIn, navigate]);
 
     return (
-        <div className="flex flex-col justify-center items-center w-80 m-auto">
-            <div className="flex flex-col gap-2 w-full">
-                <h1 className="mb-4 w-full text-center text-primary">
-                    로그인
-                </h1>
-                <div className="flex flex-col gap-2">
-                    <EmailInput
-                        value={email}
-                        onChange={handleEmailChange}
-                        width="full"
-                        ariaLabel="로그인 이메일란"
-                    />
+        <Container>
+            <div className="auth-page">
+                <div className="auth-header">
+                    <button className="back-link" onClick={handleBackClick}>
+                        ← 돌아가기
+                    </button>
+                    <h1 className="auth-title">
+                        {role ? `${role === 'mentee' ? '멘티' : '멘토'} ` : ''}로그인
+                    </h1>
+                    <p className="auth-subtitle">SeolStudy에 오신 것을 환영합니다</p>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                    <PasswordInput
-                        onChange={handlePasswordChange}
-                        value={password}
-                        width="full"
-                        ariaLabel="로그인 비밀번호란"
-                    />
-                    {error && <p className="caption text-danger">{error}</p>}
-                </div>
+                <div className="auth-form">
+                    <div className="form-group">
+                        <EmailInput
+                            value={email}
+                            onChange={handleEmailChange}
+                            width="full"
+                            ariaLabel="로그인 이메일란"
+                        />
+                    </div>
 
-                <Button
-                    onClick={handleLogin}
-                    disabled={!isLoginValid || isLoading}
-                    width="full"
-                    ariaLabel={"로그인 버튼"}
-                >
-                    로그인
-                </Button>
-                <Button
-                    variant="secondary"
-                    onClick={handleSignupClick}
-                    width="full"
-                    ariaLabel={"회원가입 버튼"}
-                >
-                    회원가입
-                </Button>
+                    <div className="form-group">
+                        <PasswordInput
+                            onChange={handlePasswordChange}
+                            value={password}
+                            width="full"
+                            ariaLabel="로그인 비밀번호란"
+                        />
+                        {error && <p className="error-message">{error}</p>}
+                    </div>
+
+                    <Button
+                        onClick={handleLogin}
+                        disabled={!isLoginValid || isLoading}
+                        width="full"
+                        ariaLabel="로그인 버튼"
+                    >
+                        로그인
+                    </Button>
+                    
+                    <Button
+                        variant="secondary"
+                        onClick={handleSignupClick}
+                        width="full"
+                        ariaLabel="회원가입 버튼"
+                    >
+                        회원가입
+                    </Button>
+                </div>
             </div>
-        </div>
+        </Container>
     );
 };
 

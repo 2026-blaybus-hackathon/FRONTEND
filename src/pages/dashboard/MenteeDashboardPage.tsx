@@ -6,9 +6,9 @@ import TaskDetailModal from '../../components/feature/dashboard/TaskDetailModal'
 import TaskCard from '../../components/feature/dashboard/TaskCard';
 import type { Task, TaskData, TaskDetail } from '../../types';
 import { FILTERS } from '../../static/subjects';
-import '../../styles/pages/dashboard.css';
+import '../../styles/pages/mentee-dashboard.css';
 
-const DashboardPage = () => {
+const MenteeDashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().getDate());
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -99,16 +99,18 @@ const DashboardPage = () => {
     setTasks([...tasks, newTask]);
   };
 
-  const handleEditTask = (updatedTask: TaskData & { id: number }) => {
-    setTasks(tasks.map(task => 
-      task.id === updatedTask.id 
-        ? { ...task, ...updatedTask }
+  const handleEditTask = (updatedTaskData: TaskData & { id: number }) => {
+    const newTasks = tasks.map(task => 
+      task.id === updatedTaskData.id 
+        ? { ...task, ...updatedTaskData }
         : task
-    ));
+    );
+    setTasks(newTasks);
+    
     // 수정 후 상세 정보 모달 열기
-    const task = tasks.find(t => t.id === updatedTask.id);
-    if (task) {
-      setDetailTask({ ...task, ...updatedTask });
+    const updatedFullTask = newTasks.find(t => t.id === updatedTaskData.id);
+    if (updatedFullTask) {
+      setDetailTask(updatedFullTask);
       setIsDetailModalOpen(true);
     }
   };
@@ -316,4 +318,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default MenteeDashboardPage;
