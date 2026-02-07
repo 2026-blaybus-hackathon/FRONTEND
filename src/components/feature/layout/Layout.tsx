@@ -47,7 +47,7 @@ const Layout = () => {
 
         <div className="layout-dashboard-wrap">
           {Nav}
-          <div className="layout-main bg-primary-50 px-20 py-14">
+          <div className="layout-main">
             <Outlet />
           </div>
         </div>

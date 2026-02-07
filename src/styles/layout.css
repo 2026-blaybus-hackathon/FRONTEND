@@ -258,11 +258,19 @@
 .layout-main {
   flex: 1;
   min-width: 0;
+  background: var(--color-violet-50);
+}
+
+@media (max-width: 768px) {
+  .layout-main {
+    padding: var(--size-space-400);
+  }
 }
 
 @media (min-width: 1024px) {
   .layout-main {
     height: 100vh;
+    padding: 56px var(--size-space-900);
   }
 }
 
