@@ -25,7 +25,19 @@ const MainPage = () => {
             </div>
 
             <div className="role-selection">
-                <div className="role-card mentee-card" onClick={handleMenteeClick}>
+                <div 
+                    className="role-card mentee-card" 
+                    onClick={handleMenteeClick}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleMenteeClick();
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="멘티로 로그인"
+                >
                     <div className="role-content">
                         <h2 className="role-title">멘티</h2>
                         <div className="role-illustration">
@@ -51,7 +63,19 @@ const MainPage = () => {
                     </button>
                 </div>
 
-                <div className="role-card mentor-card" onClick={handleMentorClick}>
+                <div 
+                    className="role-card mentor-card" 
+                    onClick={handleMentorClick}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleMentorClick();
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="멘토로 로그인"
+                >
                     <div className="role-content">
                         <h2 className="role-title">멘토</h2>
                         <div className="role-illustration">

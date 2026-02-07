@@ -76,7 +76,7 @@ const LoginPage = () => {
                         ← 돌아가기
                     </button>
                     <h1 className="auth-title">
-                        {role === 'mentee' ? '멘티' : role === 'mentor' ? '멘토' : ''} 로그인
+                        {role ? `${role === 'mentee' ? '멘티' : '멘토'} ` : ''}로그인
                     </h1>
                     <p className="auth-subtitle">SeolStudy에 오신 것을 환영합니다</p>
                 </div>

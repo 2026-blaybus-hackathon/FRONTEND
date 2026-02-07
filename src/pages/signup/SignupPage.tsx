@@ -132,7 +132,7 @@ const SignupPage = () => {
                         ← 돌아가기
                     </button>
                     <h1 className="auth-title">
-                        {role === 'mentee' ? '멘티' : role === 'mentor' ? '멘토' : ''} 회원가입
+                        {role ? `${role === 'mentee' ? '멘티' : '멘토'} ` : ''}회원가입
                     </h1>
                     <p className="auth-subtitle">SeolStudy와 함께 시작하세요</p>
                 </div>
