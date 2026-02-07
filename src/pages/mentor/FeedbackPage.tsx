@@ -75,7 +75,7 @@ const menteesExample: Mentee[] = [
   },
 ];
 
-const TodayAssignment: TodayAssignment[] = [
+const TodayAssignmentsExample: TodayAssignment[] = [
   {
     title: "오늘의 과제",
     subject: "KOREAN",
@@ -155,7 +155,7 @@ const MentorFeedbackPage = () => {
       {/* 학생 과제 확인 */}
       <div className="w-full h-full flex flex-1 gap-300 overflow-hidden">
         <div className="w-fit flex flex-col gap-300 overflow-y-auto scrollbar-hide">
-            {TodayAssignment.map((assignment) => (
+            {TodayAssignmentsExample.map((assignment) => (
               <MenteeAssignmentCard key={assignment.title} {...assignment} onClick={() => {}} />
             ))}
         </div>
