@@ -4,6 +4,7 @@ import { cn } from "../../libs/utils";
 import { Play, PlayReverse } from "../../icons";
 import IconButton from "../../components/common/button/IconButton";
 import Button from "../../components/common/button/Button";
+import MarkdownEditor from "../../components/common/MarkdownEditor";
 
 interface Mentee {
   id: number;
@@ -120,6 +121,7 @@ const TodayAssignment: TodayAssignment[] = [
 ]
 
 const MentorFeedbackPage = () => {
+  const [feedback, setFeedback] = useState("");
   const [search, setSearch] = useState("");
   const [mentees] = useState<Mentee[]>(menteesExample);
   const [selectedMentee, setSelectedMentee] = useState<number | null>(null);
@@ -164,6 +166,7 @@ const MentorFeedbackPage = () => {
           </div>
           <div className="flex-1">
             {/* 에디터 */}
+            <MarkdownEditor value={feedback} setValue={setFeedback} />
           </div>
           <div className="w-full flex justify-end gap-100 h-fit">
             <Button variant="gray" onClick={() => {}} ariaLabel="임시 저장">임시 저장</Button>
