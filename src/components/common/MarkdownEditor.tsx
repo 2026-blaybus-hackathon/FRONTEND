@@ -2,7 +2,13 @@ import MDEditor, { commands } from '@uiw/react-md-editor';
 
 // 미리보기 기능은 <MDEditor.Markdown source={value} style={{ whiteSpace: 'pre-wrap' }} />로 추가하세요
 
-const MarkdownEditor = ({ value, setValue, height = "100%" }: { value: string, setValue: (value: string) => void, height?: string }) => {
+interface MarkdownEditorProps {
+  value: string;
+  setValue: (value: string) => void;
+  height?: string;
+}
+
+const MarkdownEditor = ({ value, setValue, height = "100%" }: MarkdownEditorProps) => {
   return (
     <div
       className="markdown-editor-container"
