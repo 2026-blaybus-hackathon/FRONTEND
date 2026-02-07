@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import InputForm from "../../components/common/form/InputForm";
 import { validateEmail } from "../../libs/validation/email";
 import { validatePassword, validatePasswordConfirm } from "../../libs/validation/password";
@@ -10,10 +11,13 @@ import type {
     ValidateNicknameResponse
 } from "../../libs/types/apiResponse";
 import useAuthStore from "../../stores/authStore";
-import { useNavigate } from "react-router-dom";
+import Container from "../../components/common/Container";
+import '../../styles/pages/auth.css';
 
 const SignupPage = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const role = searchParams.get('role');
 
     const [email, setEmail] = useState({ value: "", error: "", success: "" });
     const [code, setCode] = useState({ value: "", error: "", success: "" });
@@ -23,7 +27,6 @@ const SignupPage = () => {
     const [nickname, setNickname] = useState({ value: "", error: "", success: "" });
 
     const [emailVerifyToken, setEmailVerifyToken] = useState("");
-
     const [emailOver, setEmailOver] = useState(false);
     const [codeOver, setCodeOver] = useState(false);
 
@@ -33,8 +36,10 @@ const SignupPage = () => {
 
     const { login } = useAuthStore();
 
-    // onClick 함수
-    // 코드 전송
+    const handleBackClick = () => {
+        navigate(`/login${role ? `?role=${role}` : ''}`);
+    };
+
     const sendCode = () => {
         codeApiCall("/auth/email/send", "POST", { email: email.value }).then(response => {
             if (response.status === 204) {
@@ -46,7 +51,6 @@ const SignupPage = () => {
         });
     }
 
-    // 코드 검증
     const validateCode = () => {
         codeApiCall<VerifyCodeResponse>("/auth/email/verify", "POST", { email: email.value, code: code.value }).then(response => {
             if (response.status === 200) {
@@ -59,10 +63,8 @@ const SignupPage = () => {
                 setCode(prev => ({ ...prev, error: "코드가 일치하지 않습니다."}));
             }
         });
-        
     }
 
-    // 닉네임 검증
     const validateNickName = () => {
         nicknameApiCall<ValidateNicknameResponse>("/auth/validate/nickname", "POST", { nickname: nickname.value }).then(response => {
             if (response.status === 200 && response.data?.available === true) {
@@ -73,7 +75,6 @@ const SignupPage = () => {
         });
     }
 
-    // 회원가입
     const signup = () => {
         signupApiCall("/auth/signup/email", "POST", { emailVerifyToken, nickname: nickname.value, password: password.value, name: name.value }).then(response => {
             if (response.status === 201 || response.status === 200) {
@@ -82,13 +83,12 @@ const SignupPage = () => {
                         login(response.data?.accessToken as string, response.data?.nickname as string);
                     }
                 }).then(() => {
-                    navigate("/");
+                    navigate("/mentor-dashboard");
                 });
             }
         })
     }
 
-    // onChange 함수
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const emailValue = e.target.value;
         const validation = validateEmail(emailValue);
@@ -125,88 +125,100 @@ const SignupPage = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center w-100 m-auto">
-            <h1 className="mb-4 w-full text-center">
-                회원가입
-            </h1>
-            <div className="flex flex-col gap-0.5 w-full my-8">
-                <InputForm
-                    title={"이메일"} 
-                    type={"email"} 
-                    value={email.value} 
-                    onChange={handleEmailChange} 
-                    ariaLabel={"signup email"} 
-                    error={email.error} 
-                    success={email.success}
-                    readOnly={emailOver}
-                    button={{
-                        text: "확인",
-                        onClick: sendCode,
-                        variant: "primary",
-                        disabled: email.value.length === 0 || !!email.error || emailOver || codeIsLoading
-                    }}
-                />
-                <InputForm
-                    title={"인증코드"} 
-                    type={"text"} 
-                    value={code.value} 
-                    onChange={handleCodeChange} 
-                    ariaLabel={"signup code"} 
-                    error={code.error} 
-                    success={code.success}
-                    readOnly={codeOver}
-                    button={{
-                        text: "인증",
-                        onClick: validateCode,
-                        variant: "primary",
-                        disabled: !emailOver || code.value.length === 0 || codeOver
-                    }}
-                />
-                <InputForm
-                    title={"비밀번호"} 
-                    type={"password"} 
-                    value={password.value} 
-                    onChange={handlePasswordChange} 
-                    ariaLabel={"signup password"} 
-                    error={password.error} 
-                    success={password.success}
-                />
-                <InputForm
-                    title={"비밀번호 확인"} 
-                    type={"password"} 
-                    value={passwordConfirm.value} 
-                    onChange={handlePasswordConfirmChange} 
-                    ariaLabel={"signup password confirm"} 
-                    error={passwordConfirm.error} 
-                    success={passwordConfirm.success}
-                />
-                <InputForm
-                    title={"이름"}
-                    type={"text"}
-                    value={name.value}
-                    onChange={handleNameChange}
-                    ariaLabel={"signup name"}
-                    error={name.error}
-                    success={name.success}
-                />
-                <InputForm
-                    title={"닉네임"} 
-                    type={"text"} 
-                    value={nickname.value} 
-                    onChange={handleNicknameChange} 
-                    ariaLabel={"signup nickname"} 
-                    error={nickname.error} 
-                    success={nickname.success}
-                    button={{
-                        text: "확인",
-                        onClick: validateNickName,
-                        variant: "primary",
-                        disabled: nickname.value.length === 0 || nicknameIsLoading || signupIsLoading
-                    }}
-                />
+        <Container>
+            <div className="auth-page">
+                <div className="auth-header">
+                    <button className="back-link" onClick={handleBackClick}>
+                        ← 돌아가기
+                    </button>
+                    <h1 className="auth-title">
+                        {role === 'mentee' ? '멘티' : role === 'mentor' ? '멘토' : ''} 회원가입
+                    </h1>
+                    <p className="auth-subtitle">SeolStudy와 함께 시작하세요</p>
+                </div>
+
+                <div className="auth-form">
+                    <InputForm
+                        title="이메일" 
+                        type="email" 
+                        value={email.value} 
+                        onChange={handleEmailChange} 
+                        ariaLabel="signup email" 
+                        error={email.error} 
+                        success={email.success}
+                        readOnly={emailOver}
+                        button={{
+                            text: "확인",
+                            onClick: sendCode,
+                            variant: "primary",
+                            disabled: email.value.length === 0 || !!email.error || emailOver || codeIsLoading
+                        }}
+                    />
+                    <InputForm
+                        title="인증코드" 
+                        type="text" 
+                        value={code.value} 
+                        onChange={handleCodeChange} 
+                        ariaLabel="signup code" 
+                        error={code.error} 
+                        success={code.success}
+                        readOnly={codeOver}
+                        button={{
+                            text: "인증",
+                            onClick: validateCode,
+                            variant: "primary",
+                            disabled: !emailOver || code.value.length === 0 || codeOver
+                        }}
+                    />
+                    <InputForm
+                        title="비밀번호" 
+                        type="password" 
+                        value={password.value} 
+                        onChange={handlePasswordChange} 
+                        ariaLabel="signup password" 
+                        error={password.error} 
+                        success={password.success}
+                    />
+                    <InputForm
+                        title="비밀번호 확인" 
+                        type="password" 
+                        value={passwordConfirm.value} 
+                        onChange={handlePasswordConfirmChange} 
+                        ariaLabel="signup password confirm" 
+                        error={passwordConfirm.error} 
+                        success={passwordConfirm.success}
+                    />
+                    <InputForm
+                        title="이름"
+                        type="text"
+                        value={name.value}
+                        onChange={handleNameChange}
+                        ariaLabel="signup name"
+                        error={name.error}
+                        success={name.success}
+                    />
+                    <InputForm
+                        title="닉네임" 
+                        type="text" 
+                        value={nickname.value} 
+                        onChange={handleNicknameChange} 
+                        ariaLabel="signup nickname" 
+                        error={nickname.error} 
+                        success={nickname.success}
+                        button={{
+                            text: "확인",
+                            onClick: validateNickName,
+                            variant: "primary",
+                            disabled: nickname.value.length === 0 || nicknameIsLoading || signupIsLoading
+                        }}
+                    />
+                    
+                    <Button onClick={signup} ariaLabel="signup" width="full">
+                        회원가입
+                    </Button>
+                </div>
             </div>
-            <Button onClick={signup} ariaLabel={"signup"} width="full">회원가입</Button>
-        </div>
+        </Container>
     );
 };
 

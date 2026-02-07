@@ -5,6 +5,8 @@ import Button from "../../components/common/button/Button";
 import { useApi } from "../../hooks/useApi";
 import type { OAuthSignupResponse, ValidateNicknameResponse } from "../../libs/types/apiResponse";
 import useAuthStore from "../../stores/authStore";
+import Container from "../../components/common/Container";
+import '../../styles/pages/auth.css';
 
 const OAuthSignupPage = () => {
     const navigate = useNavigate();
@@ -16,7 +18,7 @@ const OAuthSignupPage = () => {
 
     useEffect(() => {
         if (!socialSignUpToken) {
-            navigate("/", { replace: true });
+            navigate("/main", { replace: true });
         }
     }, [socialSignUpToken, navigate]);
 
@@ -46,7 +48,7 @@ const OAuthSignupPage = () => {
         submitApiCall<OAuthSignupResponse>("/auth/signup/google", "POST", { socialSignUpToken, nickname: nickname.value }).then((response) => {
             if ((response.status === 200 || response.status === 201) && response.data?.accessToken && response.data?.nickname) {
                 login(response.data.accessToken, response.data.nickname);
-                navigate("/");
+                navigate("/mentor-dashboard");
             } else if (response.status === 409) {
                 setErrorMessage("이미 존재하는 이메일입니다. 로그인 화면으로 돌아갑니다...");
                 setIsButtonDisabled(true);
@@ -63,38 +65,44 @@ const OAuthSignupPage = () => {
     const canSubmit = nicknameValid && !nicknameValidateIsLoading && !submitIsLoading && !isButtonDisabled;
 
     return (
-        <div className="flex flex-col justify-center items-center w-100 m-auto">
-            <h1 className="mb-4 w-full text-center">회원가입</h1>
-            <p className="w-full text-center text-gray-5 body-small mb-2">소셜 계정이 인증되었습니다. 아래 정보를 입력해주세요.</p>
-            {errorMessage && (
-                <p className="w-full text-center text-red-500 body-small mb-2">{errorMessage}</p>
-            )}
-            <div className="flex flex-col gap-0.5 w-full my-8">
-                <InputForm
-                    title="닉네임"
-                    type="text"
-                    value={nickname.value}
-                    onChange={handleNicknameChange}
-                    ariaLabel="signup nickname"
-                    error={nickname.error}
-                    success={nickname.success}
-                    button={{
-                        text: "확인",
-                        onClick: validateNickname,
-                        variant: "primary",
-                        disabled: nickname.value.length === 0 || nicknameValidateIsLoading || submitIsLoading,
-                    }}
-                />
+        <Container>
+            <div className="auth-page">
+                <div className="auth-header">
+                    <h1 className="auth-title">소셜 회원가입</h1>
+                    <p className="auth-subtitle">소셜 계정이 인증되었습니다. 닉네임을 입력해주세요.</p>
+                    {errorMessage && (
+                        <p className="error-message">{errorMessage}</p>
+                    )}
+                </div>
+
+                <div className="auth-form">
+                    <InputForm
+                        title="닉네임"
+                        type="text"
+                        value={nickname.value}
+                        onChange={handleNicknameChange}
+                        ariaLabel="signup nickname"
+                        error={nickname.error}
+                        success={nickname.success}
+                        button={{
+                            text: "확인",
+                            onClick: validateNickname,
+                            variant: "primary",
+                            disabled: nickname.value.length === 0 || nicknameValidateIsLoading || submitIsLoading,
+                        }}
+                    />
+                    
+                    <Button
+                        onClick={handleSubmit}
+                        ariaLabel="signup"
+                        width="full"
+                        disabled={!canSubmit}
+                    >
+                        회원가입
+                    </Button>
+                </div>
             </div>
-            <Button
-                onClick={handleSubmit}
-                ariaLabel="signup"
-                width="full"
-                disabled={!canSubmit}
-            >
-                회원가입
-            </Button>
-        </div>
+        </Container>
     );
 };
 

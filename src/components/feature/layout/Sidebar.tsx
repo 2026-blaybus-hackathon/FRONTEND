@@ -1,3 +1,4 @@
+import { useLocation, Link } from 'react-router-dom';
 import { useAuthStore } from '../../../stores/authStore';
 import '../../../styles/components/sidebar.css';
 
@@ -7,6 +8,9 @@ interface SidebarProps {
 
 const Sidebar = ({ onNavigate }: SidebarProps) => {
   const user = useAuthStore((state) => state.user);
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <aside className="sidebar">
@@ -30,21 +34,33 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
       <div className="sidebar-section">
         <div className="section-title">학습 관리</div>
         <nav className="sidebar-nav">
-          <a href="/dashboard" className="nav-item active" onClick={onNavigate}>
+          <Link 
+            to="/dashboard" 
+            className={`nav-item ${isActive('/dashboard') ? 'active' : ''}`}
+            onClick={onNavigate}
+          >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <rect x="3" y="3" width="14" height="14" rx="1" stroke="currentColor" strokeWidth="1.5"/>
               <line x1="3" y1="8" x2="17" y2="8" stroke="currentColor" strokeWidth="1.5"/>
               <line x1="8" y1="8" x2="8" y2="17" stroke="currentColor" strokeWidth="1.5"/>
             </svg>
             <span className="nav-text">오늘의 학습</span>
-          </a>
-          <a href="/submission" className="nav-item" onClick={onNavigate}>
+          </Link>
+          <Link 
+            to="/submission" 
+            className={`nav-item ${isActive('/submission') ? 'active' : ''}`}
+            onClick={onNavigate}
+          >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M10 2L3 6v5c0 4 7 7 7 7s7-3 7-7V6l-7-4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
             </svg>
             <span className="nav-text">약점 솔루션</span>
-          </a>
-          <a href="/report" className="nav-item" onClick={onNavigate}>
+          </Link>
+          <Link 
+            to="/report" 
+            className={`nav-item ${isActive('/report') ? 'active' : ''}`}
+            onClick={onNavigate}
+          >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <rect x="4" y="2" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="1.5"/>
               <line x1="7" y1="6" x2="13" y2="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -52,15 +68,19 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
               <line x1="7" y1="14" x2="10" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <span className="nav-text">리포트</span>
-          </a>
-          <a href="/review" className="nav-item" onClick={onNavigate}>
+          </Link>
+          <Link 
+            to="/review" 
+            className={`nav-item ${isActive('/review') ? 'active' : ''}`}
+            onClick={onNavigate}
+          >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M3 7h14" stroke="currentColor" strokeWidth="1.5"/>
               <rect x="6" y="2" width="8" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.5"/>
             </svg>
             <span className="nav-text">학습 보관함</span>
-          </a>
+          </Link>
         </nav>
       </div>
 
@@ -68,7 +88,11 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
       <div className="sidebar-section">
         <div className="section-title">내 관리</div>
         <nav className="sidebar-nav">
-          <a href="/calendar" className="nav-item" onClick={onNavigate}>
+          <Link 
+            to="/calendar" 
+            className={`nav-item ${isActive('/calendar') ? 'active' : ''}`}
+            onClick={onNavigate}
+          >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5"/>
               <line x1="3" y1="8" x2="17" y2="8" stroke="currentColor" strokeWidth="1.5"/>
@@ -76,14 +100,18 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
               <line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <span className="nav-text">일정 센터</span>
-          </a>
-          <a href="/my-page" className="nav-item" onClick={onNavigate}>
+          </Link>
+          <Link 
+            to="/my-page" 
+            className={`nav-item ${isActive('/my-page') ? 'active' : ''}`}
+            onClick={onNavigate}
+          >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <span className="nav-text">마이 페이지</span>
-          </a>
+          </Link>
         </nav>
       </div>
     </aside>

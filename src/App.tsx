@@ -5,7 +5,8 @@ import SignupPage from './pages/signup/SignupPage';
 import OAuthCallbackPage from './pages/signup/OAuthCallbackPage';
 import OAuthSignupPage from './pages/signup/OAuthSignupPage';
 import MainPage from './pages/MainPage';
-import DashboardPage from './pages/dashboard/DashboardPage';
+import MentorDashboardPage from './pages/dashboard/MentorDashboardPage';
+import ReviewPage from './pages/review/ReviewPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -29,10 +30,11 @@ function App() {
           <Route path="/oauth2/signup" element={<OAuthSignupPage />} />
           
           {/* 로그인 후 페이지들 (사이드바 있음) */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/mentor-dashboard" element={<MentorDashboardPage />} />
+          <Route path="/dashboard" element={<Navigate to="/mentor-dashboard" replace />} />
           <Route path="/submission" element={<PlaceholderPage name="약점 솔루션" />} />
           <Route path="/report" element={<PlaceholderPage name="리포트" />} />
-          <Route path="/review" element={<PlaceholderPage name="학습 보관함" />} />
+          <Route path="/review" element={<ReviewPage />} />
           <Route path="/calendar" element={<PlaceholderPage name="일정 센터" />} />
           <Route path="/my-page" element={<PlaceholderPage name="마이 페이지" />} />
         </Routes>
