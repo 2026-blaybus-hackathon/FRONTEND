@@ -6,9 +6,10 @@ interface MarkdownEditorProps {
   value: string;
   setValue: (value: string) => void;
   height?: string;
+  customStyle?: React.CSSProperties;
 }
 
-const MarkdownEditor = ({ value, setValue, height = "100%" }: MarkdownEditorProps) => {
+const MarkdownEditor = ({ value, setValue, height = "100%", customStyle }: MarkdownEditorProps) => {
   return (
     <div
       className="markdown-editor-container"
@@ -48,7 +49,8 @@ const MarkdownEditor = ({ value, setValue, height = "100%" }: MarkdownEditorProp
             style={{
                 flex: 1,
                 height: height || "100%",
-                minHeight: 0,
+                minHeight: "300px",
+                ...customStyle,
             }}
         />
     </div>

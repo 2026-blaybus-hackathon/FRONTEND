@@ -1,10 +1,18 @@
 @import "tailwindcss";
 
-/* Import design system styles */
+/* Design tokens: 레이어 밖에 두어 변수가 항상 사용 가능하도록 */
 @import "./styles/tokens.css";
-@import "./styles/layout.css";
-@import "./styles/components.css";
-@import "./styles/typography.css";
+
+/*
+  레이아웃/컴포넌트/타이포를 @layer components에 넣어야 Tailwind 유틸이 이김.
+  레이어 없는 CSS는 @layer utilities보다 우선하므로, 여기서 레이어 없이 import하면
+  .h-full, .lg:h-screen 등 height 유틸이 덮어쓰여서 안 먹음.
+*/
+@layer components {
+  @import "./styles/layout.css";
+  @import "./styles/components.css";
+  @import "./styles/typography.css";
+}
 
 /* tailwind에서 쓸 수 있도록 token 매핑 */
 @theme {
@@ -89,7 +97,12 @@
   --sidebar-width: var(--sidebar-width);
   --container-max-width: var(--container-max-width);
 
-  /* Breakpoints (Tailwind v4는 rem 단위 권장, 1440px = 90rem) */
+  /* Breakpoints (Tailwind v4: 기본 브레이크포인트 명시 시 lg: 등 반응형 variant 정상 동작) */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
   --breakpoint-mobile: var(--breakpoint-mobile);
   --breakpoint-desktop: 90rem; /* 1440px - variant 정렬을 위해 rem 사용 */
 

@@ -115,10 +115,7 @@
   display: flex;
 }
 
-.flex-col {
-  flex-direction: column;
-}
-
+/* .flex-col 제거: Tailwind의 .flex-col / .lg:flex-row 등과 충돌해 lg:flex-row가 안 먹힘 */
 .items-center {
   align-items: center;
 }
@@ -258,18 +255,14 @@
 .layout-main {
   flex: 1;
   min-width: 0;
+  min-height: 100vh;
   background: var(--color-violet-50);
-}
-
-@media (max-width: 768px) {
-  .layout-main {
-    padding: var(--size-space-400);
-  }
+  padding: var(--size-space-400);
 }
 
 @media (min-width: 1024px) {
   .layout-main {
-    height: 100vh;
+    max-height: 100vh;
     padding: 56px var(--size-space-900);
   }
 }
