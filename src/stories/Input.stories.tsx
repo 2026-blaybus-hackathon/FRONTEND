@@ -4,6 +4,7 @@ import EmailInput from '../components/common/input/EmailInput';
 import PasswordInput from '../components/common/input/PasswordInput';
 import '../App.css';
 import { useState } from 'react';
+import SearchInput from '../components/common/input/SearchInput';
 
 const meta = {
   title: 'Common/Input',
@@ -70,6 +71,25 @@ export const Password: Story = {
 
     return (
         <PasswordInput value={value} onChange={handleInput} ariaLabel="input" />
+    )
+  }
+};
+
+export const Search: Story = {
+  args: {
+    value: "",
+    onChange: () => {},
+    ariaLabel: "input"
+  },
+  render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [value, setValue] = useState<string>("")
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(e.target.value);
+    }
+
+    return (
+      <SearchInput value={value} onChange={handleInput} ariaLabel="input" />
     )
   }
 };
