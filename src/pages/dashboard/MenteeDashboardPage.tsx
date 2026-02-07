@@ -99,16 +99,18 @@ const MenteeDashboardPage = () => {
     setTasks([...tasks, newTask]);
   };
 
-  const handleEditTask = (updatedTask: TaskData & { id: number }) => {
-    setTasks(tasks.map(task => 
-      task.id === updatedTask.id 
-        ? { ...task, ...updatedTask }
+  const handleEditTask = (updatedTaskData: TaskData & { id: number }) => {
+    const newTasks = tasks.map(task => 
+      task.id === updatedTaskData.id 
+        ? { ...task, ...updatedTaskData }
         : task
-    ));
+    );
+    setTasks(newTasks);
+    
     // 수정 후 상세 정보 모달 열기
-    const task = tasks.find(t => t.id === updatedTask.id);
-    if (task) {
-      setDetailTask({ ...task, ...updatedTask });
+    const updatedFullTask = newTasks.find(t => t.id === updatedTaskData.id);
+    if (updatedFullTask) {
+      setDetailTask(updatedFullTask);
       setIsDetailModalOpen(true);
     }
   };

@@ -17,15 +17,15 @@ const MentorDashboardPage = () => {
   ];
 
   const assignments = [
-    { subject: '과학', mentor: '제출 완료' },
-    { subject: '과학', mentor: '국어' },
-    { subject: '미술', mentor: '문학 문제 풀이' },
-    { subject: '음악', mentor: '민유진' },
+    { id: 'assign-1', subject: '과학', mentor: '제출 완료' },
+    { id: 'assign-2', subject: '과학', mentor: '국어' },
+    { id: 'assign-3', subject: '미술', mentor: '문학 문제 풀이' },
+    { id: 'assign-4', subject: '음악', mentor: '민유진' },
   ];
 
   const recentSubmissions = [
-    { title: '대수학 과제물', date: '오늘 2:37 · 2025.02.03' },
-    { title: '대수학 과제물', date: '오늘 2:37 · 2025.02.03' },
+    { id: 'sub-1', title: '대수학 과제물', date: '오늘 2:37 · 2025.02.03' },
+    { id: 'sub-2', title: '대수학 과제물', date: '오늘 2:37 · 2025.02.03' },
   ];
 
   return (
@@ -172,8 +172,8 @@ const MentorDashboardPage = () => {
                 <button className="more-btn">⋯</button>
               </div>
               <div className="list-items">
-                {assignments.map((item, idx) => (
-                  <div key={idx} className="list-item">
+                {assignments.map((item) => (
+                  <div key={item.id} className="list-item">
                     <span>{item.subject}</span>
                     <span>{item.mentor}</span>
                   </div>
@@ -188,8 +188,8 @@ const MentorDashboardPage = () => {
                 <button className="view-all">전체 보기</button>
               </div>
               <div className="submission-items">
-                {recentSubmissions.map((item, idx) => (
-                  <div key={idx} className="submission-item">
+                {recentSubmissions.map((item) => (
+                  <div key={item.id} className="submission-item">
                     <div className="submission-title">{item.title}</div>
                     <div className="submission-date">{item.date}</div>
                     <div className="submission-status">제출 완료</div>
