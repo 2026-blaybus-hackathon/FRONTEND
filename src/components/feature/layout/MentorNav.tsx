@@ -1,5 +1,5 @@
 import Nav from "./Nav";
-import { Users, Calendar, FoldedDocument, Folder, BarChart, Clock } from "../../../icons";
+import { Users, Calendar, FoldedDocument, Folder, BarChart, Clock, User } from "../../../icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "../../../libs/utils";
 
@@ -33,10 +33,15 @@ const mentoMenu = [
     name: "보관함",
     Icon: Clock,
     path: "/mentor/archive",
+  },
+  {
+    name: "마이 페이지",
+    Icon: User,
+    path: "/mentor/my-page",
   }
 ]
 
-const MentorNav = () => {
+const MentorNav = ({ isOpen }: { isOpen?: boolean }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => {
@@ -44,7 +49,7 @@ const MentorNav = () => {
   }
 
   return (
-    <Nav>
+    <Nav isOpen={isOpen}>
         <ul className="list-none margin-0 padding-0 flex flex-col flex-1 desktop:gap-500 gap-200">
           {mentoMenu.map((item) => (
             <li key={item.name} className={cn("layout-nav__link", isActive(item.path) ? "layout-nav__link--active" : "")} onClick={() => navigate(item.path)}>

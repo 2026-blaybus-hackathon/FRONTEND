@@ -97,8 +97,7 @@
   }
 
   /* 모바일 헤더 표시 */
-  .mobile-header {
-    display: flex !important;
+  /* .mobile-header {
     align-items: center;
     gap: 16px;
     padding: 16px 24px;
@@ -107,5 +106,5 @@
     position: sticky;
     top: 0;
     z-index: 20;
-  }
+  } */
 }

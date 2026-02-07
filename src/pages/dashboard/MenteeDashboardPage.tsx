@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import DashboardLayout from '../../components/feature/layout/DashboardLayout';
 import AddTaskModal from '../../components/feature/dashboard/AddTaskModal';
 import EditTaskModal from '../../components/feature/dashboard/EditTaskModal';
 import TaskDetailModal from '../../components/feature/dashboard/TaskDetailModal';
@@ -150,8 +149,8 @@ const MenteeDashboardPage = () => {
     : tasks.filter(task => task.subject === selectedFilter);
 
   return (
-    <DashboardLayout>
-      <div className="dashboard-container">
+    <>
+      <div className="">
           {/* 헤더 섹션 */}
           <div className="dashboard-header">
             <div className="header-left">
@@ -314,7 +313,7 @@ const MenteeDashboardPage = () => {
         onSubmit={handleSubmitTaskDetail}
         task={detailTask}
       />
-    </DashboardLayout>
+    </>
   );
 };
 
