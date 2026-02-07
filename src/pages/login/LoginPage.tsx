@@ -6,12 +6,8 @@ import PasswordInput from "../../components/common/input/PasswordInput";
 import { useApi } from "../../hooks/useApi";
 import useAuthStore from "../../stores/authStore";
 import Container from "../../components/common/Container";
+import type { LoginResponse } from "../../libs/types/apiResponse";
 import '../../styles/pages/auth.css';
-
-interface LoginResponse {
-    accessToken: string;
-    nickname: string;
-}
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -52,8 +48,16 @@ const LoginPage = () => {
         })
         .then((response) => {
             if (response.status === 200 && response.data?.accessToken) {
-                login(response.data.accessToken, response.data.nickname);
-                navigate("/mentee-dashboard");
+                const { accessToken, nickname, role } = response.data;
+                const userRole = role ?? 'MENTEE';
+                if (userRole === 'MENTOR') {
+                    console.log('[로그인] 멘토로 로그인되었습니다.', { role: userRole, email: response.data });
+                } else {
+                    console.log('[로그인] 멘티로 로그인되었습니다.', { role: userRole, email: response.data });
+                }
+                login(accessToken, nickname, userRole);
+                const dashboardPath = userRole === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+                navigate(dashboardPath);
             } else if (response.status === 401) {
                 setError("이메일 또는 비밀번호가 잘못되었습니다.");
             } else {
@@ -64,7 +68,9 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            navigate("/mentee-dashboard");
+            const { role } = useAuthStore.getState();
+            const dashboardPath = role === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+            navigate(dashboardPath);
         }
     }, [isLoggedIn, navigate]);
 

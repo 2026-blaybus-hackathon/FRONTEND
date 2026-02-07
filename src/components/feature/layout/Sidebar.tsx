@@ -8,8 +8,12 @@ interface SidebarProps {
 
 const Sidebar = ({ onNavigate }: SidebarProps) => {
   const user = useAuthStore((state) => state.user);
+  const role = useAuthStore((state) => state.role);
   const location = useLocation();
 
+  const isMentor = role === 'MENTOR';
+  const dashboardPath = isMentor ? '/mentor-dashboard' : '/mentee-dashboard';
+  const dashboardLabel = isMentor ? '멘티 목록' : '오늘의 학습';
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -35,8 +39,8 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
         <div className="section-title">학습 관리</div>
         <nav className="sidebar-nav">
           <Link 
-            to="/mentee-dashboard" 
-            className={`nav-item ${isActive('/mentee-dashboard') || isActive('/dashboard') ? 'active' : ''}`}
+            to={dashboardPath} 
+            className={`nav-item ${isActive('/mentee-dashboard') || isActive('/mentor-dashboard') || isActive('/dashboard') ? 'active' : ''}`}
             onClick={onNavigate}
           >
             <svg className="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -44,7 +48,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
               <line x1="3" y1="8" x2="17" y2="8" stroke="currentColor" strokeWidth="1.5"/>
               <line x1="8" y1="8" x2="8" y2="17" stroke="currentColor" strokeWidth="1.5"/>
             </svg>
-            <span className="nav-text">오늘의 학습</span>
+            <span className="nav-text">{dashboardLabel}</span>
           </Link>
           <Link 
             to="/submission" 

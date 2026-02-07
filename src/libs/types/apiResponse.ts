@@ -9,9 +9,12 @@ interface OAuthLogin303Response {
     accessToken: string;
 }
 
+export type UserRole = 'MENTOR' | 'MENTEE';
+
 export interface LoginResponse {
     accessToken: string;
     nickname: string;
+    role?: UserRole;
 }
 
 export interface OAuthSignupResponse {

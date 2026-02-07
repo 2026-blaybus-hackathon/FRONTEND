@@ -5,6 +5,7 @@ import SignupPage from './pages/signup/SignupPage';
 import MainPage from './pages/MainPage';
 import MentorDashboardPage from './pages/dashboard/MentorDashboardPage';
 import MenteeDashboardPage from './pages/dashboard/MenteeDashboardPage';
+import DashboardRedirect from './components/feature/DashboardRedirect';
 import ReviewPage from './pages/review/ReviewPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -29,7 +30,7 @@ function App() {
           {/* 로그인 후 페이지들 (사이드바 있음) */}
           <Route path="/mentee-dashboard" element={<MenteeDashboardPage />} />
           <Route path="/mentor-dashboard" element={<MentorDashboardPage />} />
-          <Route path="/dashboard" element={<Navigate to="/mentee-dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardRedirect />} />
           <Route path="/submission" element={<PlaceholderPage name="약점 솔루션" />} />
           <Route path="/report" element={<PlaceholderPage name="리포트" />} />
           <Route path="/review" element={<ReviewPage />} />

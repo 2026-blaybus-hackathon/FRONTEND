@@ -1,44 +1,34 @@
 import { create } from "zustand";
 import Cookies from "js-cookie";
-
-interface User {
-    name: string;
-    school?: string;
-    dDay?: string;
-}
-
-interface AuthStore {
-    isLoggedIn: boolean;
-    nickname: string;
-    user: User | null;
-    login: (accessToken: string, nickname: string) => void;
-    logout: () => void;
-    checkLogin: () => void;
-    setUser: (user: User) => void;
-}
+import type { UserRole } from "../libs/types/apiResponse";
+import type { AuthStore } from "../libs/types/auth";
 
 const useAuthStore = create<AuthStore>((set) => ({
     isLoggedIn: false,
     nickname: "",
+    role: null,
     user: null,
-    login: (accessToken, nickname) => {
+    login: (accessToken, nickname, role) => {
         Cookies.set('access_token', accessToken);
         Cookies.set('nickname', nickname);
-        set({ isLoggedIn: true, nickname: nickname });
+        Cookies.set('user_role', role);
+        set({ isLoggedIn: true, nickname, role });
     },
     logout: () => {
         Cookies.remove('access_token');
         Cookies.remove('refresh_token');
         Cookies.remove('nickname');
-        set({ isLoggedIn: false, nickname: "", user: null });
+        Cookies.remove('user_role');
+        set({ isLoggedIn: false, nickname: "", role: null, user: null });
     },
     checkLogin: () => {
         const accessToken = Cookies.get('access_token');
         const nickname = Cookies.get('nickname');
+        const role = (Cookies.get('user_role') as UserRole) || null;
         if (accessToken && nickname) {
-            set({ isLoggedIn: true, nickname: nickname });
+            set({ isLoggedIn: true, nickname, role });
         } else {
-            set({ isLoggedIn: false, nickname: "" });
+            set({ isLoggedIn: false, nickname: "", role: null });
         }
     },
     setUser: (user) => {
@@ -48,4 +38,4 @@ const useAuthStore = create<AuthStore>((set) => ({
 
 export default useAuthStore;
 export { useAuthStore };
-export type { User };
+export type { User } from "../libs/types/auth";
