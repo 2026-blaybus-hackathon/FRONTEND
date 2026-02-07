@@ -12,17 +12,17 @@ const mentoMenu = [
   {
     name: "피드백 관리",
     Icon: Calendar,
-    path: "/mentor/feedback-management",
+    path: "/mentor/feedback",
   },
   {
     name: "과제 관리",
     Icon: FoldedDocument,
-    path: "/mentor/assignment-management",
+    path: "/mentor/assignment",
   },
   {
     name: "학습 자료 관리",
     Icon: Folder,
-    path: "/mentor/material-management",
+    path: "/mentor/material",
   },
   {
     name: "리포트",
