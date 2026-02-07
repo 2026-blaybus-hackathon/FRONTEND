@@ -119,7 +119,7 @@ const TodayAssignment: TodayAssignment[] = [
   },
 ]
 
-const MenteeList = () => {
+const MentorFeedbackPage = () => {
   const [search, setSearch] = useState("");
   const [mentees] = useState<Mentee[]>(menteesExample);
   const [selectedMentee, setSelectedMentee] = useState<number | null>(null);
@@ -279,4 +279,4 @@ const MenteeAssignmentCard = ({
   );
 }
 
-export default MenteeList;
+export default MentorFeedbackPage;

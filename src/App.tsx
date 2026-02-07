@@ -8,7 +8,7 @@ import MainPage from './pages/MainPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import MenteeList from './pages/mentor/MenteeList';
+import MentorFeedbackPage from './pages/mentor/FeedbackPage';
 import DesktopLayout from './components/feature/layout/DesktopLayout';
 
 const queryClient = new QueryClient()
@@ -41,10 +41,10 @@ function App() {
           {/* 멘토 페이지 */}
           <Route path="/mentor" element={<DesktopLayout />} >
             <Route index element={<Navigate to="mentee" replace />} />
-            <Route path="mentee" element={<MenteeList />} />
-            <Route path="feedback-management" element={<PlaceholderPage name="피드백 관리" />} />
-            <Route path="assignment-management" element={<PlaceholderPage name="과제 관리" />} />
-            <Route path="material-management" element={<PlaceholderPage name="학습 자료 관리" />} />
+            <Route path="mentee" element={<PlaceholderPage name="멘티 관리" />} />
+            <Route path="feedback" element={<MentorFeedbackPage />} />
+            <Route path="assignment" element={<PlaceholderPage name="과제 관리" />} />
+            <Route path="material" element={<PlaceholderPage name="학습 자료 관리" />} />
             <Route path="report" element={<PlaceholderPage name="리포트" />} />
             <Route path="archive" element={<PlaceholderPage name="보관함" />} />
           </Route>
