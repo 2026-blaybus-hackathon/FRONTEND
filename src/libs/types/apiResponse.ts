@@ -9,11 +9,16 @@ interface OAuthLogin303Response {
     accessToken: string;
 }
 
+import type { UserRole } from "./user";
+
 export type UserRole = 'MENTOR' | 'MENTEE';
 
 export interface LoginResponse {
     accessToken: string;
     nickname: string;
+    role: UserRole;
+    name?: string;
+    email?: string;
     role?: UserRole;
 }
 

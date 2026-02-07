@@ -29,6 +29,7 @@ const useAuthStore = create<AuthStore>((set) => ({
             set({ isLoggedIn: true, nickname, role });
         } else {
             set({ isLoggedIn: false, nickname: "", role: null });
+            set({ isLoggedIn: false, nickname: "", role: null });
         }
     },
     setUser: (user) => {

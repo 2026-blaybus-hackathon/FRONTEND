@@ -1,15 +1,26 @@
 import { Link } from "react-router-dom";
 import { Bell } from "lucide-react";
 import useAuthStore from "../../../stores/authStore";
+import type { UserRole } from "../../../libs/types/user";
+
+const ROLE_LABEL: Record<UserRole, string> = {
+  MENTOR: "멘토",
+  MENTEE: "멘티",
+};
 
 const Header = () => {
-  const { isLoggedIn, logout } = useAuthStore();
+  const { isLoggedIn, logout, nickname, role } = useAuthStore();
+  const roleLabel = role ? ROLE_LABEL[role] : null;
 
   return (
     <header className="layout-header">
       <div className="layout-header__left">
         <span className="layout-header__pill">D-120</span>
-        <span className="layout-header__title">홍길동 학생</span>
+        <span className="layout-header__title">
+          {isLoggedIn && nickname
+            ? `${roleLabel ? `[${roleLabel}] ` : ""}${nickname}`
+            : "홍길동 학생"}
+        </span>
       </div>
 
       <div className="layout-header__right">

@@ -21,17 +21,17 @@ const LoginPage = () => {
     const { apiCall, isLoading } = useApi();
     const { isLoggedIn, login } = useAuthStore();
 
-    const isLoginValid = email !== "" && password !== "";
+  const isLoginValid = email !== "" && password !== "";
 
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
-        setError(null);
-    };
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setError(null);
+  };
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
-        setError(null);
-    };
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setError(null);
+  };
 
     const handleSignupClick = () => {
         navigate(`/signup${role ? `?role=${role}` : ''}`);
