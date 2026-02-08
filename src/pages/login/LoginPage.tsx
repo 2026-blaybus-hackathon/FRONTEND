@@ -67,7 +67,7 @@ const LoginPage = () => {
                     console.log('[로그인] 멘티로 로그인되었습니다.', { role: userRole, email: data });
                 }
                 login(accessToken, profile);
-                const dashboardPath = userRole === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+                const dashboardPath = userRole === 'MENTOR' ? '/mentor' : '/mentee';
                 navigate(dashboardPath);
             } else if (response.status === 401) {
                 setError("이메일 또는 비밀번호가 잘못되었습니다.");
@@ -80,7 +80,7 @@ const LoginPage = () => {
     useEffect(() => {
         if (isLoggedIn) {
             const { role } = useAuthStore.getState();
-            const dashboardPath = role === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+            const dashboardPath = role === 'MENTOR' ? '/mentor' : '/mentee';
             navigate(dashboardPath);
         }
     }, [isLoggedIn, navigate]);
