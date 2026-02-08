@@ -5,7 +5,9 @@ import LoginPage from "./pages/login/LoginPage";
 import SignupPage from './pages/signup/SignupPage';
 import MainPage from './pages/MainPage';
 import MenteeDashboardPage from './pages/dashboard/MenteeDashboardPage';
+import MentorDashboardPage from './pages/dashboard/MentorDashboardPage';
 import ReviewPage from './pages/review/ReviewPage';
+import ArchivePage from './pages/mentee/ArchivePage';
 import PlaceholderPage from './static/PlaceholderPage';
 import MyPage from './pages/MyPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -45,7 +47,12 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<MenteeDashboardPage />} />
             <Route path="solution" element={<PlaceholderPage name="약점 솔루션" />} />
+<<<<<<< HEAD
             <Route path="report" element={<ReportPage />} />
+=======
+            <Route path="report" element={<PlaceholderPage name="주간 리포트" />} />
+            <Route path="archive" element={<ArchivePage />} />
+>>>>>>> 6f0462a (feat: 복습 아카이브 페이지 API 연동)
             <Route path="review" element={<ReviewPage />} />
             <Route path="notification" element={<NotificationCenterPage />} />
             <Route path="my-page" element={<MyPage />} />
@@ -54,11 +61,11 @@ function App() {
           {/* 멘토 페이지 */}
           <Route path="/mentor" element={<Layout />} >
             <Route index element={<Navigate to="mentee" replace />} />
-            <Route path="mentee" element={<PlaceholderPage name="멘티 관리" />} />
+            <Route path="mentee" element={<PlaceholderPage element={<MentorDashboardPage />} />} />
             <Route path="feedback" element={<MentorFeedbackPage />} />
             <Route path="assignment" element={<PlaceholderPage name="과제 관리" />} />
             <Route path="material" element={<PlaceholderPage name="학습 자료 관리" />} />
-            <Route path="report" element={<PlaceholderPage name="리포트" />} />
+            <Route path="report" element={<PlaceholderPage name="주간 리포트" />} />
             <Route path="archive" element={<PlaceholderPage name="보관함" />} />
             <Route path="my-page" element={<MyPage />} />
           </Route>

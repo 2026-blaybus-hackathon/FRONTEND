@@ -29,7 +29,7 @@ const manageSchedule = [
     path: "/mentee/report",
   },
   {
-    name: "학습 아카이브",
+    name: "복습 아카이브",
     Icon: OpenedBookBookmark,
     path: "/mentee/archive",
   },

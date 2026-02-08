@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import FeedbackCard from '../../components/feature/review/FeedbackCard';
 import FeedbackDetailModal from '../../components/feature/review/FeedbackDetailModal';
+import axios from '../../libs/axios';
 import '../../styles/pages/review.css';
 
 interface Feedback {
@@ -17,12 +19,94 @@ interface Feedback {
   imageUrl: string;
 }
 
+interface FeedbackApiResponse {
+  feedbackId: number;
+  taskTitle: string;
+  subject: string;
+  createdAt: string;
+  mentorName: string;
+  summaryFeedback?: string;
+  detailFeedback?: string;
+}
+
+interface UnreadCountResponse {
+  unreadCount: number;
+  totalCount: number;
+}
+
+interface TaskHistoryResponse {
+  taskId: number;
+  title: string;
+  subject: string;
+  studyTime: number;
+  isCompleted: boolean;
+  createdAt: string;
+}
+
 const ArchivePage = () => {
   const [activeTab, setActiveTab] = useState<'feedback' | 'history'>('feedback');
   const [selectedFeedback, setSelectedFeedback] = useState<number | null>(null);
 
-  // 임시 데이터 (추후 API 연동)
-  const feedbacks: Feedback[] = [];
+  // 피드백 목록 조회
+  const { data: feedbackData, isLoading: feedbackLoading } = useQuery({
+    queryKey: ['feedbacks'],
+    queryFn: async () => {
+      const response = await axios.get<FeedbackApiResponse[]>('/feedback/mentee/feedbacks');
+      console.log('피드백 데이터:', response.data);
+      return response.data;
+    },
+    retry: 1,
+  });
+
+  // 안 읽은 피드백 개수 조회
+  const { data: unreadData } = useQuery({
+    queryKey: ['unreadCount'],
+    queryFn: async () => {
+      const response = await axios.get<UnreadCountResponse>('/feedback/mentee/unread-count');
+      console.log('안읽은 개수:', response.data);
+      return response.data;
+    },
+    retry: 1,
+  });
+
+  // 학습 히스토리 조회 (최근 30일)
+  const { data: historyData, isLoading: historyLoading } = useQuery({
+    queryKey: ['taskHistory'],
+    queryFn: async () => {
+      const today = new Date();
+      const thirtyDaysAgo = new Date(today);
+      thirtyDaysAgo.setDate(today.getDate() - 30);
+      
+      const response = await axios.get<TaskHistoryResponse[]>('/tasks/mentee/list', {
+        params: {
+          startDate: thirtyDaysAgo.toISOString().split('T')[0],
+          endDate: today.toISOString().split('T')[0],
+        },
+      });
+      console.log('히스토리 데이터:', response.data);
+      return response.data;
+    },
+    retry: 1,
+  });
+
+  // API 데이터를 Feedback 형식으로 변환
+  const feedbacks: Feedback[] = feedbackData?.map((item) => ({
+    id: item.feedbackId,
+    subject: item.subject,
+    title: item.taskTitle,
+    fileName: '파일명',
+    fileSize: '2.1MB',
+    score: 0,
+    mentorPick: false,
+    date: new Date(item.createdAt).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+    mentorName: item.mentorName,
+    mentorComment: item.summaryFeedback || item.detailFeedback || '피드백 내용',
+    imageUrl: '',
+  })) || [];
 
   const handleViewFeedback = (feedbackId: number) => {
     setSelectedFeedback(feedbackId);
@@ -34,12 +118,17 @@ const ArchivePage = () => {
 
   const currentFeedback = feedbacks.find(f => f.id === selectedFeedback);
 
+  // 배지 텍스트 생성
+  const badgeText = unreadData 
+    ? `${unreadData.unreadCount}/${unreadData.totalCount}` 
+    : '0/0';
+
   return (
     <>
       <div className="review-container">
         {/* 헤더 */}
         <div className="review-header">
-          <h1>📚 학습 아카이브</h1>
+          <h1>💾 복습 아카이브</h1>
           <p className="review-subtitle">도착한 피드백을 확인하고 지난 학습 기록을 관리하세요.</p>
         </div>
 
@@ -49,23 +138,15 @@ const ArchivePage = () => {
             className={`review-tab ${activeTab === 'feedback' ? 'active' : ''}`}
             onClick={() => setActiveTab('feedback')}
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="6" y1="8" x2="14" y2="8" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="6" y1="11" x2="14" y2="11" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="6" y1="14" x2="11" y2="14" stroke="currentColor" strokeWidth="1.5"/>
-            </svg>
+            <span style={{ fontSize: '18px' }}>📋</span>
             도착한 피드백
-            <span className="tab-badge">2/1</span>
+            <span className="tab-badge">{badgeText}</span>
           </button>
           <button
             className={`review-tab ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 5v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5"/>
-            </svg>
+            <span style={{ fontSize: '18px' }}>📅</span>
             학습 히스토리
           </button>
         </div>
@@ -73,7 +154,11 @@ const ArchivePage = () => {
         {/* 컨텐츠 */}
         {activeTab === 'feedback' ? (
           <div className="feedback-list">
-            {feedbacks.length === 0 ? (
+            {feedbackLoading ? (
+              <div className="empty-state">
+                <p className="empty-title">로딩 중...</p>
+              </div>
+            ) : feedbacks.length === 0 ? (
               <div className="empty-state">
                 <svg className="empty-icon" width="80" height="80" viewBox="0 0 80 80" fill="none">
                   <rect x="20" y="15" width="40" height="50" rx="2" stroke="#D1D5DB" strokeWidth="3"/>
@@ -98,14 +183,38 @@ const ArchivePage = () => {
           </div>
         ) : (
           <div className="history-list">
-            <div className="empty-state">
-              <svg className="empty-icon" width="80" height="80" viewBox="0 0 80 80" fill="none">
-                <circle cx="40" cy="40" r="25" stroke="#D1D5DB" strokeWidth="3"/>
-                <path d="M40 25v15l10 10" stroke="#D1D5DB" strokeWidth="3" strokeLinecap="round"/>
-              </svg>
-              <p className="empty-title">학습 히스토리가 없습니다.</p>
-              <p className="empty-subtitle">학습을 완료하면 여기에 기록이 표시됩니다.</p>
-            </div>
+            {historyLoading ? (
+              <div className="empty-state">
+                <p className="empty-title">로딩 중...</p>
+              </div>
+            ) : !historyData || historyData.length === 0 ? (
+              <div className="empty-state">
+                <svg className="empty-icon" width="80" height="80" viewBox="0 0 80 80" fill="none">
+                  <circle cx="40" cy="40" r="25" stroke="#D1D5DB" strokeWidth="3"/>
+                  <path d="M40 25v15l10 10" stroke="#D1D5DB" strokeWidth="3" strokeLinecap="round"/>
+                </svg>
+                <p className="empty-title">아직 히스토리가 없어요.</p>
+                <p className="empty-subtitle">피드백을 확인하면 여기에 저장됩니다!</p>
+              </div>
+            ) : (
+              <div className="feedback-grid">
+                {historyData.map((task) => (
+                  <div key={task.taskId} className="history-card">
+                    <div className="history-card-header">
+                      <span className="history-subject">{task.subject}</span>
+                      <span className={`history-status ${task.isCompleted ? 'completed' : 'incomplete'}`}>
+                        {task.isCompleted ? '완료' : '미완료'}
+                      </span>
+                    </div>
+                    <h3 className="history-title">{task.title}</h3>
+                    <div className="history-info">
+                      <span>공부시간: {task.studyTime}분</span>
+                      <span>{new Date(task.createdAt).toLocaleDateString('ko-KR')}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
