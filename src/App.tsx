@@ -9,6 +9,7 @@ import ReviewPage from './pages/review/ReviewPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
+import NotificationCenterPage from './pages/mentee/NotificationCenterPage';
 import useAuthStore from './stores/authStore';
 import Layout from './components/feature/layout/Layout';
 
@@ -42,7 +43,7 @@ function App() {
             <Route path="solution" element={<PlaceholderPage name="약점 솔루션" />} />
             <Route path="report" element={<PlaceholderPage name="리포트" />} />
             <Route path="review" element={<ReviewPage />} />
-            <Route path="notification" element={<PlaceholderPage name="알림 센터" />} />
+            <Route path="notification" element={<NotificationCenterPage />} />
             <Route path="my-page" element={<PlaceholderPage name="마이 페이지" />} />
           </Route>
 
