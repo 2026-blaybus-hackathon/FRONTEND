@@ -149,141 +149,139 @@ const MenteeDashboardPage = () => {
     : tasks.filter(task => task.subject === selectedFilter);
 
   return (
-    <>
-      <div className="">
-          {/* 헤더 섹션 */}
-          <div className="dashboard-header">
-            <div className="header-left">
-              <div className="header-title">
-                <span className="pin-icon">📌</span>
-                <h1>{selectedDateInfo.month}월 {selectedDateInfo.date}일 {selectedDateInfo.dayName}요일</h1>
-              </div>
-              <p className="header-subtitle">오늘 계획된 학습을 완료하고 있습니다.</p>
-            </div>
-            
-            <div className="header-stats">
-              <div className="stat-item">
-                <span className="stat-label">TODAY'S FOCUS</span>
-                <span className="stat-value focus">{todayFocus.hours}시간 {todayFocus.minutes}분</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">WEEKLY SCORE</span>
-                <div className="score-dots">
-                  {[0, 1, 2].map((index) => (
-                    <span key={index} className={`dot ${index < weeklyScore ? 'active' : ''}`}></span>
-                  ))}
-                </div>
-              </div>
-            </div>
+    <div className="dashboard-container">
+      {/* 헤더 섹션 */}
+      <div className="dashboard-header">
+        <div className="header-left">
+          <div className="header-title">
+            <span className="pin-icon">📌</span>
+            <h1>{selectedDateInfo.month}월 {selectedDateInfo.date}일 {selectedDateInfo.dayName}요일</h1>
           </div>
-
-          {/* 알림 배너 */}
-          <div className="notification-banner">
-            <div className="notification-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="6" y="4" width="12" height="16" rx="1" stroke="white" strokeWidth="2"/>
-                <line x1="9" y1="8" x2="15" y2="8" stroke="white" strokeWidth="2"/>
-                <line x1="9" y1="12" x2="15" y2="12" stroke="white" strokeWidth="2"/>
-                <line x1="9" y1="16" x2="13" y2="16" stroke="white" strokeWidth="2"/>
-              </svg>
-            </div>
-            <div className="notification-content">
-              <h3>새로운 피드백 {feedbackCount}개가 도착했습니다!</h3>
-              <p>멘토님의 과제물을 확인하고 학습을 완료하세요.</p>
-            </div>
-            <button className="notification-arrow">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
+          <p className="header-subtitle">오늘 계획된 학습을 완료하고 있습니다.</p>
+        </div>
+        
+        <div className="header-stats">
+          <div className="stat-item">
+            <span className="stat-label">TODAY'S FOCUS</span>
+            <span className="stat-value focus">{todayFocus.hours}시간 {todayFocus.minutes}분</span>
           </div>
-
-          {/* 주간 날짜 선택기 */}
-          <div className="week-selector">
-            <button className="week-nav-btn">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M12 15l-5-5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-            {weekDays.map((item) => (
-              <button
-                key={item.date}
-                className={`date-btn ${selectedDate === item.date ? 'active' : ''}`}
-                onClick={() => setSelectedDate(item.date)}
-              >
-                <span className="date-day">{item.day}</span>
-                <span className="date-number">{item.date}</span>
-                {selectedDate === item.date && <span className="date-indicator"></span>}
-              </button>
-            ))}
-            <button className="week-nav-btn">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M8 15l5-5-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-          </div>
-
-          {/* 필터 탭 */}
-          <div className="filter-tabs">
-            <div className="filter-left">
-              {filters.map((filter) => (
-                <button
-                  key={filter}
-                  className={`filter-btn ${selectedFilter === filter ? 'active' : ''}`}
-                  onClick={() => setSelectedFilter(filter)}
-                >
-                  {filter}
-                </button>
+          <div className="stat-item">
+            <span className="stat-label">WEEKLY SCORE</span>
+            <div className="score-dots">
+              {[0, 1, 2].map((index) => (
+                <span key={index} className={`dot ${index < weeklyScore ? 'active' : ''}`}></span>
               ))}
             </div>
-            <div className="filter-right">
-              <button className="today-btn">TODAY</button>
-              <button className="sort-btn">
-                날짜 과제 <span className="badge">{taskCountByDate}</span>
-              </button>
-            </div>
           </div>
+        </div>
+      </div>
 
-          {/* 과제 리스트 */}
-          <div className="assignment-list">
-            {filteredTasks.length === 0 ? (
-              <div className="empty-state">
-                <svg className="empty-icon" width="80" height="80" viewBox="0 0 80 80" fill="none">
-                  <rect x="20" y="15" width="40" height="50" rx="2" stroke="#D1D5DB" strokeWidth="3"/>
-                  <line x1="28" y1="25" x2="52" y2="25" stroke="#D1D5DB" strokeWidth="3" strokeLinecap="round"/>
-                  <line x1="28" y1="35" x2="52" y2="35" stroke="#D1D5DB" strokeWidth="3" strokeLinecap="round"/>
-                  <line x1="28" y1="45" x2="45" y2="45" stroke="#D1D5DB" strokeWidth="3" strokeLinecap="round"/>
-                </svg>
-                <p className="empty-title">등록된 과제가 없습니다.</p>
-                <p className="empty-subtitle">우측 하단 버튼을 눌러 새로운 목표를 세워보세요!</p>
-              </div>
-            ) : (
-              <div className="tasks-grid">
-                {filteredTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    id={task.id}
-                    title={task.title}
-                    subject={task.subject}
-                    status={task.status}
-                    dueTime={task.dueTime}
-                    onEdit={() => handleOpenEditModal(task)}
-                    onDelete={() => handleDeleteTask(task.id)}
-                    onDetail={() => handleOpenDetailModal(task)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+      {/* 알림 배너 */}
+      <div className="notification-banner">
+        <div className="notification-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="6" y="4" width="12" height="16" rx="1" stroke="white" strokeWidth="2"/>
+            <line x1="9" y1="8" x2="15" y2="8" stroke="white" strokeWidth="2"/>
+            <line x1="9" y1="12" x2="15" y2="12" stroke="white" strokeWidth="2"/>
+            <line x1="9" y1="16" x2="13" y2="16" stroke="white" strokeWidth="2"/>
+          </svg>
+        </div>
+        <div className="notification-content">
+          <h3>새로운 피드백 {feedbackCount}개가 도착했습니다!</h3>
+          <p>멘토님의 과제물을 확인하고 학습을 완료하세요.</p>
+        </div>
+        <button className="notification-arrow">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </button>
+      </div>
 
-          {/* 플로팅 추가 버튼 */}
-          <button className="floating-add-btn" onClick={() => setIsModalOpen(true)}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <line x1="16" y1="8" x2="16" y2="24" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-              <line x1="8" y1="16" x2="24" y2="16" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-            </svg>
+      {/* 주간 날짜 선택기 */}
+      <div className="week-selector">
+        <button className="week-nav-btn">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M12 15l-5-5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </button>
+        {weekDays.map((item) => (
+          <button
+            key={item.date}
+            className={`date-btn ${selectedDate === item.date ? 'active' : ''}`}
+            onClick={() => setSelectedDate(item.date)}
+          >
+            <span className="date-day">{item.day}</span>
+            <span className="date-number">{item.date}</span>
+            {selectedDate === item.date && <span className="date-indicator"></span>}
+          </button>
+        ))}
+        <button className="week-nav-btn">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M8 15l5-5-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* 필터 탭 */}
+      <div className="filter-tabs">
+        <div className="filter-left">
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              className={`filter-btn ${selectedFilter === filter ? 'active' : ''}`}
+              onClick={() => setSelectedFilter(filter)}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+        <div className="filter-right">
+          <button className="today-btn">TODAY</button>
+          <button className="sort-btn">
+            날짜 과제 <span className="badge">{taskCountByDate}</span>
           </button>
         </div>
+      </div>
+
+      {/* 과제 리스트 */}
+      <div className="assignment-list">
+        {filteredTasks.length === 0 ? (
+          <div className="empty-state">
+            <svg className="empty-icon" width="80" height="80" viewBox="0 0 80 80" fill="none">
+              <rect x="20" y="15" width="40" height="50" rx="2" stroke="#D1D5DB" strokeWidth="3"/>
+              <line x1="28" y1="25" x2="52" y2="25" stroke="#D1D5DB" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="28" y1="35" x2="52" y2="35" stroke="#D1D5DB" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="28" y1="45" x2="45" y2="45" stroke="#D1D5DB" strokeWidth="3" strokeLinecap="round"/>
+            </svg>
+            <p className="empty-title">등록된 과제가 없습니다.</p>
+            <p className="empty-subtitle">우측 하단 버튼을 눌러 새로운 목표를 세워보세요!</p>
+          </div>
+        ) : (
+          <div className="tasks-grid">
+            {filteredTasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                id={task.id}
+                title={task.title}
+                subject={task.subject}
+                status={task.status}
+                dueTime={task.dueTime}
+                onEdit={() => handleOpenEditModal(task)}
+                onDelete={() => handleDeleteTask(task.id)}
+                onDetail={() => handleOpenDetailModal(task)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 플로팅 추가 버튼 */}
+      <button className="floating-add-btn" onClick={() => setIsModalOpen(true)}>
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <line x1="16" y1="8" x2="16" y2="24" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+          <line x1="8" y1="16" x2="24" y2="16" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+        </svg>
+      </button>
 
       {/* 할 일 추가 모달 */}
       <AddTaskModal
@@ -313,7 +311,7 @@ const MenteeDashboardPage = () => {
         onSubmit={handleSubmitTaskDetail}
         task={detailTask}
       />
-    </>
+    </div>
   );
 };
 
