@@ -1,0 +1,128 @@
+
+.mypage {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-6);
+}
+
+.mypage__title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-8);
+}
+
+/* 프로필 카드 */
+.mypage__profile-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+  border: 1px solid var(--color-border);
+}
+
+.mypage__avatar {
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  border-radius: 50%;
+  background: var(--color-primary-main);
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.mypage__profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.mypage__profile-name {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.mypage__profile-meta,
+.mypage__profile-subjects {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* 메뉴 리스트 */
+.mypage__menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.mypage__menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  width: 100%;
+  padding: var(--spacing-4) var(--spacing-6);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: left;
+}
+
+.mypage__menu-item:hover {
+  background: var(--color-bg);
+  border-color: var(--color-border-hover);
+}
+
+.mypage__menu-item--danger {
+  color: var(--color-danger);
+}
+
+.mypage__menu-item--danger:hover {
+  background: var(--color-red-50);
+  border-color: var(--color-red-100);
+}
+
+.mypage__menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.mypage__menu-item--danger .mypage__menu-icon {
+  color: var(--color-danger);
+}
+
+@media (max-width: 767px) {
+  .mypage {
+    padding: var(--spacing-4);
+  }
+
+  .mypage__profile-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .mypage__profile-info {
+    align-items: center;
+  }
+}
