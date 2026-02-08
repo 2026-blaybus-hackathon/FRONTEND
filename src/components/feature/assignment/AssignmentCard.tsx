@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Clock } from "lucide-react";
 import SubjectBadge from "../subject/SubjectBadge";
 import { cn } from "../../../libs/utils";
 
@@ -30,6 +30,12 @@ const AssignmentCard = memo(({
   onBack,
   className,
 }: AssignmentCardProps) => {
+
+  const convertTimeToLabel = (time: string) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    return `${hours > 0 ? `${hours}시간` : ""} ${minutes > 0 ? `${minutes}분` : ""}`;
+  }
+
   return (
     <div
       className={cn(
@@ -56,13 +62,13 @@ const AssignmentCard = memo(({
           <p className="text-100 text-black font-weight-500">{title}</p>
         </div>
         <div className="flex flex-col md:gap-50 justify-end align-center">
-          <div className="w-full flex gap-200 text-50 font-bold text-gray-700 justify-end md:justify-start">
+          <div className="w-full flex gap-200 text-50 font-bold text-gray-500 justify-end md:justify-start">
             <p>{status === "PENDING" ? "-.-.-" : date}</p>
             <p>{status === "PENDING" ? "미" : ""}완료</p>
           </div>
-          <div className="w-full flex gap-200 text-50 font-bold text-gray-700 justify-end md:justify-start">
-            <p>투입시간</p>
-            <p>{time ? time : "00:00:00"}</p>
+          <div className="w-fit h-6 px-100 flex gap-50 rounded-300 text-50 font-weight-500 bg-primary-100 text-primary-500 justify-center items-center">
+            <Clock className="w-3.5 h-3.5 shrink-0" aria-hidden />
+            <p>{convertTimeToLabel(time)}</p>
           </div>
         </div>
       </div>
