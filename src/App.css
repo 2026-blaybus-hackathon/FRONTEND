@@ -54,6 +54,9 @@
   --color-blue-100: var(--color-blue-100);
   --color-blue-50: var(--color-blue-50);
 
+  --color-grape-500: var(--color-grape-500);
+  --color-grape-100: var(--color-grape-100);
+
   /* Functional colors */
   --color-primary-main: var(--color-primary-main);
   --color-primary-dark: var(--color-primary-dark);
