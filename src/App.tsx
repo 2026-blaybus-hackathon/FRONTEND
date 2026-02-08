@@ -12,6 +12,7 @@ import PlaceholderPage from './static/PlaceholderPage';
 import MyPage from './pages/MyPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
+import AssignmentManagementPage from './pages/mentor/AssignmentManagementPage';
 import NotificationCenterPage from './pages/mentee/NotificationCenterPage';
 import ReportPage from './pages/mentee/ReportPage';
 import useAuthStore from './stores/authStore';
@@ -59,7 +60,7 @@ function App() {
             <Route index element={<Navigate to="mentee" replace />} />
             <Route path="mentee" element={<MentorDashboardPage />} />
             <Route path="feedback" element={<MentorFeedbackPage />} />
-            <Route path="assignment" element={<PlaceholderPage name="과제 관리" />} />
+            <Route path="assignment" element={<AssignmentManagementPage />} />
             <Route path="material" element={<PlaceholderPage name="학습 자료 관리" />} />
             <Route path="report" element={<PlaceholderPage name="주간 리포트" />} />
             <Route path="archive" element={<PlaceholderPage name="보관함" />} />
