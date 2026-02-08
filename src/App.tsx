@@ -6,7 +6,7 @@ import SignupPage from './pages/signup/SignupPage';
 import MainPage from './pages/MainPage';
 import MenteeDashboardPage from './pages/dashboard/MenteeDashboardPage';
 import ReviewPage from './pages/review/ReviewPage';
-import PlaceholderPage from './pages/PlaceholderPage';
+import PlaceholderPage from './static/PlaceholderPage';
 import MyPage from './pages/MyPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';

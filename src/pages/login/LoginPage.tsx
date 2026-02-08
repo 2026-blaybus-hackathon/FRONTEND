@@ -49,6 +49,7 @@ const LoginPage = () => {
         .then((response) => {
             if (response.status === 200 && response.data?.accessToken) {
                 const data = response.data;
+                console.log('[로그인] 서버 응답 데이터:', data);
                 const { accessToken } = data;
                 const profile = {
                     nickname: data.nickname,
@@ -60,14 +61,16 @@ const LoginPage = () => {
                     targetSchool: data.targetSchool,
                     targetDate: data.targetDate,
                 };
-                const userRole = data.role ?? 'MENTEE';
-                if (userRole === 'MENTOR') {
-                    console.log('[로그인] 멘토로 로그인되었습니다.', { role: userRole, email: data });
-                } else {
-                    console.log('[로그인] 멘티로 로그인되었습니다.', { role: userRole, email: data });
-                }
+                
+                // URL 파라미터의 role 사용 (메인에서 선택한 역할)
+                const selectedRole = role || 'mentee';
+                console.log('[로그인] 선택한 역할:', selectedRole);
+                
                 login(accessToken, profile);
-                const dashboardPath = userRole === 'MENTOR' ? '/mentor' : '/mentee';
+                
+                // 선택한 역할에 따라 다른 페이지로 이동
+                const dashboardPath = selectedRole === 'mentor' ? '/mentor/mentee' : '/mentee/dashboard';
+                console.log('[로그인] 이동할 경로:', dashboardPath);
                 navigate(dashboardPath);
             } else if (response.status === 401) {
                 setError("이메일 또는 비밀번호가 잘못되었습니다.");
@@ -79,11 +82,11 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            const { role } = useAuthStore.getState();
-            const dashboardPath = role === 'MENTOR' ? '/mentor' : '/mentee';
+            const selectedRole = role || 'mentee';
+            const dashboardPath = selectedRole === 'mentor' ? '/mentor/mentee' : '/mentee/dashboard';
             navigate(dashboardPath);
         }
-    }, [isLoggedIn, navigate]);
+    }, [isLoggedIn, navigate, role]);
 
     return (
         <Container>
