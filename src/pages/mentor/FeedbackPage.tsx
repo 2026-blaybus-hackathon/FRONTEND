@@ -138,8 +138,11 @@ const MentorFeedbackPage = () => {
   const [pageSize, setPageSize] = useState(3);
   const [feedbackSaved, setFeedbackSaved] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<TodayAssignment | null>(null);
+  const [showTopShadow, setShowTopShadow] = useState(false);
   const [showBottomShadow, setShowBottomShadow] = useState(false);
   const assignmentListRef = useRef<HTMLDivElement>(null);
+
+  const SCROLL_SHADOW_THRESHOLD = 10;
 
   useEffect(() => {
     const mqXl = window.matchMedia("(min-width: 1640px)");
@@ -157,29 +160,41 @@ const MentorFeedbackPage = () => {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const container = assignmentListRef.current;
-      if (!container) return;
+    const container = assignmentListRef.current;
+    if (!container) return;
 
-      const { scrollTop, scrollHeight, clientHeight } = container;
+    const updateShadows = () => {
+      const el = assignmentListRef.current;
+      if (!el) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = el;
       const isScrollable = scrollHeight > clientHeight;
-      const isNotAtBottom = scrollTop + clientHeight < scrollHeight - 10;
+      const isNotAtTop = scrollTop > SCROLL_SHADOW_THRESHOLD;
+      const isNotAtBottom = scrollTop + clientHeight < scrollHeight - SCROLL_SHADOW_THRESHOLD;
 
+      setShowTopShadow(isScrollable && isNotAtTop);
       setShowBottomShadow(isScrollable && isNotAtBottom);
     };
 
-    const container = assignmentListRef.current;
-    if (container) {
-      handleScroll();
-      container.addEventListener("scroll", handleScroll);
-      window.addEventListener("resize", handleScroll);
+    // 레이아웃이 끝난 뒤 한 번 더 계산 (초기 높이 0이었다가 채워지는 경우 대비)
+    const rafId = requestAnimationFrame(() => {
+      requestAnimationFrame(updateShadows);
+    });
 
-      return () => {
-        container.removeEventListener("scroll", handleScroll);
-        window.removeEventListener("resize", handleScroll);
-      };
-    }
-  }, [selectedAssignment]);
+    updateShadows();
+    container.addEventListener("scroll", updateShadows);
+    window.addEventListener("resize", updateShadows);
+
+    const resizeObserver = new ResizeObserver(updateShadows);
+    resizeObserver.observe(container);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      container.removeEventListener("scroll", updateShadows);
+      window.removeEventListener("resize", updateShadows);
+      resizeObserver.disconnect();
+    };
+  }, [selectedMentee, selectedAssignment]);
 
   const lastPage = Math.ceil(mentees.length / pageSize);
   const effectivePage = Math.min(page, Math.max(0, lastPage - 1));
@@ -214,9 +229,18 @@ const MentorFeedbackPage = () => {
       {/* 학생 과제 확인 */}
       {selectedMentee && <div className="w-full flex flex-1 flex-col-reverse md:flex-row gap-300 lg:min-h-0">
         <div className="md:w-fit w-full relative lg:min-h-0">
+          {/* 상단 안쪽 그림자: 스크롤 시 위에 더 있는 내용이 있음을 표시 */}
+          <div
+            className={cn(
+              "absolute top-0 left-0 right-0 h-4 pointer-events-none transition-opacity duration-300 z-20",
+              "bg-gradient-to-b from-black/30 via-black/15 to-transparent",
+              showTopShadow ? "opacity-100" : "opacity-0"
+            )}
+            aria-hidden="true"
+          />
           <div
             ref={assignmentListRef}
-            className="flex flex-col md:gap-300 gap-100 lg:overflow-y-auto lg:min-h-0 lg:max-h-full"
+            className="flex flex-col md:gap-300 gap-100 overflow-y-auto min-h-0 max-h-[min(400px,50vh)] lg:max-h-full"
           >
             {selectedAssignment ? (
               <AssignmentCard
@@ -238,11 +262,11 @@ const MentorFeedbackPage = () => {
               ))
             )}
           </div>
-          {/* 하단 안쪽 그림자 */}
+          {/* 하단 안쪽 그림자: 스크롤 시 아래에 더 있는 내용이 있음을 표시 */}
           <div
             className={cn(
-              "absolute bottom-0 left-0 right-0 h-4 pointer-events-none transition-opacity duration-300 z-10",
-              "bg-gradient-to-t from-black/20 via-black/10 to-transparent",
+              "absolute bottom-0 left-0 right-0 h-4 pointer-events-none transition-opacity duration-300 z-20",
+              "bg-gradient-to-t from-black/30 via-black/15 to-transparent",
               showBottomShadow ? "opacity-100" : "opacity-0"
             )}
             aria-hidden="true"
