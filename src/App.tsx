@@ -47,12 +47,8 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<MenteeDashboardPage />} />
             <Route path="solution" element={<PlaceholderPage name="약점 솔루션" />} />
-<<<<<<< HEAD
             <Route path="report" element={<ReportPage />} />
-=======
-            <Route path="report" element={<PlaceholderPage name="주간 리포트" />} />
             <Route path="archive" element={<ArchivePage />} />
->>>>>>> 6f0462a (feat: 복습 아카이브 페이지 API 연동)
             <Route path="review" element={<ReviewPage />} />
             <Route path="notification" element={<NotificationCenterPage />} />
             <Route path="my-page" element={<MyPage />} />
@@ -61,7 +57,7 @@ function App() {
           {/* 멘토 페이지 */}
           <Route path="/mentor" element={<Layout />} >
             <Route index element={<Navigate to="mentee" replace />} />
-            <Route path="mentee" element={<PlaceholderPage element={<MentorDashboardPage />} />} />
+            <Route path="mentee" element={<MentorDashboardPage />} />
             <Route path="feedback" element={<MentorFeedbackPage />} />
             <Route path="assignment" element={<PlaceholderPage name="과제 관리" />} />
             <Route path="material" element={<PlaceholderPage name="학습 자료 관리" />} />
