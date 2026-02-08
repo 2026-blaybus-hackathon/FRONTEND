@@ -12,6 +12,7 @@ import MentorFeedbackPage from './pages/mentor/FeedbackPage';
 import NotificationCenterPage from './pages/mentee/NotificationCenterPage';
 import useAuthStore from './stores/authStore';
 import Layout from './components/feature/layout/Layout';
+import { NotificationToasts } from './components/common/toast/NotificationToasts';
 
 const queryClient = new QueryClient()
 
@@ -24,6 +25,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <NotificationToasts />
       <BrowserRouter>
         <Routes>
           {/* 루트는 메인으로 리다이렉트 */}

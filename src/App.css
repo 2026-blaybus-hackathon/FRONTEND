@@ -91,6 +91,16 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-100: var(--size-shadow-100);
 
+  /* Toast enter/exit */
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes toast-out {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
+  }
+
   /* Layout dimensions */
   --header-height: var(--header-height);
   --tabbar-height: var(--tabbar-height);
