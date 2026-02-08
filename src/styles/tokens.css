@@ -38,6 +38,9 @@
   --color-lime-100: #C9ECA8;
   --color-lime-50: #F1FAE8;
 
+  --color-green-500: rgba(5, 135, 101, 1);
+  --color-green-100: rgba(205, 232, 221, 1);
+
   --color-grape-500: rgba(177, 72, 203, 1);
   --color-grape-100: rgba(244, 216, 251, 1);
 

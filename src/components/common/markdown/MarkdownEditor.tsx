@@ -48,7 +48,7 @@ const MarkdownEditor = ({ value, setValue, height = "100%", customStyle }: Markd
             style={{
                 flex: 1,
                 height: height || "100%",
-                minHeight: "300px",
+                minHeight: 0,
                 ...customStyle,
             }}
         />

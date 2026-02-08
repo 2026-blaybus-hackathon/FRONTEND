@@ -2,7 +2,9 @@ import SearchInput from "../../components/common/input/SearchInput";
 import { useState, useEffect } from "react";
 import { cn } from "../../libs/utils";
 import { Play, PlayReverse } from "../../icons";
+import { ChevronLeft } from "lucide-react";
 import IconButton from "../../components/common/button/IconButton";
+import SubjectBadge from "../../components/feature/subject/SubjectBadge";
 import Button from "../../components/common/button/Button";
 import MarkdownEditor from "../../components/common/markdown/MarkdownEditor";
 import MarkdownRenderer from "../../components/common/markdown/MarkdownRenderer";
@@ -16,6 +18,7 @@ interface Mentee {
 }
 
 interface TodayAssignment {
+  id: number;
   title: string;
   subject: "KOREAN" | "ENGLISH" | "MATH";
   date: string;
@@ -78,46 +81,52 @@ const menteesExample: Mentee[] = [
 
 const TodayAssignmentsExample: TodayAssignment[] = [
   {
+    id: 1,
     title: "오늘의 과제",
     subject: "KOREAN",
     date: "2026-02-07",
     status: "PENDING",
-    time: "10:00",
+    time: "00:10:00",
   },
   {
+    id: 2,
     title: "오늘의 과제",
     subject: "ENGLISH",
     date: "2026-02-07",
     status: "PENDING",
-    time: "10:00",
+    time: "00:10:00",
   },
   {
+    id: 3,
     title: "오늘의 과제",
     subject: "MATH",
     date: "2026-02-07",
     status: "PENDING",
-    time: "10:00",
+    time: "00:10:00",
   },
   {
+    id: 4,
     title: "오늘의 과제",
     subject: "KOREAN",
     date: "2026-02-07",
     status: "PENDING",
-    time: "10:00",
+    time: "00:10:00",
   },
   {
+    id: 5,
     title: "오늘의 과제",
     subject: "KOREAN",
     date: "2026-02-07",
     status: "PENDING",
-    time: "10:00",
+    time: "00:10:00",
   },
   {
+    id: 6,
     title: "오늘의 과제",
     subject: "KOREAN",
     date: "2026-02-07",
     status: "PENDING",
-    time: "10:00",
+    time: "00:10:00",
   },
 ]
 
@@ -129,6 +138,7 @@ const MentorFeedbackPage = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(3);
   const [feedbackSaved, setFeedbackSaved] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<TodayAssignment | null>(null);
 
   useEffect(() => {
     const mqXl = window.matchMedia("(min-width: 1640px)");
@@ -164,7 +174,10 @@ const MentorFeedbackPage = () => {
               <
                 MenteeListCard key={mentee.id} {...mentee}
                 selected={selectedMentee === mentee.id}
-                onClick={() => setSelectedMentee(mentee.id)}
+                onClick={() => {
+                setSelectedMentee(mentee.id);
+                setSelectedAssignment(null);
+              }}
               />
             ))}
           </div>
@@ -175,24 +188,40 @@ const MentorFeedbackPage = () => {
       {/* 학생 과제 확인 */}
       <div className="w-full flex flex-1 flex-col-reverse md:flex-row gap-300 min-h-0">
         <div className="md:w-fit w-full flex flex-col md:gap-300 gap-100 overflow-y-auto min-h-0">
-            {TodayAssignmentsExample.map((assignment, index) => (
-              <MenteeAssignmentCard key={assignment.title + assignment.date + index.toString()} {...assignment} onClick={() => {}} />
-            ))}
+          {selectedAssignment ? (
+            <AssignmentDetailCard
+              {...selectedAssignment}
+              time={selectedAssignment.time || "00:00:00"}
+              menteeComment="수학 오답노트 토요일로 바꿔도 될까요? 내일 수학 클리닉이 있어서 그 때 문제를 고치거든요...."
+              onBack={() => setSelectedAssignment(null)}
+            />
+          ) : (
+            TodayAssignmentsExample.map((assignment) => (
+              <MenteeAssignmentCard
+                key={assignment.id}
+                {...assignment}
+                onClick={() => setSelectedAssignment(assignment)}
+              />
+            ))
+          )}
         </div>
-        <div className="flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-7">
+        <div className="max-h-[466px] flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-7 shrink-0">
           <div className="flex flex-col gap-2">
-            <p className="heading-6 font-weight-700 text-gray-800">종합 피드백</p>
-            <p className="body-3 font-weight-500 text-gray-500">오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요.</p>
+            {selectedAssignment && <SubjectBadge subject={selectedAssignment.subject} />}
+            <p className="heading-6 font-weight-700 text-gray-800">{selectedAssignment ? selectedAssignment.title : "종합 피드백"}</p>
+            <p className="body-3 font-weight-500 text-gray-500">
+              {selectedAssignment ? "학생의 질문, 코멘트에 대한 답변이나 피드백을 남겨주세요." : "오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요."}
+            </p>
           </div>
-          <div className="flex-1 h-full min-h-0">
-            {/* 에디터 */}
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+            {/* 에디터: 부모 높이에 맞추고, 내용은 내부 스크롤 */}
             {
               feedbackSaved ?
               <MarkdownRenderer markdown={feedback} /> :
               <MarkdownEditor value={feedback} setValue={setFeedback} />
             }
           </div>
-          <div className="w-full flex justify-end gap-100 h-fit">
+          <div className="w-full flex justify-end gap-100 shrink-0">
             {!feedbackSaved && <Button variant="gray" onClick={() => {}} ariaLabel="임시 저장">임시 저장</Button>}
             <Button
               onClick={() => {setFeedbackSaved(prev => !prev)}}
@@ -283,25 +312,10 @@ const MenteeAssignmentCard = ({
   time,
   onClick,
 }: MenteeAssignmentCardProps) => {
-  const subjectInfo = {
-    "KOREAN": {
-      label: "국어",
-      style: "bg-green-100 text-green-500"
-    },
-    "ENGLISH": {
-      label: "영어",
-      style: "bg-red-100 text-red-500"
-    },
-    "MATH": {
-      label: "수학",
-      style: "bg-blue-100 text-blue-500"
-    }
-  }
-
   return (
     <div className="md:w-66 w-full rounded-600 py-150 px-200 gap-100 flex md:flex-col bg-white shadow-100 justify-between" onClick={onClick}>
       <div className="flex flex-col gap-50 md:gap-100">
-        <span className={cn("w-fit body-4 font-weight-700 px-100 py-1 rounded-900", subjectInfo[subject].style)}>{subjectInfo[subject].label}</span>
+        <SubjectBadge subject={subject} />
         <p className="text-100 text-black font-weight-500">{title}</p>
       </div>
       <div className="flex flex-col md:gap-50 justify-end align-center">
@@ -317,5 +331,83 @@ const MenteeAssignmentCard = ({
     </div>
   );
 }
+
+interface AssignmentDetailCardProps {
+  title: string;
+  subject: "KOREAN" | "ENGLISH" | "MATH";
+  date: string;
+  status: "PENDING" | "COMPLETED";
+  time: string;
+  menteeComment?: string;
+  assignmentImageUrl?: string;
+  onBack: () => void;
+}
+
+const AssignmentDetailCard = ({
+  title,
+  subject,
+  date,
+  status,
+  time,
+  menteeComment = "",
+  assignmentImageUrl,
+  onBack,
+}: AssignmentDetailCardProps) => {
+  return (
+    <div className="md:w-66 w-full bg-white rounded-600 border border-gray-100 shadow-100 overflow-hidden flex flex-col">
+      {/* 뒤로가기 */}
+      <div className="px-200 pt-200">
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex items-center body-3 font-weight-500 text-gray-600 hover:text-gray-800 transition-colors"
+          aria-label="과제 목록으로 돌아가기"
+        >
+          <ChevronLeft className="w-5 h-5 shrink-0" aria-hidden />
+          뒤로
+        </button>
+      </div>
+      {/* 과제 요약 */}
+      <div className="py-150 px-200 gap-100 flex flex-col">
+        <div className="flex flex-col gap-50 md:gap-100">
+          <SubjectBadge subject={subject} />
+          <p className="text-100 text-black font-weight-500">{title}</p>
+        </div>
+        <div className="flex flex-col md:gap-50 justify-end align-center">
+          <div className="w-full flex gap-200 text-50 font-bold text-gray-700 justify-end md:justify-start">
+            <p>{status === "PENDING" ? "-.-.-" : date}</p>
+            <p>{status === "PENDING" ? "미" : ""}완료</p>
+          </div>
+          <div className="w-full flex gap-200 text-50 font-bold text-gray-700 justify-end md:justify-start">
+            <p>투입시간</p>
+            <p>{time ? time : "00:00:00"}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 멘티 코멘트 */}
+      <div className="px-200 pb-200 flex flex-col gap-100">
+        <p className="text-50 font-bold text-gray-800">멘티 코멘트</p>
+        <div className="rounded-400 bg-gray-50 px-200 py-150">
+          <p className="body-3 font-weight-500 text-gray-700 whitespace-pre-wrap">
+            {menteeComment || "멘티 코멘트가 없습니다."}
+          </p>
+        </div>
+      </div>
+
+      {/* 과제 이미지 */}
+      <div className="px-200 pb-200 flex flex-col gap-100">
+        <p className="text-50 font-bold text-gray-800">과제 이미지</p>
+        <div className="rounded-400 overflow-hidden bg-gray-50 border border-gray-100 min-h-[200px] flex items-center justify-center">
+          {assignmentImageUrl ? (
+            <img src={assignmentImageUrl} alt="과제 이미지" className="w-full h-auto object-contain max-h-[480px]" />
+          ) : (
+            <p className="body-3 text-gray-400 py-800">과제 이미지가 없습니다.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default MentorFeedbackPage;

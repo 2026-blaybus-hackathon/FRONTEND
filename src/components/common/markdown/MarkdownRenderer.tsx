@@ -14,10 +14,10 @@ const MarkdownRenderer = ({ markdown }: { markdown: string }) => {
         <MDEditor.Markdown
             source={markdown}
             style={{
-                flex: 1,
-                height: "100%",
-                minHeight: "300px",
-                overflowY: "auto"
+                height: "auto",
+                minHeight: "0",
+                overflowY: "auto",
+                whiteSpace: "pre-wrap",
             }}
         />
     </div>
