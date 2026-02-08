@@ -24,14 +24,14 @@ const manageSchedule = [
     path: "/mentee/solution",
   },
   {
-    name: "리포트",
+    name: "주간 리포트",
     Icon: FoldedDocument,
     path: "/mentee/report",
   },
   {
-    name: "학습 보관함",
+    name: "복습 아카이브",
     Icon: OpenedBookBookmark,
-    path: "/mentee/review",
+    path: "/mentee/archive",
   },
 ];
 

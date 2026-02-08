@@ -1,31 +1,82 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axios from '../../libs/axios';
 import '../../styles/pages/mentor-dashboard.css';
+
+interface MenteeResponse {
+  menteeId: number;
+  name: string;
+  subjects: string[];
+}
+
+interface DashboardStats {
+  totalMentees: number;
+  completionRate: number;
+  consecutiveStudyDays: number;
+}
+
+interface RecentTask {
+  taskId: number;
+  title: string;
+  subject: string;
+  menteeName: string;
+  submittedAt: string;
+}
+
+interface DashboardResponse {
+  stats: DashboardStats;
+  recentTasks: RecentTask[];
+}
 
 const MentorDashboardPage = () => {
   const [selectedTab, setSelectedTab] = useState<'hub' | 'timeline'>('hub');
 
-  const stats = {
-    mentees: 3,
-    completionRate: 80,
-    studyDays: 1,
+  // 멘티 목록 조회
+  const { data: menteeData, isLoading: menteeLoading } = useQuery({
+    queryKey: ['mentees'],
+    queryFn: async () => {
+      const response = await axios.get<MenteeResponse[]>('/users/mentor/mentees');
+      console.log('멘티 목록:', response.data);
+      return response.data;
+    },
+  });
+
+  // 대시보드 통계 조회
+  const { data: dashboardData, isLoading: dashboardLoading } = useQuery({
+    queryKey: ['mentorDashboard'],
+    queryFn: async () => {
+      const response = await axios.get<DashboardResponse>('/dashboard/mentor/dashboard');
+      console.log('대시보드 데이터:', response.data);
+      return response.data;
+    },
+  });
+
+  const stats = dashboardData?.stats || {
+    totalMentees: 0,
+    completionRate: 0,
+    consecutiveStudyDays: 0,
   };
 
-  const menteeList = [
-    { id: 1, name: '민유진', subject: '국어/영어', avatar: '민' },
-    { id: 2, name: '김철수', subject: '수학/과학', avatar: '김' },
-    { id: 3, name: '이영희', subject: '영어/국어', avatar: '이' },
-  ];
+  const menteeList = menteeData?.map((mentee) => ({
+    id: mentee.menteeId,
+    name: mentee.name,
+    subject: mentee.subjects.join('/'),
+    avatar: mentee.name[0],
+  })) || [];
+
+  const recentSubmissions = dashboardData?.recentTasks?.map((task) => ({
+    id: task.taskId,
+    title: task.title,
+    date: new Date(task.submittedAt).toLocaleDateString('ko-KR'),
+    menteeName: task.menteeName,
+    subject: task.subject,
+  })) || [];
 
   const assignments = [
     { id: 'assign-1', subject: '과학', mentor: '제출 완료' },
     { id: 'assign-2', subject: '과학', mentor: '국어' },
     { id: 'assign-3', subject: '미술', mentor: '문학 문제 풀이' },
     { id: 'assign-4', subject: '음악', mentor: '민유진' },
-  ];
-
-  const recentSubmissions = [
-    { id: 'sub-1', title: '대수학 과제물', date: '오늘 2:37 · 2025.02.03' },
-    { id: 'sub-2', title: '대수학 과제물', date: '오늘 2:37 · 2025.02.03' },
   ];
 
   return (
@@ -64,17 +115,17 @@ const MentorDashboardPage = () => {
           <div className="stats-row">
             <div className="stat-box">
               <div className="stat-label">나의 멘티 수</div>
-              <div className="stat-value">{stats.mentees}명</div>
+              <div className="stat-value">{dashboardLoading ? '-' : stats.totalMentees}명</div>
               <div className="stat-desc">활동중 멘티 수</div>
             </div>
             <div className="stat-box">
               <div className="stat-label">과제 완료율</div>
-              <div className="stat-value">{stats.completionRate}%</div>
+              <div className="stat-value">{dashboardLoading ? '-' : stats.completionRate}%</div>
               <div className="stat-desc">지난주 대비 +5%</div>
             </div>
             <div className="stat-box">
               <div className="stat-label">연속 학습일수</div>
-              <div className="stat-value">{stats.studyDays}건</div>
+              <div className="stat-value">{dashboardLoading ? '-' : stats.consecutiveStudyDays}일</div>
               <div className="stat-desc">매일 꾸준히 학습하세요</div>
             </div>
           </div>
@@ -88,21 +139,27 @@ const MentorDashboardPage = () => {
               </svg>
               멘티 목록
             </h2>
-            <div className="mentee-grid">
-              {menteeList.map((mentee) => (
-                <div key={mentee.id} className="mentee-card">
-                  <div className="mentee-avatar">{mentee.avatar}</div>
-                  <div className="mentee-info">
-                    <div className="mentee-name">{mentee.name}</div>
-                    <div className="mentee-subject">{mentee.subject}</div>
+            {menteeLoading ? (
+              <div className="loading-state">로딩 중...</div>
+            ) : menteeList.length === 0 ? (
+              <div className="empty-state">등록된 멘티가 없습니다.</div>
+            ) : (
+              <div className="mentee-grid">
+                {menteeList.map((mentee) => (
+                  <div key={mentee.id} className="mentee-card">
+                    <div className="mentee-avatar">{mentee.avatar}</div>
+                    <div className="mentee-info">
+                      <div className="mentee-name">{mentee.name}</div>
+                      <div className="mentee-subject">{mentee.subject}</div>
+                    </div>
+                    <div className="mentee-actions">
+                      <button className="action-btn">피드백 확인</button>
+                      <button className="action-btn primary">과제 제출</button>
+                    </div>
                   </div>
-                  <div className="mentee-actions">
-                    <button className="action-btn">피드백 확인</button>
-                    <button className="action-btn primary">과제 제출</button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* 하단 섹션 */}
@@ -129,15 +186,23 @@ const MentorDashboardPage = () => {
                 <h2 className="section-title">최근 제출 과제 목록</h2>
                 <button className="view-all">전체 보기</button>
               </div>
-              <div className="submission-items">
-                {recentSubmissions.map((item) => (
-                  <div key={item.id} className="submission-item">
-                    <div className="submission-title">{item.title}</div>
-                    <div className="submission-date">{item.date}</div>
-                    <div className="submission-status">제출 완료</div>
-                  </div>
-                ))}
-              </div>
+              {dashboardLoading ? (
+                <div className="loading-state">로딩 중...</div>
+              ) : recentSubmissions.length === 0 ? (
+                <div className="empty-state">최근 제출된 과제가 없습니다.</div>
+              ) : (
+                <div className="submission-items">
+                  {recentSubmissions.map((item) => (
+                    <div key={item.id} className="submission-item">
+                      <div className="submission-title">{item.title}</div>
+                      <div className="submission-date">
+                        {item.menteeName} · {item.date}
+                      </div>
+                      <div className="submission-status">제출 완료</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
           </div>
         </div>
