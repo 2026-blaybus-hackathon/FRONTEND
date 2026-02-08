@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from '../../libs/axios';
+import { useMenteeList } from '../../hooks/useMenteeList';
 import '../../styles/pages/mentor-dashboard.css';
-
-interface MenteeResponse {
-  menteeId: number;
-  name: string;
-  subjects: string[];
-}
 
 interface DashboardStats {
   totalMentees: number;
@@ -31,23 +26,18 @@ interface DashboardResponse {
 const MentorDashboardPage = () => {
   const [selectedTab, setSelectedTab] = useState<'hub' | 'timeline'>('hub');
 
-  // 멘티 목록 조회
-  const { data: menteeData, isLoading: menteeLoading } = useQuery({
-    queryKey: ['mentees'],
-    queryFn: async () => {
-      const response = await axios.get<MenteeResponse[]>('/users/mentor/mentees');
-      console.log('멘티 목록:', response.data);
-      return response.data;
-    },
-  });
+  const { menteeList, isLoading: menteeLoading } = useMenteeList();
 
   // 대시보드 통계 조회
   const { data: dashboardData, isLoading: dashboardLoading } = useQuery({
     queryKey: ['mentorDashboard'],
     queryFn: async () => {
-      const response = await axios.get<DashboardResponse>('/dashboard/mentor/dashboard');
-      console.log('대시보드 데이터:', response.data);
-      return response.data;
+      try {
+        const response = await axios.get<DashboardResponse>('/dashboard/mentor/dashboard');
+        return response.data ?? { stats: { totalMentees: 0, completionRate: 0, consecutiveStudyDays: 0 }, recentTasks: [] };
+      } catch {
+        return { stats: { totalMentees: 0, completionRate: 0, consecutiveStudyDays: 0 }, recentTasks: [] };
+      }
     },
   });
 
@@ -57,20 +47,17 @@ const MentorDashboardPage = () => {
     consecutiveStudyDays: 0,
   };
 
-  const menteeList = menteeData?.map((mentee) => ({
-    id: mentee.menteeId,
-    name: mentee.name,
-    subject: mentee.subjects.join('/'),
-    avatar: mentee.name[0],
-  })) || [];
-
-  const recentSubmissions = dashboardData?.recentTasks?.map((task) => ({
-    id: task.taskId,
-    title: task.title,
-    date: new Date(task.submittedAt).toLocaleDateString('ko-KR'),
-    menteeName: task.menteeName,
-    subject: task.subject,
-  })) || [];
+  const recentTasks = dashboardData?.recentTasks ?? [];
+  const recentSubmissions = recentTasks.map((task) => {
+    const submittedAt = task?.submittedAt ? new Date(task.submittedAt) : new Date();
+    return {
+      id: task.taskId,
+      title: task.title ?? '',
+      date: Number.isNaN(submittedAt.getTime()) ? '-' : submittedAt.toLocaleDateString('ko-KR'),
+      menteeName: task.menteeName ?? '',
+      subject: task.subject ?? '',
+    };
+  });
 
   const assignments = [
     { id: 'assign-1', subject: '과학', mentor: '제출 완료' },

@@ -47,3 +47,18 @@ export interface MentorTaskAssignmentRequest {
   subject: string;
   date: string;
 }
+
+/** 과제 제공 폼 상태 */
+export interface AssignmentFormValues {
+  taskType: MentorTaskType;
+  title: string;
+  content: string;
+  subject: string;
+  date: string;
+}
+
+/** 멘티 과제 상세 (학교·달성률, API 연동 시 교체) */
+export interface MentorMenteeAssignmentDetail {
+  school: string;
+  achievementRate: number;
+}
