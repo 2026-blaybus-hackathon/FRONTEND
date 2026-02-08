@@ -7,6 +7,7 @@ import MainPage from './pages/MainPage';
 import MenteeDashboardPage from './pages/dashboard/MenteeDashboardPage';
 import ReviewPage from './pages/review/ReviewPage';
 import PlaceholderPage from './pages/PlaceholderPage';
+import MyPage from './pages/MyPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
 import useAuthStore from './stores/authStore';
@@ -43,7 +44,7 @@ function App() {
             <Route path="report" element={<PlaceholderPage name="리포트" />} />
             <Route path="review" element={<ReviewPage />} />
             <Route path="notification" element={<PlaceholderPage name="알림 센터" />} />
-            <Route path="my-page" element={<PlaceholderPage name="마이 페이지" />} />
+            <Route path="my-page" element={<MyPage />} />
           </Route>
 
           {/* 멘토 페이지 */}
@@ -55,7 +56,7 @@ function App() {
             <Route path="material" element={<PlaceholderPage name="학습 자료 관리" />} />
             <Route path="report" element={<PlaceholderPage name="리포트" />} />
             <Route path="archive" element={<PlaceholderPage name="보관함" />} />
-            <Route path="my-page" element={<PlaceholderPage name="마이 페이지" />} />
+            <Route path="my-page" element={<MyPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
