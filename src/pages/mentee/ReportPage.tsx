@@ -45,7 +45,7 @@ const ReportPage = () => {
 
   return (
     <div
-      className="w-full lg:h-full flex flex-col gap-6"
+      className="w-full h-full flex flex-col gap-6"
     >
       <header className="w-full flex justify-between items-center">
         <div className="flex flex-col gap-2">
@@ -64,8 +64,8 @@ const ReportPage = () => {
         <ReportModeButton currentMode={reportMode} reportMode="monthly" setReportMode={setReportMode} />
       </section>
 
-      {/* 메인 섹션(아티클) */}
-      <article className="w-full min-h-0 flex-1 flex flex-col rounded-2xl bg-white gap-200 py-400 px-500 border border-gray-100">
+      {/* 메인 섹션(아티클): 내용 높이에 맞춤. 총평이 길면 총평 내부 스크롤 */}
+      <article className="w-full flex flex-col rounded-2xl bg-white gap-200 py-400 px-500 border border-gray-100">
         {/* 제목 */}
         <div className="h-fit flex items-center gap-2">
           <div className={cn(
@@ -91,11 +91,12 @@ const ReportPage = () => {
           ))}
         </div>
 
-        {/* 멘토 총평 */}
-        <section className="min-h-0 flex-1 flex-col flex" aria-label="멘토 총평">
+        {/* 멘토 총평: 짧으면 본문 높이만, 길면 max-h 내부 스크롤 */}
+        <section className="flex flex-col" aria-label="멘토 총평">
           <h3 className="text-100 font-semibold text-gray-900 mb-2">멘토 총평</h3>
-          <p className="flex-1 text-sm text-gray-700 leading-relaxed text-justify min-h-0 overflow-y-scroll">
-            &ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;
+          <p className="max-h-[50vh] text-sm text-gray-700 leading-relaxed text-justify overflow-y-auto">
+            &ldquo;{mentorReview.total}
+            &rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;
           </p>
         </section>
 
@@ -109,24 +110,24 @@ const ReportPage = () => {
 
       {/* 주/월 이동 버튼 */}
       <div className="h-fit flex justify-center gap-3">
-              <button
-                type="button"
-                className={cn(
-                  "flex gap-100 items-center rounded-300 bg-primary-100 px-300 py-150 text-primary-500 transition-colors duration-300",
-                  reportMode === "weekly" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
-              )}
-              >
-                <span aria-hidden><ChevronLeftIcon /></span> 이전 {reportMode === "weekly" ? "주" : "달"}
-              </button>
-              <button
-                type="button"
-                className={cn(
-                  "flex gap-100 items-center rounded-300 bg-primary-500 px-300 py-150 text-white transition-colors duration-300",
-                  reportMode === "weekly" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
-                )}
-              >
-                다음 {reportMode === "weekly" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
-              </button>
+        <button
+          type="button"
+          className={cn(
+            "flex gap-100 items-center rounded-300 bg-primary-100 px-300 py-150 text-primary-500 transition-colors duration-300",
+            reportMode === "weekly" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
+        )}
+        >
+          <span aria-hidden><ChevronLeftIcon /></span> 이전 {reportMode === "weekly" ? "주" : "달"}
+        </button>
+        <button
+          type="button"
+          className={cn(
+            "flex gap-100 items-center rounded-300 bg-primary-500 px-300 py-150 text-white transition-colors duration-300",
+            reportMode === "weekly" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
+          )}
+        >
+          다음 {reportMode === "weekly" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
+        </button>
         </div>
     </div>
   );
