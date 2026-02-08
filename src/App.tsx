@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import './App.css'
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import LoginPage from "./pages/login/LoginPage";
 import SignupPage from './pages/signup/SignupPage';
 import MainPage from './pages/MainPage';
@@ -13,6 +13,8 @@ import MyPage from './pages/MyPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
 import AssignmentManagementPage from './pages/mentor/AssignmentManagementPage';
+import LearningMaterialPage from './pages/mentor/LearningMaterialPage';
+import ColumnWritePage from './pages/mentor/ColumnWritePage';
 import NotificationCenterPage from './pages/mentee/NotificationCenterPage';
 import ReportPage from './pages/mentee/ReportPage';
 import useAuthStore from './stores/authStore';
@@ -61,7 +63,10 @@ function App() {
             <Route path="mentee" element={<MentorDashboardPage />} />
             <Route path="feedback" element={<MentorFeedbackPage />} />
             <Route path="assignment" element={<AssignmentManagementPage />} />
-            <Route path="material" element={<PlaceholderPage name="학습 자료 관리" />} />
+            <Route path="material" element={<Outlet />}>
+              <Route index element={<LearningMaterialPage />} />
+              <Route path="column" element={<ColumnWritePage />} />
+            </Route>
             <Route path="report" element={<PlaceholderPage name="주간 리포트" />} />
             <Route path="archive" element={<PlaceholderPage name="보관함" />} />
             <Route path="my-page" element={<MyPage />} />
