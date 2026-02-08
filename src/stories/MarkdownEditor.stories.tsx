@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import MarkdownEditor from '../components/common/MarkdownEditor';
+import MarkdownEditor from '../components/common/markdown/MarkdownEditor';
 import '../App.css';
 import { useState } from 'react';
 

@@ -10,8 +10,11 @@ import PlaceholderPage from './pages/PlaceholderPage';
 import MyPage from './pages/MyPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
+import NotificationCenterPage from './pages/mentee/NotificationCenterPage';
+import ReportPage from './pages/mentee/ReportPage';
 import useAuthStore from './stores/authStore';
 import Layout from './components/feature/layout/Layout';
+import { NotificationToasts } from './components/common/toast/NotificationToasts';
 
 const queryClient = new QueryClient()
 
@@ -24,6 +27,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <NotificationToasts />
       <BrowserRouter>
         <Routes>
           {/* 루트는 메인으로 리다이렉트 */}
@@ -41,9 +45,9 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<MenteeDashboardPage />} />
             <Route path="solution" element={<PlaceholderPage name="약점 솔루션" />} />
-            <Route path="report" element={<PlaceholderPage name="리포트" />} />
+            <Route path="report" element={<ReportPage />} />
             <Route path="review" element={<ReviewPage />} />
-            <Route path="notification" element={<PlaceholderPage name="알림 센터" />} />
+            <Route path="notification" element={<NotificationCenterPage />} />
             <Route path="my-page" element={<MyPage />} />
           </Route>
 
