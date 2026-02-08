@@ -6,8 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import IconButton from "../../components/common/button/IconButton";
 import SubjectBadge from "../../components/feature/subject/SubjectBadge";
 import Button from "../../components/common/button/Button";
-import MarkdownEditor from "../../components/common/markdown/MarkdownEditor";
-import MarkdownRenderer from "../../components/common/markdown/MarkdownRenderer";
+import TextArea from "../../components/common/input/TextArea";
 
 interface Mentee {
   id: number;
@@ -209,16 +208,24 @@ const MentorFeedbackPage = () => {
           <div className="flex flex-col gap-2">
             {selectedAssignment && <SubjectBadge subject={selectedAssignment.subject} />}
             <p className="heading-6 font-weight-700 text-gray-800">{selectedAssignment ? selectedAssignment.title : "종합 피드백"}</p>
-            <p className="body-3 font-weight-500 text-gray-500">
-              {selectedAssignment ? "학생의 질문, 코멘트에 대한 답변이나 피드백을 남겨주세요." : "오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요."}
-            </p>
           </div>
           <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             {/* 에디터: 부모 높이에 맞추고, 내용은 내부 스크롤 */}
             {
               feedbackSaved ?
-              <MarkdownRenderer markdown={feedback} /> :
-              <MarkdownEditor value={feedback} setValue={setFeedback} />
+              <p className="body-3 text-gray-700 whitespace-pre-wrap overflow-y-auto">{feedback}</p> :
+              <TextArea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder={
+                  selectedAssignment ?
+                  "학생의 질문, 코멘트에 대한 답변이나 피드백을 남겨주세요." :
+                  "오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요."
+                  }
+                ariaLabel="피드백 입력"
+                className="min-h-68px"
+                rows={3}
+              />
             }
           </div>
           <div className="w-full flex justify-end gap-100 shrink-0">
