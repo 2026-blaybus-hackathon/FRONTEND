@@ -1,10 +1,18 @@
 @import "tailwindcss";
 
-/* Import design system styles */
+/* Design tokens: 레이어 밖에 두어 변수가 항상 사용 가능하도록 */
 @import "./styles/tokens.css";
-@import "./styles/layout.css";
-@import "./styles/components.css";
-@import "./styles/typography.css";
+
+/*
+  레이아웃/컴포넌트/타이포를 @layer components에 넣어야 Tailwind 유틸이 이김.
+  레이어 없는 CSS는 @layer utilities보다 우선하므로, 여기서 레이어 없이 import하면
+  .h-full, .lg:h-screen 등 height 유틸이 덮어쓰여서 안 먹음.
+*/
+@layer components {
+  @import "./styles/layout.css";
+  @import "./styles/components.css";
+  @import "./styles/typography.css";
+}
 
 /* tailwind에서 쓸 수 있도록 token 매핑 */
 @theme {
@@ -81,6 +89,7 @@
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
+  --shadow-100: var(--size-shadow-100);
 
   /* Layout dimensions */
   --header-height: var(--header-height);
@@ -88,9 +97,14 @@
   --sidebar-width: var(--sidebar-width);
   --container-max-width: var(--container-max-width);
 
-  /* Breakpoints */
+  /* Breakpoints (Tailwind v4: 기본 브레이크포인트 명시 시 lg: 등 반응형 variant 정상 동작) */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
   --breakpoint-mobile: var(--breakpoint-mobile);
-  --breakpoint-desktop: var(--breakpoint-desktop);
+  --breakpoint-desktop: 90rem; /* 1440px - variant 정렬을 위해 rem 사용 */
 
   /* Typography scale */
   --font-size-sm: var(--font-size-sm);
@@ -122,19 +136,19 @@
   --radius-800: var(--size-border-radius-800);
   --radius-900: var(--size-border-radius-900);
 
-  /* Typography font size → text-* */
-  --font-size-25: var(--size-typography-font-size-025);
-  --font-size-50: var(--size-typography-font-size-050);
-  --font-size-75: var(--size-typography-font-size-075);
-  --font-size-100: var(--size-typography-font-size-100);
-  --font-size-200: var(--size-typography-font-size-200);
-  --font-size-300: var(--size-typography-font-size-300);
-  --font-size-400: var(--size-typography-font-size-400);
-  --font-size-500: var(--size-typography-font-size-500);
-  --font-size-600: var(--size-typography-font-size-600);
-  --font-size-700: var(--size-typography-font-size-700);
-  --font-size-800: var(--size-typography-font-size-800);
-  --font-size-900: var(--size-typography-font-size-900);
+  /* Font size utilities: text-25, text-50, text-100, ... (Tailwind v4는 --text-* 만 text 유틸리티로 생성) */
+  --text-25: var(--size-typography-font-size-025);
+  --text-50: var(--size-typography-font-size-050);
+  --text-75: var(--size-typography-font-size-075);
+  --text-100: var(--size-typography-font-size-100);
+  --text-200: var(--size-typography-font-size-200);
+  --text-300: var(--size-typography-font-size-300);
+  --text-400: var(--size-typography-font-size-400);
+  --text-500: var(--size-typography-font-size-500);
+  --text-600: var(--size-typography-font-size-600);
+  --text-700: var(--size-typography-font-size-700);
+  --text-800: var(--size-typography-font-size-800);
+  --text-900: var(--size-typography-font-size-900);
 
   /* Font weight → font-* */
   --font-weight-400: var(--size-typography-font-weight-400);
@@ -218,3 +232,10 @@ h2 {
 .text-danger {
   color: var(--color-danger);
 }
+
+/* Font weight utility classes */
+.font-weight-400 { font-weight: var(--font-weight-400); }
+.font-weight-500 { font-weight: var(--font-weight-500); }
+.font-weight-600 { font-weight: var(--font-weight-600); }
+.font-weight-700 { font-weight: var(--font-weight-700); }
+.font-weight-800 { font-weight: var(--font-weight-800); }

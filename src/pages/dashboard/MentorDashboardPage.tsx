@@ -30,64 +30,6 @@ const MentorDashboardPage = () => {
 
   return (
     <div className="mentor-dashboard-layout">
-      {/* 왼쪽 사이드바 */}
-      <aside className="mentor-sidebar">
-        <div className="mentor-sidebar-header">
-          <div className="logo">
-            <span className="logo-icon">📖</span>
-            <span className="logo-text">SeolStudy</span>
-          </div>
-        </div>
-
-        <div className="mentor-nav">
-          <div className="nav-section">
-            <button className="nav-item active">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-                <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-                <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-                <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
-              <span>멘티 목록</span>
-            </button>
-            <button className="nav-item">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="4" y="3" width="12" height="14" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
-              <span>피드백 관리</span>
-            </button>
-            <button className="nav-item">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
-              <span>과제 관리</span>
-            </button>
-            <button className="nav-item">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="3" y="5" width="14" height="12" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
-              <span>학습 기록 관리</span>
-            </button>
-          </div>
-
-          <div className="nav-section">
-            <button className="nav-item">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
-              <span>알림</span>
-            </button>
-            <button className="nav-item">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
-              <span>프로필</span>
-            </button>
-          </div>
-        </div>
-      </aside>
-
       {/* 메인 컨텐츠 */}
       <main className="mentor-main">
         {/* 헤더 */}

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import DashboardLayout from '../../components/feature/layout/DashboardLayout';
 import FeedbackCard from '../../components/feature/review/FeedbackCard';
 import FeedbackDetailModal from '../../components/feature/review/FeedbackDetailModal';
 import '../../styles/pages/review.css';
@@ -36,7 +35,7 @@ const ReviewPage = () => {
   const currentFeedback = feedbacks.find(f => f.id === selectedFeedback);
 
   return (
-    <DashboardLayout>
+    <>
       <div className="review-container">
         {/* 헤더 */}
         <div className="review-header">
@@ -124,7 +123,7 @@ const ReviewPage = () => {
           imageUrl: currentFeedback.imageUrl,
         } : null}
       />
-    </DashboardLayout>
+    </>
   );
 };
 

@@ -3,11 +3,11 @@ import React from 'react';
 import { cn } from '../../../libs/utils';
 import type { LucideIcon } from 'lucide-react';
 
-type IconButtonVariant = "primary" | "gray-line"
+type IconButtonVariant = "primary" | "gray-line" | "primary-line"
 type IconButtonSize = "md" | "sm";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    Icon: LucideIcon;
+    Icon: LucideIcon | React.ReactNode;
     variant?: IconButtonVariant;
     size? : IconButtonSize;
     onClick?: () => void;
@@ -32,11 +32,13 @@ const IconButton = ({
     // variant 스타일 클래스
     const variantClasses: Record<IconButtonVariant, string> = {
         "primary": "text-white bg-primary",
-        "gray-line": "text-gray-300 bg-white border-none",
+        "primary-line": "text-primary-500 border-none",
+        "gray-line": "text-gray-300 border-none"
     }
 
     const hoverClasses: Record<IconButtonVariant, string> = {
         "primary": "hover:bg-primary-light",
+        "primary-line": "hover:text-primary-700",
         "gray-line": "hover:bg-gray-50 border-none",
     }
 
@@ -44,6 +46,7 @@ const IconButton = ({
     const disabledClasses: Record<IconButtonVariant, string> = {
         "primary": "border-transparent text-white bg-gray-200 hover:bg-gray-200 cursor-not-allowed",
         "gray-line": "text-gray-500 bg-gray-100 hover:bg-gray-100 cursor-not-allowed border-none",
+        "primary-line": "text-gray-300 cursor-not-allowed",
     }
 
     // size pixel
@@ -72,7 +75,7 @@ const IconButton = ({
             aria-label={ariaLabel}
             {...props}
         >
-            <Icon size={sizePixel[size]} />
+            {typeof Icon === 'function' ? <Icon size={sizePixel[size]} /> : Icon}
         </button>
     );
 };

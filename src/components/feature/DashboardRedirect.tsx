@@ -12,7 +12,7 @@ const DashboardRedirect = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const path = role === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+  const path = role === 'MENTOR' ? '/mentor/mentee' : '/mentee/dashboard';
   return <Navigate to={path} replace />;
 };
 

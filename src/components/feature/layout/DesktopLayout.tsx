@@ -1,16 +1,14 @@
 import { Outlet } from "react-router-dom";
-import MenteeNav from "./MenteeNav";
-// import Header from "./Header";
 
 /**
  * 데스크톱 전용 레이아웃: Nav + Header + main(Outlet)
  */
-const DesktopLayout = () => {
+const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
+
   return (
     <div className="layout-desktop">
-      <MenteeNav />
+      {children}
       <div className="layout-desktop__main">
-        {/* <Header /> */}
         <main className="layout-desktop__content">
           <Outlet />
         </main>

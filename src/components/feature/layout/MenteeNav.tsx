@@ -8,7 +8,7 @@ import {
   User,
 } from "../../../icons";
 import { cn } from "../../../libs/utils";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../../stores/authStore";
 
 // path 수정 필요
@@ -16,7 +16,7 @@ const manageSchedule = [
   {
     name: "오늘의 학습",
     Icon: Calendar,
-    path: "/mentee/today",
+    path: "/mentee/dashboard",
   },
   {
     name: "약점 솔루션",
@@ -31,7 +31,7 @@ const manageSchedule = [
   {
     name: "학습 보관함",
     Icon: OpenedBookBookmark,
-    path: "/mentee/archive",
+    path: "/mentee/review",
   },
 ];
 
@@ -48,16 +48,17 @@ const myInfo = [
   },
 ];
 
-const MenteeNav = () => {
+const MenteeNav = ({ isOpen }: { isOpen?: boolean }) => {
     const navigate = useNavigate();
+    const { pathname } = useLocation();
     const user = useAuthStore((state) => state.user);
     const nickname = useAuthStore((state) => state.nickname);
     const displayName = user?.name || nickname || '-';
     const isActive = (path: string) => {
-        return path === window.location.pathname;
+        return path === pathname;
     }
   return (
-    <Nav>
+    <Nav isOpen={isOpen}>
       <div className="flex flex-col w-60 bg-gray-800 rounded-400 py-300 px-250 border border-gray-600 gap-100">
         <div className="flex gap-150 items-center">
           <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center">
