@@ -1,5 +1,5 @@
 // Button.tsx
-import React from 'react';
+import React, { isValidElement } from 'react';
 import { cn } from '../../../libs/utils';
 import type { LucideIcon } from 'lucide-react';
 
@@ -75,7 +75,12 @@ const IconButton = ({
             aria-label={ariaLabel}
             {...props}
         >
-            {typeof Icon === 'function' ? <Icon size={sizePixel[size]} /> : Icon}
+            {isValidElement(Icon) || typeof Icon === 'string' || typeof Icon === 'number'
+                ? Icon
+                : (() => {
+                    const Component = Icon as React.ComponentType<{ size?: number }>;
+                    return <Component size={sizePixel[size]} />;
+                })()}
         </button>
     );
 };

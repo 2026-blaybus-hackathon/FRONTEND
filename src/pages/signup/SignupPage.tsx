@@ -92,7 +92,7 @@ const SignupPage = () => {
                             targetDate: data.targetDate,
                         };
                         login(data.accessToken, profile);
-                        const dashboardPath = profile.role === 'MENTOR' ? '/mentor-dashboard' : '/mentee-dashboard';
+                        const dashboardPath = profile.role === 'MENTOR' ? '/mentor' : '/mentee';
                         navigate(dashboardPath);
                     }
                 });
