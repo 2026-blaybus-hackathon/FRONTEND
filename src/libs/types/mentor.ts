@@ -34,3 +34,16 @@ export interface MentorMenteeTasksResponse {
   menteeId: number;
   tasks: MentorTaskPage;
 }
+
+/** 과제 유형 (백엔드 TaskType) */
+export type MentorTaskType = 'COLUMN' | 'WEAKNESS_SOLUTION';
+
+/** POST /tasks/mentor/assignment 요청 (과제 정보 JSON) */
+export interface MentorTaskAssignmentRequest {
+  menteeId: number;
+  taskType: MentorTaskType;
+  title: string;
+  content: string;
+  subject: string;
+  date: string;
+}
