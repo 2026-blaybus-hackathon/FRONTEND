@@ -7,6 +7,7 @@ import IconButton from "../../components/common/button/IconButton";
 import SubjectBadge from "../../components/feature/subject/SubjectBadge";
 import Button from "../../components/common/button/Button";
 import TextArea from "../../components/common/input/TextArea";
+import AssignmentCard from "../../components/feature/assignment/AssignmentCard";
 
 interface Mentee {
   id: number;
@@ -219,18 +220,21 @@ const MentorFeedbackPage = () => {
             className="flex flex-col md:gap-300 gap-100 lg:overflow-y-auto lg:min-h-0 lg:max-h-full"
           >
             {selectedAssignment ? (
-              <AssignmentDetailCard
+              <AssignmentCard
                 {...selectedAssignment}
                 time={selectedAssignment.time || "00:00:00"}
                 menteeComment="수학 오답노트 토요일로 바꿔도 될까요? 내일 수학 클리닉이 있어서 그 때 문제를 고치거든요...."
                 onBack={() => setSelectedAssignment(null)}
+                folded={false}
               />
             ) : (
               TodayAssignmentsExample.map((assignment) => (
-                <MenteeAssignmentCard
+                <AssignmentCard
                   key={assignment.id}
                   {...assignment}
                   onClick={() => setSelectedAssignment(assignment)}
+                  onBack={() => setSelectedAssignment(null)}
+                  folded={true}
                 />
               ))
             )}
