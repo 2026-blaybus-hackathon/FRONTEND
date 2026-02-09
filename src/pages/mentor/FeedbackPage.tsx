@@ -24,6 +24,12 @@ interface TodayAssignment {
   date: string;
   status: "PENDING" | "COMPLETED";
   time: string;
+  menteeComment?: string;
+  assignmentImages?: {
+    url: string;
+    name: string;
+    sequence: number;
+  }[];
 }
 
 // 데이터 예시 추후 삭제
@@ -87,6 +93,19 @@ const TodayAssignmentsExample: TodayAssignment[] = [
     date: "2026-02-07",
     status: "PENDING",
     time: "00:10:00",
+    menteeComment: "오늘의 과제 내용입니다.",
+    assignmentImages: [
+      {
+        url: "https://images.unsplash.com/photo-1761839258075-585182da7521?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8",
+        name: "과제 이미지 1",
+        sequence: 1,
+      },
+      {
+        url: "https://images.unsplash.com/photo-1761839258075-585182da7521?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8",
+        name: "과제 이미지 2",
+        sequence: 2,
+      },
+    ],
   },
   {
     id: 2,

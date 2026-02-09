@@ -1,7 +1,8 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { ChevronLeft, Clock } from "lucide-react";
 import SubjectBadge from "../subject/SubjectBadge";
 import { cn } from "../../../libs/utils";
+import ImageModal from "../../common/modal/ImageModal";
 
 export interface AssignmentCardProps {
   title: string;
@@ -10,7 +11,11 @@ export interface AssignmentCardProps {
   status: "PENDING" | "COMPLETED";
   time: string;
   menteeComment?: string;
-  assignmentImageUrl?: string;
+  assignmentImages?: {
+    url: string;
+    name: string;
+    sequence: number;
+  }[];
   folded?: boolean;
   onClick?: () => void;
   onBack?: () => void;
@@ -24,12 +29,18 @@ const AssignmentCard = memo(({
   status,
   time,
   menteeComment = "",
-  assignmentImageUrl,
+  assignmentImages = [],
   folded = true,
   onClick,
   onBack,
   className,
 }: AssignmentCardProps) => {
+
+  const [showImageModal, setShowImageModal] = useState(false);
+
+  const handleCloseImageModal = () => {
+    setShowImageModal(false);
+  };
 
   const convertTimeToLabel = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -86,14 +97,28 @@ const AssignmentCard = memo(({
       {/* 과제 이미지 */}
       {!folded && <div className="flex flex-col gap-100">
         <p className="text-50 font-bold text-gray-800">과제 이미지</p>
-        <div className="rounded-400 overflow-hidden bg-gray-50 border border-gray-100 min-h-[200px] flex items-center justify-center">
-          {assignmentImageUrl ? (
-            <img src={assignmentImageUrl} alt="과제 이미지" className="w-full h-auto object-contain max-h-[480px]" />
-          ) : (
+        
+        {assignmentImages.length > 0 ? (
+          assignmentImages.map((image) => (
+            <img
+              src={image.url}
+              alt="과제 이미지"
+              className="w-full h-auto object-contain rounded-400 max-h-[480px]"
+              onClick={() => setShowImageModal(true)}
+            />
+          ))
+        ) : (
+          <div className="rounded-400 overflow-hidden bg-gray-50 border border-gray-100 min-h-[200px] flex items-center justify-center">
             <p className="body-3 text-gray-400 py-800">과제 이미지가 없습니다.</p>
-          )}
-        </div>
+          </div>
+        )}
       </div>}
+
+      {showImageModal && <ImageModal
+        imageUrl={assignmentImages[0].url}
+        imageName={assignmentImages[0].name}
+        onClose={handleCloseImageModal}
+      />}
     </div>
   );
 });
