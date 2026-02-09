@@ -143,7 +143,6 @@ const MentorReportPage = () => {
       });
       alert(activeTab === 'weekly' ? '주간 리포트가 등록되었습니다.' : '월간 리포트가 등록되었습니다.');
     } catch (err) {
-      console.error('[MentorReportPage] save error', err);
       alert('리포트 등록에 실패했습니다. 다시 시도해 주세요.');
     } finally {
       setSaving(false);

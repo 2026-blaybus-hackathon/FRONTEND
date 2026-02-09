@@ -59,7 +59,6 @@ const MentorDashboardPage = () => {
         const response = await axios.get<DashboardResponse>('/dashboard/mentor/dashboard');
         return response.data;
       } catch (error) {
-        console.error('Failed to fetch dashboard:', error);
         return null;
       }
     },

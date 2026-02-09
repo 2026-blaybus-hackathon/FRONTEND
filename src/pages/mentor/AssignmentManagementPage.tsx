@@ -70,7 +70,7 @@ const AssignmentManagementPage = () => {
       subject,
       date,
     };
-    console.log('[AssignmentManagementPage] handleRegister payload', payload, 'files:', attachedFiles.length);
+
     try {
       await submitAssignTask({
         payload,
@@ -81,8 +81,6 @@ const AssignmentManagementPage = () => {
       setAttachedFiles([]);
     } catch (err: unknown) {
       const res = err && typeof err === 'object' && 'response' in err ? (err as { response: { status: number; data: unknown } }).response : null;
-      console.log('[AssignmentManagementPage] assign error', res?.status, res?.data);
-      console.error(err);
       const message =
         err &&
         typeof err === 'object' &&
