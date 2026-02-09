@@ -210,28 +210,37 @@ const MentorFeedbackPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-10 lg:max-h-[calc(100vh-112px)] lg:overflow-hidden">
+    <div className="flex flex-col gap-10 lg:max-h-[calc(100vh-112px)] min-h-[calc(100vh-136px)] lg:overflow-hidden">
       {/* 검색, 학생 리스트 */}
       <div className="flex flex-col gap-7.5 shrink-0">
         <SearchInput value={search} onChange={handleSearch} ariaLabel="search" className="w-45" />
         <div className="flex justify-between items-center">
           <IconButton variant="primary-line" Icon={<PlayReverse />} onClick={() => setPage(effectivePage - 1)} ariaLabel="previous page" disabled={effectivePage === 0}/>
           <div className="flex flex-1 flex-col sm:flex-row gap-100 lg:gap-500 justify-center">
-            {filteredMentees?.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
-              <MenteeListCard
-                id={mentee.id}
-                key={mentee.id}
-                name={mentee.name}
-                profileImage={getProfileImageUrl(mentee.profileUrl)}
-                school={mentee.schoolName}
-                grade={mentee.grade}
-                status={mentee.status}
-                selected={selectedMentee === mentee.id}
-                onClick={() => {
-                  setSelectedMentee(selectedMentee === mentee.id ? null : mentee.id);
-              }}
-              />
-            ))}
+            {filteredMentees && filteredMentees.length > 0 ? (
+              filteredMentees.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
+                <MenteeListCard
+                  id={mentee.id}
+                  key={mentee.id}
+                  name={mentee.name}
+                  profileImage={getProfileImageUrl(mentee.profileUrl)}
+                  school={mentee.schoolName}
+                  grade={mentee.grade}
+                  status={mentee.status}
+                  selected={selectedMentee === mentee.id}
+                  onClick={() => {
+                    setSelectedMentee(selectedMentee === mentee.id ? null : mentee.id);
+                  }}
+                />
+              ))
+            ) : (
+              // 레이아웃 높이 유지용 플레이스홀더
+              <div
+                className="w-full md:min-w-60 sm:w-fit md:h-32 py-150 lg:py-300 px-150 lg:px-250 flex items-center justify-center"
+              >
+                <p className="text-gray-300 heading-6">학생이 없습니다.</p>
+              </div>
+            )}
           </div>
           <IconButton variant="primary-line" Icon={<Play />} onClick={() => setPage(effectivePage + 1)} ariaLabel="next page" disabled={effectivePage >= lastPage - 1}/>
         </div>
