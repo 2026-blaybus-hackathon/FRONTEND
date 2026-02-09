@@ -11,6 +11,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMentorMentees, useMentorMenteeDetail, useWriteTaskFeedback, useWriteTotalFeedback } from "../../hooks/mentor/useMentorFeedback";
 import type { MentorFeedbackMenteeStatus } from "../../api/mentor";
 import { useSearchParams } from "react-router-dom";
+import { useToastStore } from "../../stores/toastStore";
 
 const MentorFeedbackPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,8 +56,10 @@ const MentorFeedbackPage = () => {
     });
   }, [setSearchParams]);
 
-  const { data: mentees, isLoading: isLoadingMentees } = useMentorMentees();
-  const { data: menteeDetail, isLoading: isLoadingMenteeDetail } = useMentorMenteeDetail(
+  const addToast = useToastStore((state) => state.addToast);
+
+  const { data: mentees, isLoading: isLoadingMentees, isError: isErrorMentees } = useMentorMentees();
+  const { data: menteeDetail, isLoading: isLoadingMenteeDetail, isError: isErrorMenteeDetail } = useMentorMenteeDetail(
     selectedMentee ?? 0,
     new Date().toISOString().split('T')[0], // YYYY-MM-DD
     {
@@ -66,6 +69,15 @@ const MentorFeedbackPage = () => {
 
   const { mutate: writeTaskFeedback } = useWriteTaskFeedback(selectedMentee ?? 0, selectedTaskId ?? 0);
   const { mutate: writeTotalFeedback } = useWriteTotalFeedback(selectedMentee ?? 0);
+
+  useEffect(() => {
+    if (isErrorMentees || isErrorMenteeDetail) {
+      addToast({
+        message: "데이터를 불러오는 중 오류가 발생했습니다.",
+        type: "error",
+      });
+    }
+  }, [isErrorMentees, isErrorMenteeDetail, addToast]);
 
   // 검색어로 멘티 이름 필터링
   const filteredMentees = useMemo(() => {
