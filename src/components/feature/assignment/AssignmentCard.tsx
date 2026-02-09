@@ -36,7 +36,7 @@ const AssignmentCard = memo(({
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<imageTypes.Image | null>(null);
   const imagesList = useMemo(() => {
-    return images.sort((a, b) => a.sequence - b.sequence);
+    return [...images].sort((a, b) => a.sequence - b.sequence);
   }, [images]);
 
   const handleCloseImageModal = () => {
