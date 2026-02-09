@@ -56,6 +56,13 @@ const MentorFeedbackPage = () => {
   }, [setSearchParams]);
 
   const { data: mentees } = useMentorMentees();
+
+  // 검색어로 멘티 이름 필터링
+  const filteredMentees = useMemo(() => {
+    if (!mentees) return undefined;
+    if (!search.trim()) return mentees;
+    return mentees.filter((m) => m.name.includes(search.trim()));
+  }, [mentees, search]);
   const { data: menteeDetail } = useMentorMenteeDetail(
     selectedMentee ?? 0,
     new Date().toISOString().split('T')[0], // YYYY-MM-DD
@@ -106,9 +113,9 @@ const MentorFeedbackPage = () => {
   const handleMovePrevious = () => {
     if (selectedMentee === null) return;
     if (selectedTaskId === null) {
-      const currentIndex = mentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
-      if (currentIndex > 0 && mentees) {
-        setSelectedMentee(mentees[currentIndex - 1].id);
+      const currentIndex = filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
+      if (currentIndex > 0 && filteredMentees) {
+        setSelectedMentee(filteredMentees[currentIndex - 1].id);
       }
     } else {
       const currentTaskIndex = menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? -1;
@@ -121,9 +128,9 @@ const MentorFeedbackPage = () => {
   const handleMoveNext = () => {
     if (selectedMentee === null) return;
     if (selectedTaskId === null) {
-      const currentIndex = mentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
-      if (mentees && currentIndex >= 0 && currentIndex < mentees.length - 1) {
-        setSelectedMentee(mentees[currentIndex + 1].id);
+      const currentIndex = filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
+      if (filteredMentees && currentIndex >= 0 && currentIndex < filteredMentees.length - 1) {
+        setSelectedMentee(filteredMentees[currentIndex + 1].id);
       }
     } else {
       const currentTaskIndex = menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? -1;
@@ -134,11 +141,11 @@ const MentorFeedbackPage = () => {
   }
 
   const isPrevDisabled = selectedTaskId === null
-  ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) <= 0
+  ? (filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? 0) <= 0
   : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) <= 0;
 
   const isNextDisabled = selectedTaskId === null
-    ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) >= (mentees?.length ?? 1) - 1
+    ? (filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? 0) >= (filteredMentees?.length ?? 1) - 1
     : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) >= (menteeDetail?.tasks.length ?? 1) - 1;
 
 
@@ -194,11 +201,12 @@ const MentorFeedbackPage = () => {
     };
   }, [selectedMentee, selectedTaskId]);
 
-  const lastPage = Math.ceil((mentees ? mentees.length : 0) / pageSize);
+  const lastPage = Math.ceil((filteredMentees ? filteredMentees.length : 0) / pageSize);
   const effectivePage = Math.min(page, Math.max(0, lastPage - 1));
  
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
+    setPage(0); // 검색 시 첫 페이지로 이동
   }
 
   return (
@@ -209,7 +217,7 @@ const MentorFeedbackPage = () => {
         <div className="flex justify-between items-center">
           <IconButton variant="primary-line" Icon={<PlayReverse />} onClick={() => setPage(effectivePage - 1)} ariaLabel="previous page" disabled={effectivePage === 0}/>
           <div className="flex flex-1 flex-col sm:flex-row gap-100 lg:gap-500 justify-center">
-            {mentees?.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
+            {filteredMentees?.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
               <MenteeListCard
                 id={mentee.id}
                 key={mentee.id}
