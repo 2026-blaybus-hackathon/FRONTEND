@@ -1,0 +1,129 @@
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F3F4F6;
+}
+
+.dashboard-page {
+  flex: 1;
+  margin-left: 228px;
+  min-height: 100vh;
+  background-color: #F3F4F6;
+  padding: 0;
+}
+
+/* 모바일 헤더 (MobileHeader.tsx) */
+.mobile-header-root {
+  width: 100vw;
+}
+
+@media (min-width: 1024px) {
+  .mobile-header-root {
+    display: none;
+  }
+}
+
+.mobile-header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--size-space-200) var(--size-space-400);
+}
+
+.hamburger-btn {
+  background: none;
+  border: none;
+  outline: none;
+  padding: var(--size-space-100);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--size-border-radius-200);
+  color: var(--color-primary-300);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.hamburger-btn:hover {
+  background-color: var(--color-gray-700);
+}
+
+/* 레거시: 기존 .mobile-header (미사용 시 제거 가능) */
+.mobile-header {
+  display: none;
+}
+
+.mobile-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #6366F1;
+}
+
+/* 사이드바 오버레이 */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sidebar-mobile {
+  width: 280px;
+  height: 100%;
+  background: #1F2937;
+  animation: slideIn 0.3s;
+  overflow-y: auto;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.sidebar-mobile .sidebar {
+  position: static;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .dashboard-layout {
+    display: block;
+  }
+
+  .dashboard-page {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  /* 모바일 헤더 표시 */
+  /* .mobile-header {
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    background: white;
+    border-bottom: 1px solid #E5E7EB;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  } */
+}

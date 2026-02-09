@@ -1,52 +1,74 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/common/button/Button";
 import EmailInput from "../../components/common/input/EmailInput";
 import PasswordInput from "../../components/common/input/PasswordInput";
 import { useApi } from "../../hooks/useApi";
-import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../stores/authStore";
-
-interface LoginResponse {
-    accessToken: string;
-    nickname: string;
-}
+import Container from "../../components/common/Container";
+import type { LoginResponse } from "../../libs/types/apiResponse";
+import '../../styles/pages/auth.css';
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const role = searchParams.get('role'); // mentee or mentor
+    
     const [email, setEmail] = useState("");
-    const { apiCall, isLoading } = useApi();
     const [password, setPassword] = useState("");
+    const [error, setError] = useState<null | string>(null);
+    
+    const { apiCall, isLoading } = useApi();
     const { isLoggedIn, login } = useAuthStore();
 
-    // 에러를 key로 저장
-    const [error, setError] = useState<null | string>(null);
+  const isLoginValid = email !== "" && password !== "";
 
-    const isLoginValid = email !== "" && password !== "";
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setError(null);
+  };
 
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
-        setError(null);
-    };
-
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
-        setError(null);
-    };
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setError(null);
+  };
 
     const handleSignupClick = () => {
-        navigate("/signup")
-    }
+        navigate(`/signup${role ? `?role=${role}` : ''}`);
+    };
+
+    const handleBackClick = () => {
+        navigate('/main');
+    };
 
     const handleLogin = () => {
-        // 로그인 로직 처리 후 에러 발생 시
         apiCall<LoginResponse>('/auth/login/email', 'POST', {
             email,
             password
         })
         .then((response) => {
             if (response.status === 200 && response.data?.accessToken) {
-                login(response.data.accessToken, response.data.nickname);
-                navigate("/");
+                const data = response.data;
+                const { accessToken } = data;
+                const profile = {
+                    nickname: data.nickname,
+                    role: data.role,
+                    name: data.name,
+                    email: data.email,
+                    schoolName: data.schoolName,
+                    grade: data.grade,
+                    targetSchool: data.targetSchool,
+                    targetDate: data.targetDate,
+                };
+                
+                // URL 파라미터의 role 사용 (메인에서 선택한 역할)
+                const selectedRole = role || 'mentee';
+                
+                login(accessToken, profile);
+                
+                // 선택한 역할에 따라 다른 페이지로 이동
+                const dashboardPath = selectedRole === 'mentor' ? '/mentor/mentee' : '/mentee/dashboard';
+                navigate(dashboardPath);
             } else if (response.status === 401) {
                 setError("이메일 또는 비밀번호가 잘못되었습니다.");
             } else {
@@ -57,80 +79,66 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            navigate("/");
+            const selectedRole = role || 'mentee';
+            const dashboardPath = selectedRole === 'mentor' ? '/mentor/mentee' : '/mentee/dashboard';
+            navigate(dashboardPath);
         }
-    }, [isLoggedIn, navigate]);
+    }, [isLoggedIn, navigate, role]);
 
     return (
-        <div className="flex flex-col justify-center items-center w-80 m-auto">
-            <div className="flex flex-col gap-2 w-full">
-                <h1 className="mb-4 w-full text-center">
-                    로그인
-                </h1>
-                <div className="flex flex-col gap-2">
-                    <EmailInput
-                        value={email}
-                        onChange={handleEmailChange}
-                        width="full"
-                        ariaLabel="로그인 이메일란"
-                    />
+        <Container>
+            <div className="auth-page">
+                <div className="auth-header">
+                    <button className="back-link" onClick={handleBackClick}>
+                        ← 돌아가기
+                    </button>
+                    <h1 className="auth-title">
+                        {role ? `${role === 'mentee' ? '멘티' : '멘토'} ` : ''}로그인
+                    </h1>
+                    <p className="auth-subtitle">SeolStudy에 오신 것을 환영합니다</p>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                    <PasswordInput
-                        onChange={handlePasswordChange}
-                        value={password}
+                <div className="auth-form">
+                    <div className="form-group">
+                        <EmailInput
+                            value={email}
+                            onChange={handleEmailChange}
+                            width="full"
+                            ariaLabel="로그인 이메일란"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <PasswordInput
+                            onChange={handlePasswordChange}
+                            value={password}
+                            width="full"
+                            ariaLabel="로그인 비밀번호란"
+                        />
+                        {error && <p className="error-message">{error}</p>}
+                    </div>
+
+                    <Button
+                        onClick={handleLogin}
+                        disabled={!isLoginValid || isLoading}
                         width="full"
-                        ariaLabel="로그인 비밀번호란"
-                    />
-                    {error && <p className="caption text-error">{error}</p>}
+                        ariaLabel="로그인 버튼"
+                    >
+                        로그인
+                    </Button>
+                    
+                    <Button
+                        variant="secondary"
+                        onClick={handleSignupClick}
+                        width="full"
+                        ariaLabel="회원가입 버튼"
+                    >
+                        회원가입
+                    </Button>
                 </div>
-
-                <Button
-                    onClick={handleLogin}
-                    disabled={!isLoginValid || isLoading}
-                    width="full"
-                    ariaLabel={"로그인 버튼"}
-                >
-                    로그인
-                </Button>
-                <Button
-                    variant="outlined"
-                    onClick={handleSignupClick}
-                    width="full"
-                    ariaLabel={"회원가입 버튼"}
-                >
-                    회원가입
-                </Button>
             </div>
-
-            <div className="mt-4 mb-6 flex justify-center items-center gap-3">
-                <div className="w-30 h-[1px] bg-gray-2" />
-                <span className="text-gray-3">or</span>
-                <div className="w-30 h-[1px] bg-gray-2" />
-            </div>
-
-            <GoogleButton />
-        </div>
+        </Container>
     );
 };
-
-
-const GoogleButton = () => {
-    const OAuthLoginUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
-        `client_id=${encodeURIComponent(import.meta.env.VITE_PUBLIC_GOOGLE_CLIENT_ID)}` +
-        `&redirect_uri=${encodeURIComponent(import.meta.env.VITE_PUBLIC_GOOGLE_REDIRECT_URI)}` +
-        "&response_type=code" + "&scope=email%20openid%20profile" + "&access_type=offline" + "&prompt=select_account";
-
-    const handleGoogleLogin = () => {
-        window.location.href = OAuthLoginUrl;
-    }
-
-    return (
-        <button className="my-0 mx-auto border-none bg-transparent cursor-pointer w-45" onClick={handleGoogleLogin}>
-            <img src="/googleSignupButton.png" alt="google" />
-        </button>       
-    );
-}
 
 export default LoginPage;

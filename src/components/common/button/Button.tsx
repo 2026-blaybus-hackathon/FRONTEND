@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '../../../libs/utils';
 
-export type ButtonVariant = "primary" | "outlined";
+export type ButtonVariant = "primary" | "secondary" | "outlined" | "ghost" | "gray";
 export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonWidth = "auto" | "full";
 
@@ -20,7 +20,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = ({
     variant = "primary",
-    size = "lg",
+    size = "md",
     width = "auto",
     children,
     onClick = () => {},
@@ -31,28 +31,20 @@ const Button = ({
     ...props
 }: ButtonProps) => {
 
-    // variant 스타일 클래스
+    // 우리의 디자인 토큰 시스템 사용
     const variantClasses: Record<ButtonVariant, string> = {
-        "primary": "bg-primary text-white border-transparent",
-        "outlined": "bg-white text-primary border-primary",
+        "primary": "btn btn-primary",
+        "secondary": "btn btn-secondary",
+        "outlined": "btn btn-outlined",
+        "ghost": "btn btn-ghost",
+        "gray": "btn btn-gray",
     }
 
-    const hoverClasses: Record<ButtonVariant, string> = {
-        "primary": "hover:bg-primary-dark",
-        "outlined": "hover:bg-primary-light",
-    }
-
-    // disabled variant 스타일 클래스
-    const disabledClasses: Record<ButtonVariant, string> = {
-        "primary": "bg-gray-3 text-gray-1",
-        "outlined": "bg-gray-1 text-gray-3 border-gray-3",
-    }
-
-    // size 스타일 클래스
+    // size 스타일 클래스 (디자인 토큰 시스템과 통합)
     const sizeClasses: Record<ButtonSize, string> = {
-        sm: "text-xs px-3 py-1.5 rounded",
-        md: "text-sm px-4 py-2 rounded-md",
-        lg: "text-base px-6 py-3 rounded-lg",
+        sm: "btn-sm",
+        md: "",  // 기본 btn 크기 사용
+        lg: "btn-lg",
     }
 
     // width 스타일 클래스
@@ -64,12 +56,11 @@ const Button = ({
     return (
         <button
             className={cn(
-                "border-2 font-medium transition-colors duration-200 whitespace-nowrap",
+                "font-weight-500",
                 variantClasses[variant],
                 sizeClasses[size],
                 widthClasses[width],
-                disabled ? disabledClasses[variant] : hoverClasses[variant],
-                className,
+                className
             )}
             onClick={onClick}
             disabled={disabled || isLoading}

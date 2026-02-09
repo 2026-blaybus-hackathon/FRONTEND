@@ -23,11 +23,35 @@ export const Primary: Story = {
   },
 };
 
+export const Secondary: Story = {
+  args: {
+    variant: "secondary",
+    ariaLabel: 'Secondary Button',
+    children: "Secondary Button",
+  },
+};
+
 export const Outlined: Story = {
   args: {
     variant: "outlined",
     ariaLabel: 'Outlined Button',
     children: "Outlined Button",
+  },
+};
+
+export const Ghost: Story = {
+  args: {
+    variant: "ghost",
+    ariaLabel: 'Ghost Button',
+    children: "Ghost Button",
+  },
+};
+
+export const Gray: Story = {
+  args: {
+    variant: "gray",
+    ariaLabel: 'Gray Button',
+    children: "Gray Button",
   },
 };
 

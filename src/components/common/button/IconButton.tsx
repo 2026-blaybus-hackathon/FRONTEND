@@ -1,13 +1,13 @@
 // Button.tsx
-import React from 'react';
+import React, { isValidElement } from 'react';
 import { cn } from '../../../libs/utils';
 import type { LucideIcon } from 'lucide-react';
 
-type IconButtonVariant = "transparent-gray" | "transparent-primary"
+type IconButtonVariant = "primary" | "gray-line" | "primary-line"
 type IconButtonSize = "md" | "sm";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    Icon: LucideIcon;
+    Icon: LucideIcon | React.ReactNode;
     variant?: IconButtonVariant;
     size? : IconButtonSize;
     onClick?: () => void;
@@ -19,7 +19,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const IconButton = ({
     Icon,
-    variant = "transparent-gray",
+    variant = "primary",
     size = "md",
     onClick = () => {},
     disabled = false,
@@ -31,19 +31,22 @@ const IconButton = ({
 
     // variant 스타일 클래스
     const variantClasses: Record<IconButtonVariant, string> = {
-        "transparent-gray": "border-transparent text-gray-3 bg-transparent",
-        "transparent-primary": "border-transparent text-primary bg-transparent",
+        "primary": "text-white bg-primary",
+        "primary-line": "text-primary-500 border-none",
+        "gray-line": "text-gray-300 border-none"
     }
 
     const hoverClasses: Record<IconButtonVariant, string> = {
-        "transparent-gray": "hover:bg-gray-1",
-        "transparent-primary": "hover:bg-primary-light",
+        "primary": "hover:bg-primary-light",
+        "primary-line": "hover:text-primary-700",
+        "gray-line": "hover:bg-gray-50 border-none",
     }
 
     // disabled variant 스타일 클래스
     const disabledClasses: Record<IconButtonVariant, string> = {
-        "transparent-gray": "border-transparent text-gray-2 bg-transparent hover:bg-transparent",
-        "transparent-primary": "border-transparent text-gray-2 bg-transparent hover:bg-transparent",
+        "primary": "border-transparent text-white bg-gray-200 hover:bg-gray-200 cursor-not-allowed",
+        "gray-line": "text-gray-500 bg-gray-100 hover:bg-gray-100 cursor-not-allowed border-none",
+        "primary-line": "text-gray-300 cursor-not-allowed",
     }
 
     // size pixel
@@ -72,7 +75,12 @@ const IconButton = ({
             aria-label={ariaLabel}
             {...props}
         >
-            <Icon size={sizePixel[size]} />
+            {isValidElement(Icon) || typeof Icon === 'string' || typeof Icon === 'number'
+                ? Icon
+                : (() => {
+                    const Component = Icon as React.ComponentType<{ size?: number }>;
+                    return <Component size={sizePixel[size]} />;
+                })()}
         </button>
     );
 };
