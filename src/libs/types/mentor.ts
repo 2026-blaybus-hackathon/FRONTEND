@@ -12,6 +12,12 @@ export interface MentorTaskFeedback {
   comment: string;
 }
 
+/** 과제 조회 응답에서 추출한 피드백 (과제 정보 포함) */
+export interface MenteeFeedbackItem extends MentorTaskFeedback {
+  taskId: number;
+  taskTitle: string;
+}
+
 /** 멘토-멘티 과제 목록 항목 */
 export interface MentorTaskItem {
   taskId: number;
@@ -61,4 +67,27 @@ export interface AssignmentFormValues {
 export interface MentorMenteeAssignmentDetail {
   school: string;
   achievementRate: number;
+}
+
+/** GET /users/mentor/mentees/:menteeId/stats 응답 */
+export type MenteeStatsPeriod = 'WEEK' | 'MONTH';
+
+export interface MenteeStatsResponse {
+  achievementRate: {
+    achievementRate: number;
+  };
+  weeklyStudyTimeMinutes: number;
+}
+
+/** POST /reports/mentor 요청 - 멘토 주/월간 리포트 생성 */
+export type MentorReportPeriod = 'WEEKLY' | 'MONTHLY';
+
+export interface MentorReportCreateRequest {
+  menteeId: number;
+  overallReview: string;
+  period: MentorReportPeriod;
+  keepContent: string;
+  problemContent: string;
+  tryContent: string;
+  reportDate: string; // YYYY-MM-DD
 }
