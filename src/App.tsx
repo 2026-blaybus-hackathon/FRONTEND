@@ -15,6 +15,7 @@ import MentorFeedbackPage from './pages/mentor/FeedbackPage';
 import AssignmentManagementPage from './pages/mentor/AssignmentManagementPage';
 import LearningMaterialPage from './pages/mentor/LearningMaterialPage';
 import ColumnWritePage from './pages/mentor/ColumnWritePage';
+import MentorReportPage from './pages/mentor/MentorReportPage';
 import NotificationCenterPage from './pages/mentee/NotificationCenterPage';
 import ReportPage from './pages/mentee/ReportPage';
 import useAuthStore from './stores/authStore';
@@ -67,7 +68,7 @@ function App() {
               <Route index element={<LearningMaterialPage />} />
               <Route path="column" element={<ColumnWritePage />} />
             </Route>
-            <Route path="report" element={<PlaceholderPage name="주간 리포트" />} />
+            <Route path="report" element={<MentorReportPage />} />
             <Route path="archive" element={<PlaceholderPage name="보관함" />} />
             <Route path="my-page" element={<MyPage />} />
           </Route>
