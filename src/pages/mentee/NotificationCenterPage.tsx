@@ -17,7 +17,7 @@ const NotificationCenterPage = () => {
     ? (rawType as NotificationFilterType)
     : 'all';
 
-  const { data: notifications } = useMenteeNotifications();
+  const { data: notifications, isLoading } = useMenteeNotifications();
   const { mutate: readNotificationMutation } = useReadMenteeNotification();
 
   const filtered = filter === 'all'
@@ -81,7 +81,7 @@ const NotificationCenterPage = () => {
       <section className="w-full gap-250 flex flex-col" aria-label="알림 목록">
         <div className="w-full flex flex-wrap lg:gap-x-250 gap-x-100 gap-y-100" aria-label="알림 필터">
           {
-            ['all', 'feedback', 'report', 'notice'].map((type) => (
+            ['all', 'feedback', 'report'].map((type) => (
               <button
                 key={type}
                 type="button"
@@ -98,7 +98,22 @@ const NotificationCenterPage = () => {
           }
         </div>
         <div className="w-full overflow-hidden rounded-xl bg-white" aria-label="알림 목록">
-          {filtered?.length === 0 ? (
+          {isLoading ? (
+            <ul className="m-0 list-none p-0 flex flex-col px-400">
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <li key={idx}>
+                  <div className="flex py-200 lg:py-300 items-center animate-pulse">
+                    <div className="relative w-6 h-6 rounded-full mr-200 lg:mr-[45px] bg-gray-100" />
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 lg:mb-2.5 h-4 w-3/5 rounded bg-gray-100" />
+                      <div className="h-3 w-1/4 rounded bg-gray-50" />
+                    </div>
+                  </div>
+                  {idx !== 4 && <div className="w-full h-[1px] bg-gray-50" />}
+                </li>
+              ))}
+            </ul>
+          ) : filtered?.length === 0 ? (
             <div className="flex min-h-0 flex-col items-center justify-center px-6 py-12 text-center sm:min-h-[320px] sm:px-10 sm:py-20">
               <div className="mx-auto mb-6 flex items-center justify-center opacity-20">
                 <Megaphone className="h-12 w-12 text-gray-900 sm:h-20 sm:w-20" aria-hidden />
