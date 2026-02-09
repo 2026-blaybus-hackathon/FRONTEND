@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { User, Settings, HelpCircle, LogOut } from 'lucide-react';
 import useAuthStore from '../stores/authStore';
+import { useMenteeProfile } from '../hooks/useMenteeProfile';
+import { getProfileImageUrl } from '../libs/utils';
 import '../styles/pages/my-page.css';
 
 const menuItems = [
-  { label: '프로필 설정', Icon: User, path: '#' },
+  { label: '프로필 설정', Icon: User, path: 'profile' },
   { label: '환경설정', Icon: Settings, path: '#' },
   { label: '도움말', Icon: HelpCircle, path: '#' },
 ];
@@ -16,10 +18,17 @@ const MyPage = () => {
   const role = useAuthStore((state) => state.role);
   const logout = useAuthStore((state) => state.logout);
 
-  const displayName = user?.name || nickname || '사용자';
+  const isMentee = role === 'MENTEE';
+  const isMentor = role === 'MENTOR';
+  const canEditProfile = isMentee || isMentor;
+  const { data: profile } = useMenteeProfile({
+    enabled: canEditProfile,
+  });
+  const displayName = user?.name || nickname || profile?.name || '사용자';
   const initial = displayName[0] || '?';
-  const school = user?.school || '학교 정보 없음';
+  const school = user?.school || profile?.schoolName || '학교 정보 없음';
   const subjectLine = role === 'MENTOR' ? '담당 과목: 국어, 수학' : null;
+  const profileImageUrl = getProfileImageUrl(profile?.profileUrl);
 
   const handleLogout = () => {
     logout();
@@ -30,7 +39,16 @@ const MyPage = () => {
     <div className="my-page">
       <div className="my-page__profile card">
         <div className="my-page__avatar" aria-hidden>
-          {initial}
+          {profileImageUrl ? (
+            <img
+              src={profileImageUrl}
+              alt=""
+              className="w-full h-full object-cover rounded-full"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            initial
+          )}
         </div>
         <div className="my-page__profile-info">
           <h1 className="my-page__name">{displayName}</h1>
@@ -44,7 +62,13 @@ const MyPage = () => {
           key={label}
           type="button"
           className="my-page__menu-card card"
-          onClick={() => path !== '#' && navigate(path)}
+          onClick={() => {
+            if (label === '프로필 설정' && canEditProfile && path === 'profile') {
+              navigate(role === 'MENTOR' ? '/mentor/profile' : '/mentee/profile');
+            } else if (path !== '#') {
+              navigate(path.startsWith('/') ? path : (role === 'MENTOR' ? `/mentor/${path}` : `/mentee/${path}`));
+            }
+          }}
           aria-label={label}
         >
           <Icon className="my-page__menu-icon" size={24} aria-hidden />

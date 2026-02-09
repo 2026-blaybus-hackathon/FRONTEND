@@ -4,6 +4,7 @@ import { ChevronRight, Minus, List } from 'lucide-react';
 import SearchInput from '../../components/common/input/SearchInput';
 import TaskDetailModal from '../../components/common/modal/TaskDetailModal';
 import type { MenteeListItem } from '../../libs/types/mentee';
+import { getProfileImageUrl } from '../../libs/utils';
 import type { AssignmentFormValues } from '../../libs/types/mentor';
 import type { LearningMaterialItem } from '../../libs/types/material';
 import {
@@ -110,7 +111,6 @@ const AssignmentManagementPage = () => {
       setAttachedFiles([]);
       setSelectedMaterialId(null);
     } catch (err: unknown) {
-      const res = err && typeof err === 'object' && 'response' in err ? (err as { response: { status: number; data: unknown } }).response : null;
       const message =
         err &&
         typeof err === 'object' &&
@@ -169,8 +169,12 @@ const AssignmentManagementPage = () => {
                     className="w-full flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-md text-left cursor-pointer transition-colors hover:bg-gray-50 hover:border-gray-300"
                     onClick={() => setSelectedMentee(mentee)}
                   >
-                    <div className="w-10 h-10 rounded-full bg-[var(--color-primary-500)] text-white text-base font-bold flex items-center justify-center shrink-0">
-                      {mentee.avatar}
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-primary-500)] text-white text-base font-bold flex items-center justify-center shrink-0 overflow-hidden">
+                      {getProfileImageUrl(mentee.profileUrl) ? (
+                        <img src={getProfileImageUrl(mentee.profileUrl)} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        mentee.avatar
+                      )}
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col gap-0.5">
                       <span className="text-base font-medium text-gray-900">{mentee.name}</span>
@@ -191,10 +195,14 @@ const AssignmentManagementPage = () => {
             <div className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-6">
               <div className="flex flex-col items-center text-center space-y-2">
                 <div
-                  className="w-14 h-14 rounded-full bg-[var(--color-primary-500)] text-white text-xl font-bold flex items-center justify-center"
+                  className="w-14 h-14 rounded-full bg-[var(--color-primary-500)] text-white text-xl font-bold flex items-center justify-center overflow-hidden"
                   aria-hidden
                 >
-                  {selectedMentee.avatar}
+                  {getProfileImageUrl(selectedMentee.profileUrl) ? (
+                    <img src={getProfileImageUrl(selectedMentee.profileUrl)} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  ) : (
+                    selectedMentee.avatar
+                  )}
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900 m-0">{selectedMentee.name}</h2>
                 <p className="text-sm text-gray-600 m-0">

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getMenteeList, searchMentees } from '../api/mentor';
+import { getMenteeList } from '../api/mentor';
 
 const MENTEES_QUERY_KEY = ['mentees'] as const;
 const MENTEE_SEARCH_QUERY_KEY = ['mentees', 'search'] as const;
