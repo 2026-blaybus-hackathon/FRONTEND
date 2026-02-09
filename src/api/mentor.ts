@@ -80,6 +80,39 @@ export async function createMentorReport(
 }
 
 /**
+ * 멘티 과제, 피드백 조회 (보관함용)
+ * GET /mentor/mentee/{menteeId}/task-feedback
+ */
+export interface MenteeTaskFeedbackResponse {
+  tasks: Array<{
+    taskId: number;
+    title: string;
+    subject: string;
+    createdAt: string;
+    feedbackStatus: 'PENDING' | 'COMPLETED';
+    images: Array<{
+      url: string;
+      name: string;
+      sequence: number;
+    }>;
+    feedback?: {
+      feedbackId: number;
+      summary: string;
+      comment: string;
+    };
+  }>;
+}
+
+export async function getMenteeTaskFeedback(
+  menteeId: number
+): Promise<MenteeTaskFeedbackResponse> {
+  const response = await axios.get<MenteeTaskFeedbackResponse>(
+    `/mentor/mentee/${menteeId}/task-feedback`
+  );
+  return response.data;
+}
+
+/**
  * 멘티에게 과제 할당 (PDF 포함).
  * POST /tasks/mentor/assignment
  * - request: 과제 정보 JSON (필수)

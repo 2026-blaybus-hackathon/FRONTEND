@@ -12,6 +12,7 @@ import PlaceholderPage from './static/PlaceholderPage';
 import MyPage from './pages/MyPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
+import MentorArchivePage from './pages/mentor/ArchivePage';
 import AssignmentManagementPage from './pages/mentor/AssignmentManagementPage';
 import LearningMaterialPage from './pages/mentor/LearningMaterialPage';
 import ColumnWritePage from './pages/mentor/ColumnWritePage';
@@ -33,8 +34,8 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NotificationToasts />
       <BrowserRouter>
+        <NotificationToasts />
         <Routes>
           {/* 루트는 메인으로 리다이렉트 */}
           <Route path="/" element={<Navigate to="/main" replace />} />
@@ -69,7 +70,7 @@ function App() {
               <Route path="column" element={<ColumnWritePage />} />
             </Route>
             <Route path="report" element={<MentorReportPage />} />
-            <Route path="archive" element={<PlaceholderPage name="보관함" />} />
+            <Route path="archive" element={<MentorArchivePage />} />
             <Route path="my-page" element={<MyPage />} />
           </Route>
         </Routes>

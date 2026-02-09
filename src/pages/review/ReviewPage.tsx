@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMenteeFeedbacks } from '../../hooks/useMenteeFeedbacks';
 import FeedbackCard from '../../components/feature/review/FeedbackCard';
 import FeedbackDetailModal from '../../components/feature/review/FeedbackDetailModal';
 import '../../styles/pages/review.css';
@@ -7,22 +8,22 @@ const ReviewPage = () => {
   const [activeTab, setActiveTab] = useState<'feedback' | 'history'>('feedback');
   const [selectedFeedback, setSelectedFeedback] = useState<number | null>(null);
 
-  // 임시 데이터 (추후 API 연동)
-  const feedbacks = [
-    {
-      id: 1,
-      subject: '영어',
-      title: '단어 시험 (Day 15)',
-      fileName: 'Day15_Word_Test.pdf',
-      fileSize: '2.1MB',
-      score: 45,
-      mentorPick: true,
-      date: '2025년 2월 5일',
-      mentorName: '김영희',
-      mentorComment: '단어 암기를 정말 열심히 하셨네요! 특히 Day 15의 어려운 단어들을 잘 소화하신 것 같습니다.\n\n다만 몇 가지 철자 실수가 있었어요:\n- "receive"를 "recieve"로 쓰신 부분\n- "separate"를 "seperate"로 쓰신 부분\n\n이런 헷갈리는 철자는 따로 노트에 정리해서 반복 학습하시면 좋을 것 같아요. 전체적으로 잘하고 계십니다. 화이팅!',
-      imageUrl: '',
-    },
-  ];
+  // 피드백 목록 조회
+  const { feedbacks: feedbacksData, isLoading } = useMenteeFeedbacks();
+
+  const feedbacks = feedbacksData.map((fb) => ({
+    id: fb.feedbackId,
+    subject: fb.subject || '과목',
+    title: fb.taskTitle,
+    fileName: '',
+    fileSize: '',
+    score: 0,
+    mentorPick: false,
+    date: fb.createdAt ? new Date(fb.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
+    mentorName: '멘토',
+    mentorComment: fb.comment || fb.summary,
+    imageUrl: '',
+  }));
 
   const handleViewFeedback = (feedbackId: number) => {
     setSelectedFeedback(feedbackId);
@@ -32,7 +33,7 @@ const ReviewPage = () => {
     setSelectedFeedback(null);
   };
 
-  const currentFeedback = feedbacks.find(f => f.id === selectedFeedback);
+  const currentFeedback = feedbacks.find((f: { id: number }) => f.id === selectedFeedback);
 
   return (
     <>
@@ -73,7 +74,11 @@ const ReviewPage = () => {
         {/* 컨텐츠 */}
         {activeTab === 'feedback' ? (
           <div className="feedback-list">
-            {feedbacks.length === 0 ? (
+            {isLoading ? (
+              <div className="empty-state">
+                <p className="empty-title">로딩 중...</p>
+              </div>
+            ) : feedbacks.length === 0 ? (
               <div className="empty-state">
                 <svg className="empty-icon" width="80" height="80" viewBox="0 0 80 80" fill="none">
                   <rect x="20" y="15" width="40" height="50" rx="2" stroke="#D1D5DB" strokeWidth="3"/>
@@ -86,7 +91,19 @@ const ReviewPage = () => {
               </div>
             ) : (
               <div className="feedback-grid">
-                {feedbacks.map((feedback) => (
+                {feedbacks.map((feedback: {
+                  id: number;
+                  subject: string;
+                  title: string;
+                  fileName: string;
+                  fileSize: string;
+                  score: number;
+                  mentorPick: boolean;
+                  date: string;
+                  mentorName: string;
+                  mentorComment: string;
+                  imageUrl: string;
+                }) => (
                   <FeedbackCard 
                     key={feedback.id} 
                     {...feedback} 
