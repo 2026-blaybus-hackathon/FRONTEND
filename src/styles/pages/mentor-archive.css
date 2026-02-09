@@ -1,0 +1,333 @@
+/* 멘토 보관함 페이지 */
+.mentor-archive-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding: 32px 40px;
+}
+
+/* 검색 섹션 */
+.search-section {
+  margin-bottom: 32px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  max-width: 400px;
+}
+
+.search-input-wrapper svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9CA3AF;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 12px 16px 12px 48px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 14px;
+  background: white;
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+  border-color: #6366F1;
+}
+
+/* 페이지 헤더 */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.page-header svg {
+  color: #111827;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.page-description {
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: 32px;
+}
+
+/* 멘티 캐러셀 */
+.mentee-carousel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.carousel-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.carousel-arrow:hover {
+  background: #F9FAFB;
+}
+
+.carousel-arrow svg {
+  color: #6B7280;
+}
+
+.mentee-cards {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  flex: 1;
+  padding: 8px 0;
+}
+
+.mentee-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 160px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mentee-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.mentee-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.mentee-info {
+  text-align: center;
+}
+
+.mentee-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.mentee-info p {
+  font-size: 13px;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* 탭 컨테이너 */
+.tabs-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  padding: 12px 20px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab:hover {
+  background: #F9FAFB;
+}
+
+.tab.active {
+  background: #6366F1;
+  color: white;
+  border-color: #6366F1;
+}
+
+.tab svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  background-color: #EF4444;
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tab.active .tab-badge {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 컨텐츠 영역 */
+.content-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* 과제 카드 */
+.task-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.task-card.pink {
+  border-color: #FDE2E4;
+}
+
+.task-card.green {
+  border-color: #D1FAE5;
+}
+
+.task-card-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.task-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-badge.pink {
+  background-color: #FDE2E4;
+  color: #E11D48;
+}
+
+.task-badge.green {
+  background-color: #D1FAE5;
+  color: #059669;
+}
+
+.task-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 12px 0;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.task-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6B7280;
+}
+
+.task-time svg {
+  color: #9CA3AF;
+}
+
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #F3F4F6;
+  margin-bottom: 16px;
+}
+
+.task-date {
+  font-size: 13px;
+  color: #6B7280;
+}
+
+.task-subject {
+  font-size: 13px;
+  color: #6B7280;
+}
+
+.task-action-btn {
+  width: 100%;
+  padding: 10px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6366F1;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.task-action-btn:hover {
+  background: #6366F1;
+  color: white;
+  border-color: #6366F1;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .mentor-archive-page {
+    padding: 20px;
+  }
+
+  .content-area {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}

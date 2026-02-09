@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react';
+import { useMenteeTasks, useCreateMenteeTask, useUpdateMenteeTask, useDeleteMenteeTask, useUpdateMenteeTaskCompletion, useUpdateMenteeStudyTime, useUpdateMenteeTaskComment } from '../../hooks/useMenteeTasks';
+import { useUnreadFeedbackCount } from '../../hooks/useMenteeFeedbacks';
 import AddTaskModal from '../../components/feature/dashboard/AddTaskModal';
 import EditTaskModal from '../../components/feature/dashboard/EditTaskModal';
 import TaskDetailModal from '../../components/feature/dashboard/TaskDetailModal';
@@ -15,7 +17,42 @@ const MenteeDashboardPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [detailTask, setDetailTask] = useState<Task | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
+
+  // 선택된 날짜 문자열 생성
+  const selectedDateStr = useMemo(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    return `${year}-${String(month).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
+  }, [selectedDate]);
+
+  // 과제 목록 조회
+  const { tasks: tasksData, isLoading } = useMenteeTasks(selectedDateStr);
+  
+  // 안 읽은 피드백 개수
+  const { count: feedbackCount } = useUnreadFeedbackCount();
+
+  // Mutations
+  const createTaskMutation = useCreateMenteeTask();
+  const updateTaskMutation = useUpdateMenteeTask();
+  const deleteTaskMutation = useDeleteMenteeTask();
+  const updateCompletionMutation = useUpdateMenteeTaskCompletion();
+  const updateStudyTimeMutation = useUpdateMenteeStudyTime();
+  const updateCommentMutation = useUpdateMenteeTaskComment();
+
+  // API 데이터를 Task 타입으로 변환
+  const tasks: Task[] = useMemo(() => {
+    return tasksData.map((task) => ({
+      id: task.taskId,
+      title: task.title,
+      subject: task.subject,
+      status: task.isCompleted ? 'completed' : 'pending',
+      date: task.date,
+      dueTime: task.studyTime ? `${Math.floor(task.studyTime / 60)}시간 ${task.studyTime % 60}분` : '',
+      studyHours: task.studyTime ? Math.floor(task.studyTime / 60) : 0,
+      studyMinutes: task.studyTime ? task.studyTime % 60 : 0,
+    }));
+  }, [tasksData]);
 
   // 현재 주의 날짜 계산
   const weekDays = useMemo(() => {
@@ -76,9 +113,6 @@ const MenteeDashboardPage = () => {
     return score;
   }, [tasks, weekDays]);
 
-  // 피드백 개수 (임시로 0, 추후 API 연동)
-  const feedbackCount = 0;
-
   // 날짜별 과제 개수
   const taskCountByDate = useMemo(() => {
     return tasks.filter(task => {
@@ -90,28 +124,28 @@ const MenteeDashboardPage = () => {
   const filters = FILTERS;
 
   const handleAddTask = (task: TaskData) => {
-    const newTask: Task = {
-      ...task,
-      id: Date.now(), // 고유 ID 생성
-      status: 'pending',
-    };
-    setTasks([...tasks, newTask]);
+    createTaskMutation.mutate({
+      title: task.title,
+      subject: task.subject,
+      date: task.date,
+    });
   };
 
   const handleEditTask = (updatedTaskData: TaskData & { id: number }) => {
-    const newTasks = tasks.map(task => 
-      task.id === updatedTaskData.id 
-        ? { ...task, ...updatedTaskData }
-        : task
-    );
-    setTasks(newTasks);
-    
-    // 수정 후 상세 정보 모달 열기
-    const updatedFullTask = newTasks.find(t => t.id === updatedTaskData.id);
-    if (updatedFullTask) {
-      setDetailTask(updatedFullTask);
-      setIsDetailModalOpen(true);
-    }
+    updateTaskMutation.mutate({
+      taskId: updatedTaskData.id,
+      title: updatedTaskData.title,
+      subject: updatedTaskData.subject,
+      date: updatedTaskData.date,
+    }, {
+      onSuccess: () => {
+        const updatedTask = tasks.find(t => t.id === updatedTaskData.id);
+        if (updatedTask) {
+          setDetailTask(updatedTask);
+          setIsDetailModalOpen(true);
+        }
+      }
+    });
   };
 
   const handleOpenEditModal = (task: Task) => {
@@ -124,24 +158,34 @@ const MenteeDashboardPage = () => {
     setIsDetailModalOpen(true);
   };
 
-  const handleSubmitTaskDetail = (taskDetail: TaskDetail) => {
-    setTasks(tasks.map(task => 
-      task.id === taskDetail.id 
-        ? { 
-            ...task, 
-            studyHours: taskDetail.studyHours,
-            studyMinutes: taskDetail.studyMinutes,
-            description: taskDetail.description,
-            imageUrl: taskDetail.imageUrl,
-            status: 'completed',
-            dueTime: `${taskDetail.studyHours}시간 ${taskDetail.studyMinutes}분`
-          }
-        : task
-    ));
+  const handleSubmitTaskDetail = async (taskDetail: TaskDetail) => {
+    try {
+      // 공부 시간 업데이트
+      await updateStudyTimeMutation.mutateAsync({
+        taskId: taskDetail.id,
+        studyTime: (taskDetail.studyHours || 0) * 60 + (taskDetail.studyMinutes || 0)
+      });
+      
+      // 코멘트 업데이트
+      if (taskDetail.description) {
+        await updateCommentMutation.mutateAsync({
+          taskId: taskDetail.id,
+          comment: taskDetail.description
+        });
+      }
+      
+      // 완료 상태로 변경
+      await updateCompletionMutation.mutateAsync({
+        taskId: taskDetail.id,
+        isCompleted: true
+      });
+    } catch (error) {
+      console.error('Failed to submit task detail:', error);
+    }
   };
 
   const handleDeleteTask = (id: number) => {
-    setTasks(tasks.filter(task => task.id !== id));
+    deleteTaskMutation.mutate(id);
   };
 
   const filteredTasks = selectedFilter === '전체' 
@@ -245,7 +289,11 @@ const MenteeDashboardPage = () => {
 
       {/* 과제 리스트 */}
       <div className="assignment-list">
-        {filteredTasks.length === 0 ? (
+        {isLoading ? (
+          <div className="empty-state">
+            <p className="empty-title">로딩 중...</p>
+          </div>
+        ) : filteredTasks.length === 0 ? (
           <div className="empty-state">
             <svg className="empty-icon" width="80" height="80" viewBox="0 0 80 80" fill="none">
               <rect x="20" y="15" width="40" height="50" rx="2" stroke="#D1D5DB" strokeWidth="3"/>
