@@ -7,6 +7,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useMenteeReport } from '../../hooks/mentee/useMenteeReport';
 import { subjectTypes } from '../../types';
 import type { MenteeReportPeriod } from '../../api/mentee';
+import { useToastStore } from '../../stores/toastStore';
 
 export type SubjectWithAll = "ALL" | subjectTypes.Subject;
 export const REPORTDETAILS = ['keepContent', 'problemContent', 'tryContent'] as const;
@@ -16,11 +17,22 @@ const ReportPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const date = searchParams.get("date");
   const period = searchParams.get("period") as MenteeReportPeriod | null;
+  const { addToast } = useToastStore();
 
-  const { data: report, isLoading: isReportLoading } = useMenteeReport(
+  const { data: report, isLoading: isReportLoading, isError: isReportError } = useMenteeReport(
     period as MenteeReportPeriod, date as string,
-    { enabled: !!date && !!period }
+    { enabled: !!date && !!period },
   );
+
+  useEffect(() => {
+    if (isReportError) {
+      addToast({
+        title: "리포트 조회 실패",
+        message: "리포트를 불러오는 중 오류가 발생했습니다.",
+        type: "error",
+      });
+    }
+  }, [isReportError, addToast]);
 
   const pillsData = useMemo(() => {
     if (!report) return undefined;
