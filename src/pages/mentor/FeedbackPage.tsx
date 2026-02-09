@@ -1,5 +1,5 @@
 import SearchInput from "../../components/common/input/SearchInput";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { cn } from "../../libs/utils";
 import { Play, PlayReverse } from "../../icons";
 import IconButton from "../../components/common/button/IconButton";
@@ -8,161 +8,99 @@ import Button from "../../components/common/button/Button";
 import TextArea from "../../components/common/input/TextArea";
 import AssignmentCard from "../../components/feature/assignment/AssignmentCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface Mentee {
-  id: number;
-  name: string;
-  school: string;
-  grade: string;
-  status: "WAITING_FEEDBACK" | "COMPLETED";
-}
-
-interface TodayAssignment {
-  id: number;
-  title: string;
-  subject: "KOREAN" | "ENGLISH" | "MATH";
-  date: string;
-  status: "PENDING" | "COMPLETED";
-  time: string;
-  menteeComment?: string;
-  assignmentImages?: {
-    url: string;
-    name: string;
-    sequence: number;
-  }[];
-}
-
-// 데이터 예시 추후 삭제
-const menteesExample: Mentee[] = [
-  {
-    id: 1,
-    name: "John Doe",
-    school: "가나고등학교",
-    grade: "1",
-    status: "WAITING_FEEDBACK",
-  },
-  {
-    id: 2,
-    name: "Jane Doe",
-    school: "가나다고등학교",
-    grade: "2",
-    status: "COMPLETED",
-  },
-  {
-    id: 3,
-    name: "Jim Beam",
-    school: "가나다라고등학교",
-    grade: "3",
-    status: "WAITING_FEEDBACK",
-  },
-  {
-    id: 4,
-    name: "John Doe",
-    school: "John Doe",
-    grade: "4",
-    status: "COMPLETED",
-  },
-  {
-    id: 5,
-    name: "John Doe",
-    school: "John Doe",
-    grade: "5",
-    status: "WAITING_FEEDBACK",
-  },
-  {
-    id: 6,
-    name: "John Doe",
-    school: "John Doe",
-    grade: "6",
-    status: "COMPLETED",
-  },
-  {
-    id: 7,
-    name: "John Doe",
-    school: "John Doe",
-    grade: "7",
-    status: "WAITING_FEEDBACK",
-  },
-];
-
-const TodayAssignmentsExample: TodayAssignment[] = [
-  {
-    id: 1,
-    title: "오늘의 과제",
-    subject: "KOREAN",
-    date: "2026-02-07",
-    status: "PENDING",
-    time: "00:10:00",
-    menteeComment: "오늘의 과제 내용입니다.",
-    assignmentImages: [
-      {
-        url: "https://images.unsplash.com/photo-1761839258075-585182da7521?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8",
-        name: "과제 이미지 1",
-        sequence: 1,
-      },
-      {
-        url: "https://images.unsplash.com/photo-1761839258075-585182da7521?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8",
-        name: "과제 이미지 2",
-        sequence: 2,
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "오늘의 과제",
-    subject: "ENGLISH",
-    date: "2026-02-07",
-    status: "PENDING",
-    time: "00:10:00",
-  },
-  {
-    id: 3,
-    title: "오늘의 과제",
-    subject: "MATH",
-    date: "2026-02-07",
-    status: "PENDING",
-    time: "00:10:00",
-  },
-  {
-    id: 4,
-    title: "오늘의 과제",
-    subject: "KOREAN",
-    date: "2026-02-07",
-    status: "PENDING",
-    time: "00:10:00",
-  },
-  {
-    id: 5,
-    title: "오늘의 과제",
-    subject: "KOREAN",
-    date: "2026-02-07",
-    status: "PENDING",
-    time: "00:10:00",
-  },
-  {
-    id: 6,
-    title: "오늘의 과제",
-    subject: "KOREAN",
-    date: "2026-02-07",
-    status: "PENDING",
-    time: "00:10:00",
-  },
-]
+import { useMentorMentees, useMentorMenteeDetail, useWriteTaskFeedback, useWriteTotalFeedback } from "../../hooks/mentor/useMentorFeedback";
+import type { MentorFeedbackMenteeStatus } from "../../api/mentor";
 
 const MentorFeedbackPage = () => {
   const [feedback, setFeedback] = useState("");
   const [search, setSearch] = useState("");
-  const [mentees] = useState<Mentee[]>(menteesExample);
   const [selectedMentee, setSelectedMentee] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(3);
-  const [feedbackSaved, setFeedbackSaved] = useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState<TodayAssignment | null>(null);
+  const [mode, setMode] = useState<"edit" | "view">("edit"); // 작성 모드(edit) / 조회 모드(view)
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [showTopShadow, setShowTopShadow] = useState(false);
   const [showBottomShadow, setShowBottomShadow] = useState(false);
   const assignmentListRef = useRef<HTMLDivElement>(null);
 
   const SCROLL_SHADOW_THRESHOLD = 10;
+
+  const { data: mentees } = useMentorMentees();
+  const { data: menteeDetail } = useMentorMenteeDetail(
+    selectedMentee ?? 0,
+    {
+      enabled: selectedMentee !== null,
+    }
+  );
+
+  const selectedTask = useMemo(() => {
+    return menteeDetail?.tasks.find((task) => task.taskId === selectedTaskId);
+  }, [menteeDetail, selectedTaskId]);
+
+  const editorMode = selectedTaskId !== null ? "task" : "total";
+  const isEditing = editorMode === "task" ? selectedTask?.feedback !== null : menteeDetail?.totalFeedback !== null;
+  const isTotalFeedbackCompleted = menteeDetail?.totalFeedback !== null;
+  
+
+  const { mutate: writeTaskFeedback } = useWriteTaskFeedback(selectedMentee ?? 0, selectedTaskId ?? 0);
+  const { mutate: writeTotalFeedback } = useWriteTotalFeedback(selectedMentee ?? 0);
+
+  const handleEnrollTaskFeedback = () => {
+    if (selectedTaskId === null) return;
+    writeTaskFeedback({
+      content: feedback,
+    });
+  }
+
+  const handleEnrollTotalFeedback = () => {
+    if (selectedMentee === null) return;
+    writeTotalFeedback({
+      content: feedback,
+      menteeId: selectedMentee,
+    });
+  }
+
+  const handleEnrollFeedback = () => {
+    if (mode === "edit") {
+      if (editorMode === "total") {
+        handleEnrollTotalFeedback();
+      } else {
+        handleEnrollTaskFeedback();
+      }
+    } else if (mode === "view") {
+      setMode("edit");
+    } 
+  }
+
+  const handleMovePrevious = () => {
+    if (selectedMentee === null) return;
+    if (selectedTaskId === null) {
+      const currentIndex = mentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
+      if (currentIndex > 0 && mentees) {
+        setSelectedMentee(mentees[currentIndex - 1].id);
+      }
+    } else {
+      const currentTaskIndex = menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? -1;
+      if (currentTaskIndex > 0 && menteeDetail) {
+        setSelectedTaskId(menteeDetail.tasks[currentTaskIndex - 1].taskId);
+      }
+    }
+  }
+
+  const handleMoveNext = () => {
+    if (selectedMentee === null) return;
+    if (selectedTaskId === null) {
+      const currentIndex = mentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
+      if (mentees && currentIndex >= 0 && currentIndex < mentees.length - 1) {
+        setSelectedMentee(mentees[currentIndex + 1].id);
+      }
+    } else {
+      const currentTaskIndex = menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? -1;
+      if (menteeDetail && currentTaskIndex >= 0 && currentTaskIndex < menteeDetail.tasks.length - 1) {
+        setSelectedTaskId(menteeDetail.tasks[currentTaskIndex + 1].taskId);
+      }
+    }
+  }
 
   useEffect(() => {
     const mqXl = window.matchMedia("(min-width: 1640px)");
@@ -214,9 +152,9 @@ const MentorFeedbackPage = () => {
       window.removeEventListener("resize", updateShadows);
       resizeObserver.disconnect();
     };
-  }, [selectedMentee, selectedAssignment]);
+  }, [selectedMentee, selectedTaskId]);
 
-  const lastPage = Math.ceil(mentees.length / pageSize);
+  const lastPage = Math.ceil((mentees ? mentees.length : 0) / pageSize);
   const effectivePage = Math.min(page, Math.max(0, lastPage - 1));
  
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,13 +169,19 @@ const MentorFeedbackPage = () => {
         <div className="flex justify-between items-center">
           <IconButton variant="primary-line" Icon={<PlayReverse />} onClick={() => setPage(effectivePage - 1)} ariaLabel="previous page" disabled={effectivePage === 0}/>
           <div className="flex flex-1 flex-col sm:flex-row gap-100 lg:gap-500 justify-center">
-            {mentees.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
-              <
-                MenteeListCard key={mentee.id} {...mentee}
+            {mentees?.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
+              <MenteeListCard
+                id={mentee.id}
+                key={mentee.id}
+                name={mentee.name}
+                profileImage={mentee.profileUrl}
+                school={mentee.schoolName}
+                grade={mentee.grade}
+                status={mentee.status}
                 selected={selectedMentee === mentee.id}
                 onClick={() => {
-                setSelectedMentee(mentee.id);
-                setSelectedAssignment(null);
+                  setSelectedMentee(mentee.id);
+                  setSelectedTaskId(null);
               }}
               />
             ))}
@@ -262,21 +206,20 @@ const MentorFeedbackPage = () => {
             ref={assignmentListRef}
             className="flex flex-col md:gap-300 gap-100 overflow-y-auto min-h-0 max-h-[min(400px,50vh)] lg:max-h-full"
           >
-            {selectedAssignment ? (
+            {selectedTask ? (
               <AssignmentCard
-                {...selectedAssignment}
-                time={selectedAssignment.time || "00:00:00"}
-                menteeComment="수학 오답노트 토요일로 바꿔도 될까요? 내일 수학 클리닉이 있어서 그 때 문제를 고치거든요...."
-                onBack={() => setSelectedAssignment(null)}
+                {...selectedTask}
+                time={selectedTask.time}
+                onBack={() => setSelectedTaskId(null)}
                 folded={false}
               />
             ) : (
-              TodayAssignmentsExample.map((assignment) => (
+              menteeDetail?.tasks.map((task) => (
                 <AssignmentCard
-                  key={assignment.id}
-                  {...assignment}
-                  onClick={() => setSelectedAssignment(assignment)}
-                  onBack={() => setSelectedAssignment(null)}
+                  key={task.taskId}
+                  {...task}
+                  onClick={() => setSelectedTaskId(task.taskId)}
+                  onBack={() => setSelectedTaskId(null)}
                   folded={true}
                 />
               ))
@@ -295,19 +238,31 @@ const MentorFeedbackPage = () => {
         <div className="max-h-[466px] flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-100 shrink-0">
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-2">
-              {selectedAssignment && <SubjectBadge subject={selectedAssignment.subject} />}
-              <p className="heading-6 font-weight-700 text-gray-800">{selectedAssignment ? selectedAssignment.title : "종합 피드백"}</p>
+              {selectedTaskId && selectedTask && <SubjectBadge subject={selectedTask.subject} />}
+              <p className="heading-6 font-weight-700 text-gray-800">
+                {selectedTaskId && selectedTask ? selectedTask.title : "종합 피드백"}
+              </p>
             </div>
             <div className="flex gap-100">
               <button
-                className="text-xs font-weight-500 text-gray-700 flex items-center hover:bg-gray-50 rounded-full py-50 pl-75 pr-100 cursor-pointer"
-                onClick={() => {}}
+                className="text-xs font-weight-500 text-gray-700 flex items-center hover:bg-gray-50 rounded-full py-50 pl-75 pr-100 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={handleMovePrevious}
+                disabled={
+                  selectedTaskId === null
+                    ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) <= 0
+                    : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) <= 0
+                }
               >
                 <ChevronLeft width={16} height={16} />이전
               </button>
               <button
-                className="text-xs font-weight-500 text-gray-700 flex items-center hover:bg-gray-50 rounded-full py-50 pl-100 pr-75 cursor-pointer"
-                onClick={() => {}}
+                className="text-xs font-weight-500 text-gray-700 flex items-center hover:bg-gray-50 rounded-full py-50 pl-100 pr-75 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={handleMoveNext}
+                disabled={
+                  selectedTaskId === null
+                    ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) >= (mentees?.length ?? 1) - 1
+                    : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) >= (menteeDetail?.tasks.length ?? 1) - 1
+                }
               >
                 다음 <ChevronRight width={16} height={16} />
               </button>
@@ -316,30 +271,31 @@ const MentorFeedbackPage = () => {
           <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             {/* 에디터: 부모 높이에 맞추고, 내용은 내부 스크롤 */}
             {
-              feedbackSaved ?
+              mode === "view" ?
               <p className="body-3 text-gray-700 whitespace-pre-wrap overflow-y-auto">{feedback}</p> :
               <TextArea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder={
-                  selectedAssignment ?
+                  selectedTaskId !== null ?
                   "학생의 질문, 코멘트에 대한 답변이나 피드백을 남겨주세요." :
                   "오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요."
                   }
                 ariaLabel="피드백 입력"
                 className="h-full"
+                readOnly={editorMode === "task" && !isTotalFeedbackCompleted}
               />
             }
           </div>
           <div className="w-full flex justify-end gap-100 shrink-0">
-            {!feedbackSaved && <Button variant="gray" onClick={() => {}} ariaLabel="임시 저장">임시 저장</Button>}
+            {/* {mode === "edit" && <Button variant="gray" onClick={() => {}} ariaLabel="임시 저장">임시 저장</Button>} */}
             <Button
-              onClick={() => {setFeedbackSaved(prev => !prev)}}
+              onClick={handleEnrollFeedback}
               ariaLabel="피드백 등록"
               className="font-weight-700"
               disabled={!feedback}
             >
-              {feedbackSaved ? "피드백 수정" : "피드백 등록"}
+              {isEditing ? "피드백 수정" : "피드백 등록"}
             </Button>
           </div>
         </div>
@@ -354,7 +310,7 @@ interface MenteeListCardProps {
   profileImage?: string;
   school: string;
   grade: string;
-  status: "WAITING_FEEDBACK" | "COMPLETED";
+  status: MentorFeedbackMenteeStatus;
   selected: boolean;
   onClick: () => void;
 }
@@ -399,7 +355,11 @@ const MenteeListCard = ({
             </div>
           </div>
         </div>
-        <p className={cn("subtitle-2 font-weight-500 text-right md:text-left", selected ? "text-white" : "text-gray-300", "transition-all duration-300")}>피드백 {status === "WAITING_FEEDBACK" ? "대기" : "완료"}</p>
+        <p className={cn(
+          "subtitle-2 font-weight-500 text-right md:text-left",
+          selected ? "text-white" : "text-gray-300", "transition-all duration-300")}
+        >피드백 {status === "PENDING" ? "대기" : "완료"}
+        </p>
       </div>
     </div>
   );

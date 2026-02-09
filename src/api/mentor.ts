@@ -206,7 +206,7 @@ export interface WriteMentorTaskFeedbackPayload {
 
 export interface WriteMentorTotalFeedbackPayload {
   menteeId: number;
-  totalFeedback: string;
+  content: string;
 }
 
 // 피드백 작성

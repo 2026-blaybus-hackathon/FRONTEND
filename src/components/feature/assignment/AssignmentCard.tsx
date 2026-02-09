@@ -1,21 +1,18 @@
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { ChevronLeft, Clock } from "lucide-react";
 import SubjectBadge from "../subject/SubjectBadge";
 import { cn } from "../../../libs/utils";
 import ImageModal from "../../common/modal/ImageModal";
+import type { imageTypes, subjectTypes } from "../../../types";
 
 export interface AssignmentCardProps {
   title: string;
-  subject: "KOREAN" | "ENGLISH" | "MATH";
+  subject: subjectTypes.Subject;
   date: string;
-  status: "PENDING" | "COMPLETED";
-  time: string;
+  status: boolean;
+  time: number;
   menteeComment?: string;
-  assignmentImages?: {
-    url: string;
-    name: string;
-    sequence: number;
-  }[];
+  images?: imageTypes.Image[];
   folded?: boolean;
   onClick?: () => void;
   onBack?: () => void;
@@ -29,7 +26,7 @@ const AssignmentCard = memo(({
   status,
   time,
   menteeComment = "",
-  assignmentImages = [],
+  images = [],
   folded = true,
   onClick,
   onBack,
@@ -37,14 +34,19 @@ const AssignmentCard = memo(({
 }: AssignmentCardProps) => {
 
   const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<imageTypes.Image | null>(null);
+  const imagesList = useMemo(() => {
+    return images.sort((a, b) => a.sequence - b.sequence);
+  }, [images]);
 
   const handleCloseImageModal = () => {
     setShowImageModal(false);
   };
 
-  const convertTimeToLabel = (time: string) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    return `${hours > 0 ? `${hours}시간` : ""} ${minutes > 0 ? `${minutes}분` : ""}`;
+  const convertTimeToLabel = (time: number) => {
+    const hour= Math.floor(time / 60);
+    const minute= time % 60;
+    return `${hour > 0 ? `${hour}시간` : ""} ${minute > 0 ? `${minute}분` : ""}`;
   }
 
   return (
@@ -74,8 +76,8 @@ const AssignmentCard = memo(({
         </div>
         <div className="flex flex-col md:gap-50 justify-end align-center">
           <div className="w-full flex gap-200 text-50 font-bold text-gray-500 justify-end md:justify-start">
-            <p>{status === "PENDING" ? "-.-.-" : date}</p>
-            <p>{status === "PENDING" ? "미" : ""}완료</p>
+            <p>{status ? "-.-.-" : date}</p>
+            <p>{status ? "미" : ""}완료</p>
           </div>
           <div className="w-fit h-6 px-100 flex gap-50 rounded-300 text-50 font-weight-500 bg-primary-100 text-primary-500 justify-center items-center">
             <Clock className="w-3.5 h-3.5 shrink-0" aria-hidden />
@@ -98,13 +100,16 @@ const AssignmentCard = memo(({
       {!folded && <div className="flex flex-col gap-100">
         <p className="text-50 font-bold text-gray-800">과제 이미지</p>
         
-        {assignmentImages.length > 0 ? (
-          assignmentImages.map((image) => (
+        {images.length > 0 ? (
+          imagesList.map((image) => (
             <img
               src={image.url}
               alt="과제 이미지"
               className="w-full h-auto object-contain rounded-400 max-h-[480px]"
-              onClick={() => setShowImageModal(true)}
+              onClick={() => {
+                setSelectedImage(image);
+                setShowImageModal(true);
+              }}
             />
           ))
         ) : (
@@ -112,13 +117,13 @@ const AssignmentCard = memo(({
             <p className="body-3 text-gray-400 py-800">과제 이미지가 없습니다.</p>
           </div>
         )}
-      </div>}
 
-      {showImageModal && <ImageModal
-        imageUrl={assignmentImages[0].url}
-        imageName={assignmentImages[0].name}
-        onClose={handleCloseImageModal}
-      />}
+        {showImageModal && selectedImage && <ImageModal
+          imageUrl={selectedImage?.url ?? ""}
+          imageName={selectedImage?.name ?? ""}
+          onClose={handleCloseImageModal}
+        />}
+      </div>}
     </div>
   );
 });
