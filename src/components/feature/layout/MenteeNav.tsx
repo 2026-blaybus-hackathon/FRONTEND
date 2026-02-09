@@ -7,9 +7,10 @@ import {
   // StarShield,
   User,
 } from "../../../icons";
-import { cn } from "../../../libs/utils";
+import { cn, getProfileImageUrl } from "../../../libs/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../../stores/authStore";
+import { useMenteeProfile } from "../../../hooks/useMenteeProfile";
 
 // path 수정 필요
 const manageSchedule = [
@@ -53,26 +54,37 @@ const MenteeNav = ({ isOpen }: { isOpen?: boolean }) => {
     const { pathname } = useLocation();
     const user = useAuthStore((state) => state.user);
     const nickname = useAuthStore((state) => state.nickname);
+    const { data: profile } = useMenteeProfile();
     const displayName = user?.name || nickname || '-';
+    const profileImageUrl = getProfileImageUrl(profile?.profileUrl);
     const isActive = (path: string) => {
         return path === pathname;
     }
   return (
     <Nav isOpen={isOpen}>
-      <div className="flex flex-col w-60 bg-gray-800 rounded-400 py-300 px-250 border border-gray-600 gap-100">
+      <button
+        type="button"
+        onClick={() => navigate('/mentee/profile')}
+        className="flex flex-col w-60 bg-gray-800 rounded-400 py-300 px-250 border border-gray-600 gap-100 text-left cursor-pointer hover:bg-gray-700/80 transition-colors"
+        aria-label="프로필 작성 페이지로 이동"
+      >
         <div className="flex gap-150 items-center">
-          <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center">
-            <p className="heading-4 font-weight-bold text-white">{displayName[0] || '-'}</p>
+          <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center overflow-hidden shrink-0">
+            {profileImageUrl ? (
+              <img src={profileImageUrl} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            ) : (
+              <p className="heading-4 font-weight-bold text-white">{displayName[0] || '-'}</p>
+            )}
           </div>
-          <div className="flex flex-col">
-            <p className="heading-4 font-weight-bold text-white">{displayName}</p>
-            <p className="heading-6 text-gray-300">{user?.school || '학교를 설정해주세요'}</p>
+          <div className="flex flex-col min-w-0">
+            <p className="heading-4 font-weight-bold text-white truncate">{displayName}</p>
+            <p className="heading-6 text-gray-300 truncate">{user?.school || '학교를 설정해주세요'}</p>
           </div>
         </div>
         <p className="subtitle-2 text-gray-500 h-[19px]">
           {[user?.dDay, user?.targetSchool].filter(Boolean).join(' | ') || '-'}
         </p>
-      </div>
+      </button>
 
       {/* manage schedule */}
       <div className="flex flex-col gap-100 w-full">

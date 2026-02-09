@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMenteeList } from '../../hooks/useMenteeList';
 import SearchInput from '../../components/common/input/SearchInput';
+import { getProfileImageUrl } from '../../libs/utils';
 import '../../styles/pages/mentee-list.css';
 
 const MenteeListPage = () => {
@@ -164,7 +165,11 @@ const MenteeListPage = () => {
                     className="mentee-avatar-large"
                     style={{ backgroundColor: '#7C3AED' }}
                   >
-                    {mentee.avatar}
+                    {getProfileImageUrl(mentee.profileUrl) ? (
+                      <img src={getProfileImageUrl(mentee.profileUrl)} alt="" className="w-full h-full object-cover rounded-inherit" referrerPolicy="no-referrer" />
+                    ) : (
+                      mentee.avatar
+                    )}
                   </div>
                   <div className="mentee-status online" title="온라인" />
                 </div>

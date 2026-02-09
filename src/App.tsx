@@ -10,6 +10,7 @@ import ReviewPage from './pages/review/ReviewPage';
 import ArchivePage from './pages/mentee/ArchivePage';
 // import PlaceholderPage from './static/PlaceholderPage';
 import MyPage from './pages/MyPage';
+import ProfilePage from './pages/ProfilePage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
 import MentorArchivePage from './pages/mentor/ArchivePage';
@@ -57,6 +58,7 @@ function App() {
             <Route path="archive" element={<ArchivePage />} />
             <Route path="review" element={<ReviewPage />} />
             <Route path="notification" element={<NotificationCenterPage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="my-page" element={<MyPage />} />
           </Route>
 
@@ -75,6 +77,7 @@ function App() {
             </Route>
             <Route path="report" element={<MentorReportPage />} />
             <Route path="archive" element={<MentorArchivePage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="my-page" element={<MyPage />} />
           </Route>
         </Routes>
