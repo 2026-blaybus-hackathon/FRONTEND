@@ -18,8 +18,8 @@ const MenteeListPage = () => {
     sortBy,
   });
 
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   };
 
   const handleMenteeClick = (menteeId: number) => {

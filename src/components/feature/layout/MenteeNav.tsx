@@ -4,7 +4,7 @@ import {
   FoldedDocument,
   Megaphone,
   OpenedBookBookmark,
-  StarShield,
+  // StarShield,
   User,
 } from "../../../icons";
 import { cn } from "../../../libs/utils";
@@ -18,11 +18,11 @@ const manageSchedule = [
     Icon: Calendar,
     path: "/mentee/dashboard",
   },
-  {
-    name: "약점 솔루션",
-    Icon: StarShield,
-    path: "/mentee/solution",
-  },
+  // {
+  //   name: "약점 솔루션",
+  //   Icon: StarShield,
+  //   path: "/mentee/solution",
+  // },
   {
     name: "주간 리포트",
     Icon: FoldedDocument,

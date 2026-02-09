@@ -23,7 +23,7 @@ export function useMenteeFeedbacksFromTasks(
   error: Error | null;
   refetch: () => void;
 } {
-  const { data, tasks, isLoading, isError, error, refetch } = useMentorMenteeTasks(
+  const { tasks, isLoading, isError, error, refetch } = useMentorMenteeTasks(
     menteeId,
     options
   );

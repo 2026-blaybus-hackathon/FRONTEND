@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import Button from '../../common/button/Button';
-import type { Task } from '../../../types';
+import type { taskTypes } from '../../../types';
 import { SUBJECTS } from '../../../static/subjects';
 import '../../../styles/components/modal.css';
+
+type Task = taskTypes.Task;
 
 interface EditTaskModalProps {
   isOpen: boolean;

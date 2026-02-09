@@ -12,12 +12,12 @@ export type ReportMode = "weekly" | "monthly";
 
 const ReportPage = () => {
   const [reportMode, setReportMode] = useState<ReportMode>("weekly");
-  const [year, setYear] = useState<number | null>(null);
-  const [week, setWeek] = useState<number | null>(null);
-  const [month, setMonth] = useState<number | null>(null);
-  const [day, setDay] = useState<number | null>(null);
+  const [year] = useState<number | null>(null);
+  const [week] = useState<number | null>(null);
+  const [month] = useState<number | null>(null);
+  const [day] = useState<number | null>(null);
 
-  const [subjectFeedback, setSubjectFeedback] = useState({
+  const [subjectFeedback] = useState({
     all: {
       hours: 60,
       rate: 85,
@@ -36,7 +36,7 @@ const ReportPage = () => {
     },
   });
 
-  const [mentorReview, setMentorReview] = useState({
+  const [mentorReview] = useState({
     total: "설스터디 멘토링이 시작된 첫 주입니다. 학생의 현재 학습 상태를 진단하고, 약점인 국어 비문학 독해와 수학 풀이 습관을 교정하기 위한 기초 틀을 마련했습니다. 멘토와의 라포 형성 및 데일리 인증 루틴 적응에 초점을 맞췄습니다.",
     keep: "매일 플래너를 업로드하며 학습 시간을 확보하려는 노력이 돋보입니다. 영어 단어 테스트 통과율이 90% 이상으로 유지되고 있습니다.",
     problem: "수학 오답노트 작성 시, 단순히 풀이 과정을 베껴 적는 경향이 있어 '내가 왜 틀렸는지'에 대한 사고 과정 기록이 부족합니다.",

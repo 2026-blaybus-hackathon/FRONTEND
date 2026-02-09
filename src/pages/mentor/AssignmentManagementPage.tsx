@@ -110,7 +110,6 @@ const AssignmentManagementPage = () => {
       setAttachedFiles([]);
       setSelectedMaterialId(null);
     } catch (err: unknown) {
-      const res = err && typeof err === 'object' && 'response' in err ? (err as { response: { status: number; data: unknown } }).response : null;
       const message =
         err &&
         typeof err === 'object' &&

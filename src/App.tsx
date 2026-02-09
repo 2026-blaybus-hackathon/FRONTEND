@@ -8,7 +8,7 @@ import MenteeDashboardPage from './pages/dashboard/MenteeDashboardPage';
 import MentorDashboardPage from './pages/dashboard/MentorDashboardPage';
 import ReviewPage from './pages/review/ReviewPage';
 import ArchivePage from './pages/mentee/ArchivePage';
-import PlaceholderPage from './static/PlaceholderPage';
+// import PlaceholderPage from './static/PlaceholderPage';
 import MyPage from './pages/MyPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
@@ -52,7 +52,7 @@ function App() {
           <Route path="/mentee" element={<Layout />} >
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<MenteeDashboardPage />} />
-            <Route path="solution" element={<PlaceholderPage name="약점 솔루션" />} />
+            {/* <Route path="solution" element={<PlaceholderPage name="약점 솔루션" />} /> */}
             <Route path="report" element={<ReportPage />} />
             <Route path="archive" element={<ArchivePage />} />
             <Route path="review" element={<ReviewPage />} />

@@ -1,5 +1,5 @@
 import axios from '../libs/axios';
-import type { MentorMenteeTasksResponse } from '../libs/types/mentorTask';
+import type { MentorMenteeTasksResponse } from '../libs/types/mentor';
 
 export interface GetMentorMenteeTasksParams {
   page?: number;
