@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Megaphone } from '../../icons';
 import { cn } from '../../libs/utils';
-import { useMenteeNotifications, useReadMenteeNotification } from '../../hooks/mentee/useMenteeNotification';
+import { useMenteeNotifications, useReadMenteeNotification, useReadAllMenteeNotifications } from '../../hooks/mentee/useMenteeNotification';
 import type { MenteeNotification } from '../../api/mentee';
 
 type NotificationFilterType = "all" | "feedback" | "report";
@@ -19,6 +19,7 @@ const NotificationCenterPage = () => {
 
   const { data: notifications, isLoading } = useMenteeNotifications();
   const { mutate: readNotificationMutation } = useReadMenteeNotification();
+  const { mutate: readAllNotificationsMutation, isPending: isReadingAll } = useReadAllMenteeNotifications();
 
   const filtered = filter === 'all'
     ? notifications
@@ -50,6 +51,13 @@ const NotificationCenterPage = () => {
     });
   };
 
+  const handleReadAll = () => {
+    const unreadIds = notifications?.filter((n) => !n.read).map((n) => n.notificationId) ?? [];
+    if (unreadIds.length > 0) {
+      readAllNotificationsMutation(unreadIds);
+    }
+  };
+
   const getTypeLabel = (type: NotificationFilterType) => {
     switch (type) {
       case 'all':
@@ -74,9 +82,14 @@ const NotificationCenterPage = () => {
         </div>
       </header>
       
-      <div className="w-fit h-fit flex h-10.5 justify-end px-200 py-100 cursor-pointer rounded-300 hover:bg-primary-100" onClick={() => {}}>
+      <button
+        type="button"
+        className="w-fit h-fit flex h-10.5 justify-end px-200 py-100 cursor-pointer rounded-300 hover:bg-primary-100 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={isReadingAll || !notifications?.some((n) => !n.read)}
+        onClick={handleReadAll}
+      >
         <p className="subtitle-1 font-weight-500 text-primary-500">모두 읽음 처리</p>
-      </div>
+      </button>
 
       <section className="w-full gap-250 flex flex-col" aria-label="알림 목록">
         <div className="w-full flex flex-wrap lg:gap-x-250 gap-x-100 gap-y-100" aria-label="알림 필터">

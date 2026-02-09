@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { readMenteeNotification } from "../../api/mentee";
+import { readMenteeNotification, readAllMenteeNotifications } from "../../api/mentee";
 import { getMenteeNotifications } from "../../api/mentee";
 
 // ── Query Keys ──────────────────────────────────────────────
@@ -24,6 +24,16 @@ export function useReadMenteeNotification() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (notificationId: number) => readMenteeNotification(notificationId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: menteeNotificationKeys.all });
+        },
+    });
+}
+
+export function useReadAllMenteeNotifications() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (notificationIds: number[]) => readAllMenteeNotifications(notificationIds),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: menteeNotificationKeys.all });
         },

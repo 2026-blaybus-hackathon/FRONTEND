@@ -98,4 +98,8 @@ export async function readMenteeNotification(notificationId: number): Promise<vo
     await axios.post(`/notifications/mentee/${notificationId}/read`);
 }
 
+export async function readAllMenteeNotifications(notificationIds: number[]): Promise<void> {
+    await Promise.all(notificationIds.map((id) => axios.post(`/notifications/mentee/${id}/read`)));
+}
+
 
