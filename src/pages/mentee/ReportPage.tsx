@@ -17,7 +17,7 @@ const ReportPage = () => {
   const date = searchParams.get("date");
   const period = searchParams.get("period") as MenteeReportPeriod | null;
 
-  const { data: report } = useMenteeReport(
+  const { data: report, isLoading: isReportLoading } = useMenteeReport(
     period as MenteeReportPeriod, date as string,
     { enabled: !!date && !!period }
   );
@@ -75,72 +75,118 @@ const ReportPage = () => {
         <ReportModeButton currentPeriod={period ?? "WEEKLY"} period="MONTHLY" onClick={() => handlePeriodButtonClick("MONTHLY")} />
       </section>
 
-      {/* 메인 섹션(아티클): 내용 높이에 맞춤. 총평이 길면 총평 내부 스크롤 */}
-      <article className="w-full flex flex-col rounded-2xl bg-white gap-200 py-400 px-500 border border-gray-100">
-        {/* 제목 */}
-        <div className="h-fit flex items-center gap-2">
-          <div className={cn(
-            "p-2 shrink-0 rounded-300 transition-colors duration-300",
-            period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
-          )}>
-            <Calendar className="h-4 w-4" aria-hidden />
+      {isReportLoading ? (
+        /* 스켈레톤 UI */
+        <article className="w-full flex flex-col rounded-2xl bg-white gap-200 py-400 px-500 border border-gray-100 animate-pulse">
+          {/* 제목 스켈레톤 */}
+          <div className="h-fit flex items-center gap-2">
+            <div className="h-8 w-8 shrink-0 rounded-300 bg-gray-200" />
+            <div className="h-5 w-40 rounded bg-gray-200" />
           </div>
-          <h2 className="text-200 font-semibold text-gray-900">
-            <span>{period === "WEEKLY" ? "주간" : "월간"} 리포트</span>
-            {period === "WEEKLY" && <span>({report?.startDate} ~ {report?.endDate})</span>}
-          </h2>
-        </div>
 
-        {/* 과목별 피드백 */}
-        <div className="flex flex-wrap gap-x-400 gap-y-200">
-          {pillsData?.map((pill: { subject: SubjectWithAll; feedback: { hours: number, rate: number } }) => (
-            <SubjectFeedbackPill
-              key={pill.subject}
-              subject={pill.subject}
-              feedback={pill.feedback}
-            />
-          ))}
-        </div>
+          {/* 과목별 피드백 pill 스켈레톤 */}
+          <div className="flex flex-wrap gap-x-400 gap-y-200">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-8 w-28 rounded-full bg-gray-200" />
+            ))}
+          </div>
 
-        {/* 멘토 총평: 짧으면 본문 높이만, 길면 max-h 내부 스크롤 */}
-        <section className="flex flex-col" aria-label="멘토 총평">
-          <h3 className="text-100 font-semibold text-gray-900 mb-2">멘토 총평</h3>
-          <p className="max-h-[50vh] text-sm text-gray-700 leading-relaxed text-justify overflow-y-auto">
-            &ldquo;{report?.overallReview}
-          </p>
-        </section>
+          {/* 멘토 총평 스켈레톤 */}
+          <div className="flex flex-col gap-2">
+            <div className="h-4 w-20 rounded bg-gray-200" />
+            <div className="space-y-2">
+              <div className="h-3 w-full rounded bg-gray-200" />
+              <div className="h-3 w-full rounded bg-gray-200" />
+              <div className="h-3 w-5/6 rounded bg-gray-200" />
+              <div className="h-3 w-4/6 rounded bg-gray-200" />
+            </div>
+          </div>
 
-        {/* KPT 3열 */}
-        <section className="h-fit grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" aria-label="KPT">
-          {REPORTDETAILS.map((detail) =>
-            report?.[detail] ? (
-              <ReportDetailCard key={detail} detail={detail} content={report[detail]!} />
-            ) : null
-          )}
-        </section>
-      </article>
+          {/* KPT 3열 스켈레톤 */}
+          <div className="h-fit grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl border border-gray-100 py-300 px-200 flex flex-col gap-250">
+                <div className="h-5 w-32 rounded bg-gray-200" />
+                <div className="space-y-2">
+                  <div className="h-3 w-full rounded bg-gray-200" />
+                  <div className="h-3 w-full rounded bg-gray-200" />
+                  <div className="h-3 w-3/4 rounded bg-gray-200" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+      ) : (
+        /* 실제 콘텐츠 */
+        <>
+          {/* 메인 섹션(아티클): 내용 높이에 맞춤. 총평이 길면 총평 내부 스크롤 */}
+          <article className="w-full flex flex-col rounded-2xl bg-white gap-200 py-400 px-500 border border-gray-100">
+            {/* 제목 */}
+            <div className="h-fit flex items-center gap-2">
+              <div className={cn(
+                "p-2 shrink-0 rounded-300 transition-colors duration-300",
+                period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
+              )}>
+                <Calendar className="h-4 w-4" aria-hidden />
+              </div>
+              <h2 className="text-200 font-semibold text-gray-900">
+                <span>{period === "WEEKLY" ? "주간" : "월간"} 리포트</span>
+                {period === "WEEKLY" && <span>({report?.startDate} ~ {report?.endDate})</span>}
+              </h2>
+            </div>
 
-      {/* 주/월 이동 버튼 */}
-      <div className="h-fit flex justify-center gap-3">
-        <button
-          type="button"
-          className={cn(
-            "flex gap-100 items-center rounded-300 bg-primary-100 px-300 py-150 text-primary-500 transition-colors duration-300",
-            period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
-        )}
-        >
-          <span aria-hidden><ChevronLeftIcon /></span> 이전 {period === "WEEKLY" ? "주" : "달"}
-        </button>
-        <button
-          type="button"
-          className={cn(
-            "flex gap-100 items-center rounded-300 bg-primary-500 px-300 py-150 text-white transition-colors duration-300",
-            period === "WEEKLY" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
-          )}
-        >
-          다음 {period === "WEEKLY" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
-        </button>
-        </div>
+            {/* 과목별 피드백 */}
+            <div className="flex flex-wrap gap-x-400 gap-y-200">
+              {pillsData?.map((pill: { subject: SubjectWithAll; feedback: { hours: number, rate: number } }) => (
+                <SubjectFeedbackPill
+                  key={pill.subject}
+                  subject={pill.subject}
+                  feedback={pill.feedback}
+                />
+              ))}
+            </div>
+
+            {/* 멘토 총평: 짧으면 본문 높이만, 길면 max-h 내부 스크롤 */}
+            <section className="flex flex-col" aria-label="멘토 총평">
+              <h3 className="text-100 font-semibold text-gray-900 mb-2">멘토 총평</h3>
+              <p className="max-h-[50vh] text-sm text-gray-700 leading-relaxed text-justify overflow-y-auto">
+                &ldquo;{report?.overallReview}
+              </p>
+            </section>
+
+            {/* KPT 3열 */}
+            <section className="h-fit grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" aria-label="KPT">
+              {REPORTDETAILS.map((detail) =>
+                report?.[detail] ? (
+                  <ReportDetailCard key={detail} detail={detail} content={report[detail]!} />
+                ) : null
+              )}
+            </section>
+          </article>
+
+          {/* 주/월 이동 버튼 */}
+          <div className="h-fit flex justify-center gap-3">
+            <button
+              type="button"
+              className={cn(
+                "flex gap-100 items-center rounded-300 bg-primary-100 px-300 py-150 text-primary-500 transition-colors duration-300",
+                period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
+            )}
+            >
+              <span aria-hidden><ChevronLeftIcon /></span> 이전 {period === "WEEKLY" ? "주" : "달"}
+            </button>
+            <button
+              type="button"
+              className={cn(
+                "flex gap-100 items-center rounded-300 bg-primary-500 px-300 py-150 text-white transition-colors duration-300",
+                period === "WEEKLY" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
+              )}
+            >
+              다음 {period === "WEEKLY" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
