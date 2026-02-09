@@ -1,47 +1,58 @@
-import { useState } from "react";
+import { useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo } from "react";
 import { cn } from "../../libs/utils";
 import { Calendar } from "../../icons";
 import Button from "../../components/common/button/Button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useMenteeReport } from '../../hooks/mentee/useMenteeReport';
+import { subjectTypes } from '../../types';
+import type { MenteeReportPeriod } from '../../api/mentee';
 
-export const SUBJECTS = ["all", "en", "ko", "math"] as const;
-export const REPORTDETAILS = ['keep', 'problem', 'try'] as const;
-export type Subject = typeof SUBJECTS[number];
+export type SubjectWithAll = "ALL" | subjectTypes.Subject;
+export const REPORTDETAILS = ['keepContent', 'problemContent', 'tryContent'] as const;
 export type ReportDetail = typeof REPORTDETAILS[number];
-export type ReportMode = "weekly" | "monthly";
 
 const ReportPage = () => {
-  const [reportMode, setReportMode] = useState<ReportMode>("weekly");
-  const [year, setYear] = useState<number | null>(null);
-  const [week, setWeek] = useState<number | null>(null);
-  const [month, setMonth] = useState<number | null>(null);
-  const [day, setDay] = useState<number | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const date = searchParams.get("date");
+  const period = searchParams.get("period") as MenteeReportPeriod | null;
 
-  const [subjectFeedback, setSubjectFeedback] = useState({
-    all: {
-      hours: 60,
-      rate: 85,
-    },
-    en: {
-      hours: 24,
-      rate: 95,
-    },
-    ko: {
-      hours: 12,
-      rate: 85,
-    },
-    math: {
-      hours: 24,
-      rate: 75,
-    },
-  });
+  const { data: report } = useMenteeReport(
+    period as MenteeReportPeriod, date as string,
+    { enabled: !!date && !!period }
+  );
 
-  const [mentorReview, setMentorReview] = useState({
-    total: "설스터디 멘토링이 시작된 첫 주입니다. 학생의 현재 학습 상태를 진단하고, 약점인 국어 비문학 독해와 수학 풀이 습관을 교정하기 위한 기초 틀을 마련했습니다. 멘토와의 라포 형성 및 데일리 인증 루틴 적응에 초점을 맞췄습니다.",
-    keep: "매일 플래너를 업로드하며 학습 시간을 확보하려는 노력이 돋보입니다. 영어 단어 테스트 통과율이 90% 이상으로 유지되고 있습니다.",
-    problem: "수학 오답노트 작성 시, 단순히 풀이 과정을 베껴 적는 경향이 있어 '내가 왜 틀렸는지'에 대한 사고 과정 기록이 부족합니다.",
-    try: "수학 오답노트 양식에 '틀린 이유(실수/개념부족)' 칸을 추가했으니 이를 활용해보세요. 국어 문법 강의 수강 후 백지 복습을 추가합시다.",
-  });
+  const pillsData = useMemo(() => {
+    if (!report) return undefined;
+    const total = {
+      subject: "ALL" as const,
+      feedback: { hours: report.totalStudyMinutes, rate: report.totalAchievementRate },
+    };
+    const subjects = report.subjectReports.map((subject) => ({
+      subject: subject.subject,
+      feedback: { hours: subject.studyMinutes, rate: subject.achievementRate },
+    }));
+    return [total, ...subjects];
+  }, [report]);
+
+  const handlePeriodButtonClick = (buttonPeriod: MenteeReportPeriod) => {
+    if (period === buttonPeriod) return;
+    
+    setSearchParams({
+      date: new Date().toISOString().split('T')[0], // 오늘 날짜로 재설정
+      period: buttonPeriod,
+    }, { replace: true });
+  };
+
+  useEffect(() => {
+    if (date && period) return;
+    setSearchParams({
+      date: new Date().toISOString().split('T')[0],
+      period: "WEEKLY",
+    }, { replace: true });
+  }, [date, period, setSearchParams]);
+
+ 
 
   return (
     <div
@@ -60,8 +71,8 @@ const ReportPage = () => {
 
       {/* 주간 / 월간 탭 (pill) */}
       <section aria-label="리포트 유형 선택" className="flex gap-200">
-        <ReportModeButton currentMode={reportMode} reportMode="weekly" setReportMode={setReportMode} />
-        <ReportModeButton currentMode={reportMode} reportMode="monthly" setReportMode={setReportMode} />
+        <ReportModeButton currentPeriod={period ?? "WEEKLY"} period="WEEKLY" onClick={() => handlePeriodButtonClick("WEEKLY")} />
+        <ReportModeButton currentPeriod={period ?? "WEEKLY"} period="MONTHLY" onClick={() => handlePeriodButtonClick("MONTHLY")} />
       </section>
 
       {/* 메인 섹션(아티클): 내용 높이에 맞춤. 총평이 길면 총평 내부 스크롤 */}
@@ -70,23 +81,23 @@ const ReportPage = () => {
         <div className="h-fit flex items-center gap-2">
           <div className={cn(
             "p-2 shrink-0 rounded-300 transition-colors duration-300",
-            reportMode === "weekly" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
+            period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
           )}>
             <Calendar className="h-4 w-4" aria-hidden />
           </div>
           <h2 className="text-200 font-semibold text-gray-900">
-            <span>{month ? month : "-"}월 {week ? week : "-"}주차 {reportMode === "weekly" ? "주간" : "월간"} 리포트</span>
-            {reportMode === "weekly" && <span>({year}.{month}.{day} ~ {year}.{month}.{day ? day + 6 : ""})</span>}
+            <span>{period === "WEEKLY" ? "주간" : "월간"} 리포트</span>
+            {period === "WEEKLY" && <span>({report?.startDate} ~ {report?.endDate})</span>}
           </h2>
         </div>
 
         {/* 과목별 피드백 */}
         <div className="flex flex-wrap gap-x-400 gap-y-200">
-          {SUBJECTS.map((subject) => (
+          {pillsData?.map((pill: { subject: SubjectWithAll; feedback: { hours: number, rate: number } }) => (
             <SubjectFeedbackPill
-              key={subject}
-              subject={subject}
-              feedback={subjectFeedback[subject]}
+              key={pill.subject}
+              subject={pill.subject}
+              feedback={pill.feedback}
             />
           ))}
         </div>
@@ -95,16 +106,17 @@ const ReportPage = () => {
         <section className="flex flex-col" aria-label="멘토 총평">
           <h3 className="text-100 font-semibold text-gray-900 mb-2">멘토 총평</h3>
           <p className="max-h-[50vh] text-sm text-gray-700 leading-relaxed text-justify overflow-y-auto">
-            &ldquo;{mentorReview.total}
-            &rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;&ldquo;{mentorReview.total}&rdquo;
+            &ldquo;{report?.overallReview}
           </p>
         </section>
 
         {/* KPT 3열 */}
         <section className="h-fit grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" aria-label="KPT">
-          {REPORTDETAILS.map((detail) => (
-            <ReportDetailCard key={detail} detail={detail} content={mentorReview[detail]} />
-          ))}
+          {REPORTDETAILS.map((detail) =>
+            report?.[detail] ? (
+              <ReportDetailCard key={detail} detail={detail} content={report[detail]!} />
+            ) : null
+          )}
         </section>
       </article>
 
@@ -114,50 +126,51 @@ const ReportPage = () => {
           type="button"
           className={cn(
             "flex gap-100 items-center rounded-300 bg-primary-100 px-300 py-150 text-primary-500 transition-colors duration-300",
-            reportMode === "weekly" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
+            period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
         )}
         >
-          <span aria-hidden><ChevronLeftIcon /></span> 이전 {reportMode === "weekly" ? "주" : "달"}
+          <span aria-hidden><ChevronLeftIcon /></span> 이전 {period === "WEEKLY" ? "주" : "달"}
         </button>
         <button
           type="button"
           className={cn(
             "flex gap-100 items-center rounded-300 bg-primary-500 px-300 py-150 text-white transition-colors duration-300",
-            reportMode === "weekly" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
+            period === "WEEKLY" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
           )}
         >
-          다음 {reportMode === "weekly" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
+          다음 {period === "WEEKLY" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
         </button>
         </div>
     </div>
   );
 };
 
-const ReportModeButton = ({ currentMode, reportMode, setReportMode }: { currentMode: ReportMode, reportMode: ReportMode, setReportMode: (reportMode: ReportMode) => void }) => {
-  const label = reportMode === "weekly" ? "주간 리포트" : "월간 리포트";
+const ReportModeButton = ({ currentPeriod, period, onClick }: { currentPeriod: MenteeReportPeriod, period: MenteeReportPeriod, onClick: () => void }) => {
+  const label = period === "WEEKLY" ? "주간 리포트" : "월간 리포트";
   const className = {
-    weekly: "",
-    monthly: "text-grape-500",
+    WEEKLY: "",
+    MONTHLY: "text-grape-500",
   }
-  const isActive = currentMode === reportMode;  
+  const isActive = currentPeriod === period;  
   return (
     <Button
       variant={isActive ? "secondary" : "gray"}
       ariaLabel={label}
-      className={cn("rounded-300 px-200", className[reportMode], isActive ? "shadow-sm" : "bg-gray-50 text-gray-500")}
-      onClick={() => setReportMode(reportMode)}
+      className={cn("rounded-300 px-200",
+        className[period], isActive ? "shadow-sm" : "bg-gray-50 text-gray-500")}
+      onClick={onClick}
     >
       {label}
     </Button>
   );
 };
 
-const SubjectFeedbackPill = ({ subject, feedback }: { subject: Subject, feedback: { hours: number, rate: number } }) => {
-  const SUBJECT_PILLS: Record<Subject, { label: string, className: string }> = {
-    all: { label: "전체", className: "bg-primary-50 border-primary-100 text-primary-500" },
-    en: { label: "영어", className: "bg-red-50 border-red-100 text-red-500" },
-    ko: { label: "국어", className: "bg-green-50 border-lime-100 text-lime-500" },
-    math: { label: "수학", className: "bg-blue-50 border-blue-100 text-blue-500" },
+const SubjectFeedbackPill = ({ subject, feedback }: { subject: SubjectWithAll, feedback: { hours: number, rate: number } }) => {
+  const SUBJECT_PILLS: Record<SubjectWithAll, { label: string, className: string }> = {
+    ALL: { label: "전체", className: "bg-primary-50 border-primary-100 text-primary-500" },
+    ENGLISH: { label: "영어", className: "bg-red-50 border-red-100 text-red-500" },
+    KOREAN: { label: "국어", className: "bg-green-50 border-lime-100 text-lime-500" },
+    MATH: { label: "수학", className: "bg-blue-50 border-blue-100 text-blue-500" },
   };
 
   return (
@@ -174,9 +187,9 @@ const SubjectFeedbackPill = ({ subject, feedback }: { subject: Subject, feedback
 
 const ReportDetailCard = ({ detail, content }: { detail: ReportDetail, content: string }) => {
   const DETAIL_CARDS: Record<ReportDetail, { label: string, className: string }> = {
-    keep: { label: "Keep (잘한 점)", className: "bg-blue-50 border-blue-100 text-blue-500" },
-    problem: { label: "Problem (부족한 점)", className: "bg-red-50 border-red-100 text-red-500" },
-    try: { label: "Try (시도할 점)", className: "bg-green-50 border-lime-100 text-lime-500" },
+    keepContent: { label: "Keep (잘한 점)", className: "bg-blue-50 border-blue-100 text-blue-500" },
+    problemContent: { label: "Problem (부족한 점)", className: "bg-red-50 border-red-100 text-red-500" },
+    tryContent: { label: "Try (시도할 점)", className: "bg-green-50 border-lime-100 text-lime-500" },
   };
   return (
     <div className={cn(
