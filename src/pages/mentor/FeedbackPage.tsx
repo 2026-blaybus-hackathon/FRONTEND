@@ -1,5 +1,5 @@
 import SearchInput from "../../components/common/input/SearchInput";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { cn, getProfileImageUrl } from "../../libs/utils";
 import { Play, PlayReverse } from "../../icons";
 import IconButton from "../../components/common/button/IconButton";
@@ -10,24 +10,55 @@ import AssignmentCard from "../../components/feature/assignment/AssignmentCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMentorMentees, useMentorMenteeDetail, useWriteTaskFeedback, useWriteTotalFeedback } from "../../hooks/mentor/useMentorFeedback";
 import type { MentorFeedbackMenteeStatus } from "../../api/mentor";
+import { useSearchParams } from "react-router-dom";
 
 const MentorFeedbackPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [feedback, setFeedback] = useState("");
   const [search, setSearch] = useState("");
-  const [selectedMentee, setSelectedMentee] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(3);
   const [mode, setMode] = useState<"edit" | "view">("edit"); // 작성 모드(edit) / 조회 모드(view)
-  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [showTopShadow, setShowTopShadow] = useState(false);
   const [showBottomShadow, setShowBottomShadow] = useState(false);
   const assignmentListRef = useRef<HTMLDivElement>(null);
 
   const SCROLL_SHADOW_THRESHOLD = 10;
 
+  // searchParams에서 menteeId, taskId 파싱
+  const selectedMentee = searchParams.get("menteeId") ? Number(searchParams.get("menteeId")) : null;
+  const selectedTaskId = searchParams.get("taskId") ? Number(searchParams.get("taskId")) : null;
+
+  const setSelectedMentee = useCallback((menteeId: number | null) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (menteeId !== null) {
+        next.set("menteeId", String(menteeId));
+      } else {
+        next.delete("menteeId");
+      }
+      // 멘티가 바뀌면 taskId는 초기화
+      next.delete("taskId");
+      return next;
+    });
+  }, [setSearchParams]);
+
+  const setSelectedTaskId = useCallback((taskId: number | null) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (taskId !== null) {
+        next.set("taskId", String(taskId));
+      } else {
+        next.delete("taskId");
+      }
+      return next;
+    });
+  }, [setSearchParams]);
+
   const { data: mentees } = useMentorMentees();
   const { data: menteeDetail } = useMentorMenteeDetail(
     selectedMentee ?? 0,
+    new Date().toISOString().split('T')[0], // YYYY-MM-DD
     {
       enabled: selectedMentee !== null,
     }
@@ -189,8 +220,7 @@ const MentorFeedbackPage = () => {
                 status={mentee.status}
                 selected={selectedMentee === mentee.id}
                 onClick={() => {
-                  setSelectedMentee(mentee.id);
-                  setSelectedTaskId(null);
+                  setSelectedMentee(selectedMentee === mentee.id ? null : mentee.id);
               }}
               />
             ))}
@@ -332,7 +362,7 @@ const MenteeListCard = ({
   return (
     <div
       className={cn(
-        "w-full md:h-45 xl:min-w-60 xl:w-fit lg:h-32 flex flex-col gap-3 rounded-[12px] py-150 lg:py-300 px-150 lg:px-250 relative overflow-hidden",
+        "w-full md:min-w-60 sm:w-fit md:h-32 flex flex-col gap-3 rounded-[12px] py-150 lg:py-300 px-150 lg:px-250 relative overflow-hidden",
         "bg-white"
       )}
       onClick={onClick}
@@ -349,14 +379,14 @@ const MenteeListCard = ({
         <div className="flex gap-150 flex-row sm:flex-col md:flex-row">
           {
             profileImage ?
-            <img src={profileImage} alt={name} className="w-36 h-36 rounded-full object-cover" referrerPolicy="no-referrer" /> :
+            <img src={profileImage} alt={name} className="w-12 h-12 rounded-full object-cover" referrerPolicy="no-referrer" /> :
             <div className="min-w-12 min-h-12 w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white heading-4 font-weight-500">{name[0]}</div>
           }
           <div className="flex flex-col">
             <p className={cn("heading-6 md:heading-4 font-weight-500", selected ? "text-white" : "text-gray-800", "transition-all duration-300")}>{name}</p>
             <div className={cn("subtitle-1 md:heading-6 flex flex-wrap gap-x-50", selected ? "text-white" : "text-gray-300", "transition-all duration-300")}>
               <p>{school} </p>
-              <p>{grade}학년</p>
+              <p>{grade}</p>
             </div>
           </div>
         </div>

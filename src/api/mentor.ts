@@ -216,8 +216,8 @@ export async function getMentorFeedbackMenteeList(): Promise<MentorFeedbackMente
   return response.data;
 }
 
-export async function getMentorFeedbackMenteeDetail(menteeId: number): Promise<MentorFeedbackMenteeDetail> {
-  const response = await axios.get<MentorFeedbackMenteeDetail>(`/feedback/mentor/mentees/${menteeId}`);
+export async function getMentorFeedbackMenteeDetail(menteeId: number, date: string): Promise<MentorFeedbackMenteeDetail> {
+  const response = await axios.get<MentorFeedbackMenteeDetail>(`/feedback/mentor/mentees/${menteeId}?date=${date}`);
   return response.data;
 }
 

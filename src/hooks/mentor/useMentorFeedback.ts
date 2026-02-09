@@ -26,10 +26,10 @@ export function useMentorMentees() {
     });
 }
 
-export function useMentorMenteeDetail(menteeId: number, options: { enabled?: boolean } = {}) {
+export function useMentorMenteeDetail(menteeId: number, date: string, options: { enabled?: boolean } = {}) {
     return useQuery({
         queryKey: mentorFeedbackKeys.menteeDetail(menteeId),
-        queryFn: () => getMentorFeedbackMenteeDetail(menteeId),
+        queryFn: () => getMentorFeedbackMenteeDetail(menteeId, date),
         staleTime: 1 * 60 * 1000,
         gcTime: 3 * 60 * 1000,
         ...options,
