@@ -1,7 +1,16 @@
-    import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useToastStore } from '../stores/toastStore';
 
-export const useNotificationStream = () => {
+export interface NotificationPayload {
+  body?: string;
+  message?: string;
+  title?: string;
+  type?: string;
+  link?: string;
+  uri?: string;
+}
+
+export const useNotificationStream = (onNotification?: (data: NotificationPayload) => void) => {
   const addToast = useToastStore((state) => state.addToast);
 
   useEffect(() => {
@@ -10,15 +19,19 @@ export const useNotificationStream = () => {
     
     // eventSource.onmessage = (event) => {
     //   const notification = JSON.parse(event.data);
-    //   addToast({
-    //     id: Date.now().toString(),
-    //     message: notification.message,
-    //     type: notification.type || 'info',
-    //   });
+    //   if (onNotification) {
+    //     onNotification(notification);
+    //   } else {
+    //     addToast({
+    //       id: Date.now().toString(),
+    //       message: notification.message,
+    //       type: notification.type || 'info',
+    //     });
+    //   }
     // };
 
     // return () => {
     //   eventSource.close();
     // };
-  }, [addToast]);
+  }, [addToast, onNotification]);
 };

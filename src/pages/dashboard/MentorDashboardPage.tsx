@@ -4,19 +4,19 @@ import axios from '../../libs/axios';
 import { useMenteeList } from '../../hooks/useMenteeList';
 import '../../styles/pages/mentor-dashboard.css';
 
-interface DashboardStats {
-  totalMentees: number;
-  completionRate: number;
-  consecutiveStudyDays: number;
-}
+// interface DashboardStats {
+//   totalMentees: number;
+//   completionRate: number;
+//   consecutiveStudyDays: number;
+// }
 
-interface RecentTask {
-  taskId: number;
-  title: string;
-  subject: string;
-  menteeName: string;
-  submittedAt: string;
-}
+// interface RecentTask {
+//   taskId: number;
+//   title: string;
+//   subject: string;
+//   menteeName: string;
+//   submittedAt: string;
+// }
 
 interface MenteeSummary {
   menteeId: number;
@@ -86,13 +86,6 @@ const MentorDashboardPage = () => {
       isFeedbackCompleted: task.isFeedbackCompleted,
     };
   });
-
-  const assignments = [
-    { id: 'assign-1', subject: '과학', mentor: '제출 완료' },
-    { id: 'assign-2', subject: '과학', mentor: '국어' },
-    { id: 'assign-3', subject: '미술', mentor: '문학 문제 풀이' },
-    { id: 'assign-4', subject: '음악', mentor: '민유진' },
-  ];
 
   return (
     <div className="mentor-dashboard-layout">

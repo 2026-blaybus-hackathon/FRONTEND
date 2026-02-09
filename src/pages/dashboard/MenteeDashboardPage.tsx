@@ -1,13 +1,17 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useMenteeTasks, useCreateMenteeTask, useUpdateMenteeTask, useDeleteMenteeTask, useUpdateMenteeTaskCompletion, useUpdateMenteeStudyTime, useUpdateMenteeTaskComment } from '../../hooks/useMenteeTasks';
-import { useUnreadFeedbackCount } from '../../hooks/useMenteeFeedbacks';
+import { useUnreadFeedbackCount, useTotalFeedback } from '../../hooks/useMenteeFeedbacks';
 import AddTaskModal from '../../components/feature/dashboard/AddTaskModal';
 import EditTaskModal from '../../components/feature/dashboard/EditTaskModal';
 import TaskDetailModal from '../../components/feature/dashboard/TaskDetailModal';
 import TaskCard from '../../components/feature/dashboard/TaskCard';
-import type { Task, TaskData, TaskDetail } from '../../types';
+import type { taskTypes } from '../../types';
 import { FILTERS } from '../../static/subjects';
+
+type Task = taskTypes.Task;
+type TaskData = taskTypes.TaskData;
+type TaskDetail = taskTypes.TaskDetail;
 import '../../styles/pages/mentee-dashboard.css';
 
 const MenteeDashboardPage = () => {
@@ -38,6 +42,12 @@ const MenteeDashboardPage = () => {
   
   // 안 읽은 피드백 개수
   const { count: feedbackCount } = useUnreadFeedbackCount();
+
+  // 종합 피드백 조회 (모달이 열릴 때만)
+  const { totalFeedback, isLoading: isLoadingFeedback } = useTotalFeedback(
+    selectedDateStr, 
+    showTotalFeedbackModal
+  );
 
   // Mutations
   const createTaskMutation = useCreateMenteeTask();
@@ -388,7 +398,7 @@ const MenteeDashboardPage = () => {
         task={detailTask}
       />
 
-      {/* 종합 피드백 모달 (임시) */}
+      {/* 종합 피드백 모달 */}
       {showTotalFeedbackModal && (
         <div className="modal-overlay" onClick={() => setShowTotalFeedbackModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{
@@ -411,18 +421,29 @@ const MenteeDashboardPage = () => {
               marginBottom: '24px',
               minHeight: '200px',
             }}>
-              <p style={{ color: '#374151' }}>
-                종합 피드백 내용이 여기에 표시됩니다.
-                <br /><br />
-                API: GET /api/v1/feedbacks/daily-planner/total-feedback?date={selectedDateStr}
-              </p>
+              {isLoadingFeedback ? (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+                  <svg className="animate-spin h-8 w-8" style={{ color: '#7C3AED' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              ) : totalFeedback ? (
+                <p style={{ color: '#374151', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                  {totalFeedback}
+                </p>
+              ) : (
+                <p style={{ color: '#9CA3AF', textAlign: 'center', padding: '40px 0' }}>
+                  아직 종합 피드백이 작성되지 않았습니다.
+                </p>
+              )}
             </div>
             <button
               onClick={() => setShowTotalFeedbackModal(false)}
               style={{
                 width: '100%',
                 padding: '12px',
-                background: '#6366F1',
+                background: '#7C3AED',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
