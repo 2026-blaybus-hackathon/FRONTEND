@@ -1,6 +1,6 @@
 import axios from '../libs/axios';
 import type { MenteeListItem, MenteeResponse } from '../libs/types/mentee';
-import type { mentorTypes } from '../types';
+import type { subjectTypes, imageTypes } from '../types';
 import type {
   MentorMenteeTasksResponse,
   MentorTaskAssignmentRequest,
@@ -154,13 +154,49 @@ export async function assignTask(
 /**
  * 멘토 피드백 페이지 용 조회 및 작성 API
  */
-export async function getMentorFeedbackMenteeList(): Promise<mentorTypes.MentorFeedbackMenteeList> {
-  const response = await axios.get<mentorTypes.MentorFeedbackMenteeList>('/feedback/mentor/mentees');
+
+// 멘토 피드백 페이지 내 멘티 상태
+export type MentorFeedbackMenteeStatus = "PENDING" | "COMPLETED";
+// 멘토 피드백 페이지 내 과제 상태
+export type MentorFeedbackTaskStatus = "PENDING" | "COMPLETED" | "NOT_SUBMITTED";
+
+// 멘토 피드백 페이지 내 멘티 리스트
+export interface MentorFeedbackMenteeListItem {
+    id: number;
+    name: string;
+    profileUrl: string;
+    schoolName: string;
+    grade: string;
+    status: MentorFeedbackMenteeStatus;
+}
+
+export type MentorFeedbackMenteeList = MentorFeedbackMenteeListItem[]
+
+export interface MentorFeedbackTask {
+  taskId: number;
+  subject: subjectTypes.Subject;
+  title: string;
+  time: number;
+  date: string;
+  status: boolean;
+  menteeComment: string;
+  feedbackStatus: MentorFeedbackTaskStatus;
+  images: imageTypes.Image[];
+  feedback: string;
+}
+
+export interface MentorFeedbackMenteeDetail {
+tasks: MentorFeedbackTask[];
+totalFeedback: string;
+}
+
+export async function getMentorFeedbackMenteeList(): Promise<MentorFeedbackMenteeList> {
+  const response = await axios.get<MentorFeedbackMenteeList>('/feedback/mentor/mentees');
   return response.data;
 }
 
-export async function getMentorFeedbackMenteeDetail(menteeId: number): Promise<mentorTypes.MentorFeedbackMenteeDetail> {
-  const response = await axios.get<mentorTypes.MentorFeedbackMenteeDetail>(`/feedback/mentor/mentees/${menteeId}`);
+export async function getMentorFeedbackMenteeDetail(menteeId: number): Promise<MentorFeedbackMenteeDetail> {
+  const response = await axios.get<MentorFeedbackMenteeDetail>(`/feedback/mentor/mentees/${menteeId}`);
   return response.data;
 }
 
