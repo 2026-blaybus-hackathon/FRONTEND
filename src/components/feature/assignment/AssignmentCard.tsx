@@ -103,8 +103,9 @@ const AssignmentCard = memo(({
         {images.length > 0 ? (
           imagesList.map((image) => (
             <img
+              key={image.url}
               src={image.url}
-              alt="과제 이미지"
+              alt={image.name ?? "과제 이미지"}
               className="w-full h-auto object-contain rounded-400 max-h-[480px]"
               onClick={() => {
                 setSelectedImage(image);

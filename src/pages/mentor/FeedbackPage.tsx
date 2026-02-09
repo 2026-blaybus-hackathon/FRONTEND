@@ -102,6 +102,15 @@ const MentorFeedbackPage = () => {
     }
   }
 
+  const isPrevDisabled = selectedTaskId === null
+  ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) <= 0
+  : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) <= 0;
+
+  const isNextDisabled = selectedTaskId === null
+    ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) >= (mentees?.length ?? 1) - 1
+    : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) >= (menteeDetail?.tasks.length ?? 1) - 1;
+
+
   useEffect(() => {
     const mqXl = window.matchMedia("(min-width: 1640px)");
     const mq2xl = window.matchMedia("(min-width: 1920px)");
@@ -248,9 +257,7 @@ const MentorFeedbackPage = () => {
                 className="text-xs font-weight-500 text-gray-700 flex items-center hover:bg-gray-50 rounded-full py-50 pl-75 pr-100 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 onClick={handleMovePrevious}
                 disabled={
-                  selectedTaskId === null
-                    ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) <= 0
-                    : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) <= 0
+                  isPrevDisabled
                 }
               >
                 <ChevronLeft width={16} height={16} />이전
@@ -259,9 +266,7 @@ const MentorFeedbackPage = () => {
                 className="text-xs font-weight-500 text-gray-700 flex items-center hover:bg-gray-50 rounded-full py-50 pl-100 pr-75 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 onClick={handleMoveNext}
                 disabled={
-                  selectedTaskId === null
-                    ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) >= (mentees?.length ?? 1) - 1
-                    : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) >= (menteeDetail?.tasks.length ?? 1) - 1
+                  isNextDisabled
                 }
               >
                 다음 <ChevronRight width={16} height={16} />
