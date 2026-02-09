@@ -3,6 +3,9 @@ import type { MenteeListItem, MenteeResponse } from '../libs/types/mentee';
 import type {
   MentorMenteeTasksResponse,
   MentorTaskAssignmentRequest,
+  MenteeStatsResponse,
+  MenteeStatsPeriod,
+  MentorReportCreateRequest,
 } from '../libs/types/mentor';
 
 function toMenteeListItem(mentee: MenteeResponse): MenteeListItem {
@@ -42,6 +45,37 @@ export async function getMentorMenteeTasks(
     `/tasks/mentor/mentee/${menteeId}`,
     { params: { page, size } }
   );
+  return response.data;
+}
+
+export interface GetMenteeStatsParams {
+  date: string; // YYYY-MM-DD
+  period: MenteeStatsPeriod;
+}
+
+/**
+ * 멘티 주/월간 과제 달성률 및 총 공부 시간 조회.
+ * GET /users/mentor/mentees/:menteeId/stats?date=YYYY-MM-DD&period=WEEK|MONTH
+ */
+export async function getMenteeStats(
+  menteeId: number,
+  params: GetMenteeStatsParams
+): Promise<MenteeStatsResponse> {
+  const response = await axios.get<MenteeStatsResponse>(
+    `/users/mentor/mentees/${menteeId}/stats`,
+    { params: { date: params.date, period: params.period } }
+  );
+  return response.data;
+}
+
+/**
+ * 멘토 주/월간 리포트 생성.
+ * POST /reports/mentor
+ */
+export async function createMentorReport(
+  payload: MentorReportCreateRequest
+): Promise<unknown> {
+  const response = await axios.post('/reports/mentor', payload);
   return response.data;
 }
 
