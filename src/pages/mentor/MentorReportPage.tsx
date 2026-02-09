@@ -17,7 +17,7 @@ import { createMentorReport } from '../../api/mentor';
 import type { MentorReportPeriod, MenteeFeedbackItem } from '../../libs/types/mentor';
 import { useMenteeFeedbacksFromTasks } from '../../hooks/useMenteeFeedbacksFromTasks';
 import { DEFAULT_MENTEE_ASSIGNMENT_DETAIL } from '../../static/assignment';
-import { cn } from '../../libs/utils';
+import { cn, getProfileImageUrl } from '../../libs/utils';
 
 function todayYYYYMMDD(): string {
   const d = new Date();
@@ -242,8 +242,12 @@ const MentorReportPage = () => {
                 )}
                 onClick={() => setSelectedMentee(mentee)}
               >
-                <div className="w-12 h-12 rounded-full bg-[var(--color-primary-500)] text-white text-lg font-bold flex items-center justify-center mx-auto mb-2">
-                  {mentee.avatar}
+                <div className="w-12 h-12 rounded-full bg-[var(--color-primary-500)] text-white text-lg font-bold flex items-center justify-center mx-auto mb-2 overflow-hidden">
+                  {getProfileImageUrl(mentee.profileUrl) ? (
+                    <img src={getProfileImageUrl(mentee.profileUrl)} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  ) : (
+                    mentee.avatar
+                  )}
                 </div>
                 <div className="font-semibold text-gray-900 truncate">{mentee.name}</div>
                 <div className="text-xs text-gray-600 truncate mb-1">
@@ -277,8 +281,12 @@ const MentorReportPage = () => {
           {/* 왼쪽: 멘티 학습 요약 */}
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-full bg-[var(--color-primary-100)] text-[var(--color-primary-600)] text-xl font-bold flex items-center justify-center shrink-0">
-                {selectedMentee.avatar}
+              <div className="w-12 h-12 rounded-full bg-[var(--color-primary-100)] text-[var(--color-primary-600)] text-xl font-bold flex items-center justify-center shrink-0 overflow-hidden">
+                {getProfileImageUrl(selectedMentee.profileUrl) ? (
+                  <img src={getProfileImageUrl(selectedMentee.profileUrl)} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  selectedMentee.avatar
+                )}
               </div>
               <div className="min-w-0">
                 <div className="font-semibold text-gray-900">{selectedMentee.name}</div>
