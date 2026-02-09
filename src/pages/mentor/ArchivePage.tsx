@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToastStore } from '../../stores/toastStore';
 import SubmittedTaskModal from '../../components/feature/dashboard/SubmittedTaskModal';
 import { useMenteeList } from '../../hooks/useMenteeList';
+import { getProfileImageUrl } from '../../libs/utils';
 import { useMentorMenteeTasks } from '../../hooks/useMentorMenteeTasks';
 
 const MentorArchivePage = () => {
@@ -202,10 +203,14 @@ const MentorArchivePage = () => {
                   onClick={() => setSelectedMentee(mentee.id)}
                 >
                   <div 
-                    className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-semibold mb-2.5"
+                    className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-semibold mb-2.5 overflow-hidden"
                     style={{ backgroundColor: '#7C3AED' }}
                   >
-                    {mentee.avatar}
+                    {getProfileImageUrl(mentee.profileUrl) ? (
+                      <img src={getProfileImageUrl(mentee.profileUrl)} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      mentee.avatar
+                    )}
                   </div>
                   <h3 className="text-sm font-bold text-gray-900 mb-0.5">{mentee.name}</h3>
                   <p className="text-xs text-gray-500">{mentee.subject}</p>

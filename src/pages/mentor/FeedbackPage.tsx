@@ -1,6 +1,6 @@
 import SearchInput from "../../components/common/input/SearchInput";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { cn } from "../../libs/utils";
+import { cn, getProfileImageUrl } from "../../libs/utils";
 import { Play, PlayReverse } from "../../icons";
 import IconButton from "../../components/common/button/IconButton";
 import SubjectBadge from "../../components/feature/subject/SubjectBadge";
@@ -183,7 +183,7 @@ const MentorFeedbackPage = () => {
                 id={mentee.id}
                 key={mentee.id}
                 name={mentee.name}
-                profileImage={mentee.profileUrl}
+                profileImage={getProfileImageUrl(mentee.profileUrl)}
                 school={mentee.schoolName}
                 grade={mentee.grade}
                 status={mentee.status}
@@ -349,7 +349,7 @@ const MenteeListCard = ({
         <div className="flex gap-150 flex-row sm:flex-col md:flex-row">
           {
             profileImage ?
-            <img src={profileImage} alt={name} className="w-36 h-36 rounded-full" /> :
+            <img src={profileImage} alt={name} className="w-36 h-36 rounded-full object-cover" referrerPolicy="no-referrer" /> :
             <div className="min-w-12 min-h-12 w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white heading-4 font-weight-500">{name[0]}</div>
           }
           <div className="flex flex-col">

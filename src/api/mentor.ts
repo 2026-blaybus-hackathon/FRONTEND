@@ -16,8 +16,9 @@ function toMenteeListItem(mentee: MenteeResponse): MenteeListItem {
   return {
     id: mentee.menteeId,
     name,
-    subject: Array.isArray(mentee.subjects) ? mentee.subjects.join('/') : '',
+    subject: Array.isArray(mentee.subjects) ? mentee.subjects.join('/') : (mentee.schoolName ?? ''),
     avatar: name[0] ?? '-',
+    profileUrl: mentee.profileUrl ?? null,
   };
 }
 
