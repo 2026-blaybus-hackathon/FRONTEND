@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { assignTask } from '../api/mentor';
-import type { MentorTaskAssignmentRequest } from '../libs/types/mentor';
+import { assignTask } from '../../api/mentor';
+import type { MentorTaskAssignmentRequest } from '../../libs/types/mentor';
 
 const RECENT_TASKS_QUERY_KEY_PREFIX = ['recentMenteeTasks'] as const;
 const MENTOR_MENTEE_TASKS_QUERY_KEY_PREFIX = ['mentorMenteeTasks'] as const;
