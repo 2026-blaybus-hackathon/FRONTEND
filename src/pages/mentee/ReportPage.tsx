@@ -59,6 +59,27 @@ const ReportPage = () => {
     }, { replace: true });
   };
 
+  const getNewDate = (direction: 'prev' | 'next') => {
+    if (period === 'WEEKLY') {
+      const baseDate = new Date(date as string);
+      baseDate.setDate(baseDate.getDate() + (direction === 'prev' ? -7 : 7));
+      return baseDate.toISOString().split('T')[0];
+    } else {
+      const baseDate = new Date(date as string);
+      baseDate.setMonth(baseDate.getMonth() + (direction === 'prev' ? -1 : 1));
+      return baseDate.toISOString().split('T')[0];
+    }
+  };
+
+  // 주/월 이동 버튼 클릭 이벤트
+  const handlePeriodMoveButtonClick = (direction: 'prev' | 'next') => {
+    const newDate = getNewDate(direction);
+    setSearchParams({
+      date: newDate,
+      period: period as MenteeReportPeriod,
+    }, { replace: true });
+  };
+
   // 날짜와 기간이 설정되지 않았을 때 기본값 설정
   useEffect(() => {
     if (date && period) return;
@@ -186,6 +207,7 @@ const ReportPage = () => {
                 "flex gap-100 items-center rounded-300 bg-primary-100 px-300 py-150 text-primary-500 transition-colors duration-300",
                 period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
             )}
+            onClick={() => handlePeriodMoveButtonClick("prev")}
             >
               <span aria-hidden><ChevronLeftIcon /></span> 이전 {period === "WEEKLY" ? "주" : "달"}
             </button>
@@ -195,6 +217,7 @@ const ReportPage = () => {
                 "flex gap-100 items-center rounded-300 bg-primary-500 px-300 py-150 text-white transition-colors duration-300",
                 period === "WEEKLY" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
               )}
+              onClick={() => handlePeriodMoveButtonClick("next")}
             >
               다음 {period === "WEEKLY" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
             </button>
