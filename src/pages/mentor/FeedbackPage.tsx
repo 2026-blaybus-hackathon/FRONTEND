@@ -55,7 +55,14 @@ const MentorFeedbackPage = () => {
     });
   }, [setSearchParams]);
 
-  const { data: mentees } = useMentorMentees();
+  const { data: mentees, isLoading: isLoadingMentees } = useMentorMentees();
+  const { data: menteeDetail, isLoading: isLoadingMenteeDetail } = useMentorMenteeDetail(
+    selectedMentee ?? 0,
+    new Date().toISOString().split('T')[0], // YYYY-MM-DD
+    {
+      enabled: selectedMentee !== null,
+    }
+  );
 
   // 검색어로 멘티 이름 필터링
   const filteredMentees = useMemo(() => {
@@ -63,13 +70,6 @@ const MentorFeedbackPage = () => {
     if (!search.trim()) return mentees;
     return mentees.filter((m) => m.name.includes(search.trim()));
   }, [mentees, search]);
-  const { data: menteeDetail } = useMentorMenteeDetail(
-    selectedMentee ?? 0,
-    new Date().toISOString().split('T')[0], // YYYY-MM-DD
-    {
-      enabled: selectedMentee !== null,
-    }
-  );
 
   const selectedTask = useMemo(() => {
     return menteeDetail?.tasks.find((task) => task.taskId === selectedTaskId);
@@ -217,7 +217,11 @@ const MentorFeedbackPage = () => {
         <div className="flex justify-between items-center">
           <IconButton variant="primary-line" Icon={<PlayReverse />} onClick={() => setPage(effectivePage - 1)} ariaLabel="previous page" disabled={effectivePage === 0}/>
           <div className="flex flex-1 flex-col sm:flex-row gap-100 lg:gap-500 justify-center">
-            {filteredMentees && filteredMentees.length > 0 ? (
+            {isLoadingMentees ? (
+              Array.from({ length: pageSize }).map((_, i) => (
+                <MenteeListCardSkeleton key={i} />
+              ))
+            ) : filteredMentees && filteredMentees.length > 0 ? (
               filteredMentees.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
                 <MenteeListCard
                   id={mentee.id}
@@ -262,7 +266,11 @@ const MentorFeedbackPage = () => {
             ref={assignmentListRef}
             className="flex flex-col md:gap-300 gap-100 overflow-y-auto min-h-0 max-h-[min(400px,50vh)] lg:max-h-full"
           >
-            {selectedTask ? (
+            {isLoadingMenteeDetail ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <AssignmentCardSkeleton key={i} />
+              ))
+            ) : selectedTask ? (
               <AssignmentCard
                 {...selectedTask}
                 time={selectedTask.time}
@@ -291,6 +299,9 @@ const MentorFeedbackPage = () => {
             aria-hidden="true"
           />
         </div>
+        {isLoadingMenteeDetail ? (
+          <FeedbackEditorSkeleton />
+        ) : (
         <div className="max-h-[466px] flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-100 shrink-0">
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-2">
@@ -330,7 +341,7 @@ const MentorFeedbackPage = () => {
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder={
                   selectedTaskId !== null ?
-                  "학생의 질문, 코멘트에 대한 답변이나 피드백을 남겨주세요." :
+                  (!isTotalFeedbackCompleted ? "종합 피드백을 먼저 남겨주세요." : "학생의 질문, 코멘트에 대한 답변이나 피드백을 남겨주세요." ):
                   "오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요."
                   }
                 ariaLabel="피드백 입력"
@@ -351,6 +362,7 @@ const MentorFeedbackPage = () => {
             </Button>
           </div>
         </div>
+        )}
       </div>}
     </div>
   );
@@ -416,5 +428,58 @@ const MenteeListCard = ({
     </div>
   );
 }
+
+/* ── Skeleton Components ────────────────────────────────────── */
+
+const MenteeListCardSkeleton = () => (
+  <div className="w-full md:min-w-60 sm:w-fit md:h-32 flex flex-col gap-3 rounded-[12px] py-150 lg:py-300 px-150 lg:px-250 bg-white animate-pulse">
+    <div className="h-full flex flex-col justify-between">
+      <div className="flex gap-150 flex-row sm:flex-col md:flex-row">
+        <div className="min-w-12 min-h-12 w-12 h-12 rounded-full bg-gray-200" />
+        <div className="flex flex-col gap-1.5">
+          <div className="h-5 w-16 bg-gray-200 rounded" />
+          <div className="h-4 w-24 bg-gray-200 rounded" />
+        </div>
+      </div>
+      <div className="h-4 w-20 bg-gray-200 rounded self-end md:self-start" />
+    </div>
+  </div>
+);
+
+const AssignmentCardSkeleton = () => (
+  <div className="md:w-66 w-full shrink-0 bg-white rounded-600 py-150 px-200 gap-400 shadow-100 flex flex-col animate-pulse">
+    <div className="w-full gap-100 flex md:flex-col justify-between">
+      <div className="flex flex-col gap-50 md:gap-100">
+        <div className="h-5 w-14 bg-gray-200 rounded-full" />
+        <div className="h-5 w-32 bg-gray-200 rounded" />
+      </div>
+      <div className="flex flex-col md:gap-50 justify-end items-end md:items-start">
+        <div className="h-4 w-24 bg-gray-200 rounded" />
+        <div className="h-6 w-20 bg-gray-200 rounded-300" />
+      </div>
+    </div>
+  </div>
+);
+
+const FeedbackEditorSkeleton = () => (
+  <div className="max-h-[466px] flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-100 shrink-0 animate-pulse">
+    <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-2">
+        <div className="h-5 w-20 bg-gray-200 rounded" />
+        <div className="h-6 w-32 bg-gray-200 rounded" />
+      </div>
+      <div className="flex gap-100">
+        <div className="h-7 w-12 bg-gray-200 rounded-full" />
+        <div className="h-7 w-12 bg-gray-200 rounded-full" />
+      </div>
+    </div>
+    <div className="flex-1 min-h-0">
+      <div className="w-full h-full min-h-[300px] bg-gray-100 rounded-400" />
+    </div>
+    <div className="w-full flex justify-end shrink-0">
+      <div className="h-9 w-24 bg-gray-200 rounded-400" />
+    </div>
+  </div>
+);
 
 export default MentorFeedbackPage;
