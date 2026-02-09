@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import Button from '../../common/button/Button';
-import type { Task, TaskDetail } from '../../../types';
+import type { taskTypes } from '../../../types';
 import { SUBJECT_COLORS } from '../../../static/subjects';
 import '../../../styles/components/task-detail-modal.css';
+
+type Task = taskTypes.Task;
+type TaskDetail = taskTypes.TaskDetail;
 
 interface TaskDetailModalProps {
   isOpen: boolean;
