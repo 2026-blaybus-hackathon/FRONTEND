@@ -7,6 +7,7 @@ import SubjectBadge from "../../components/feature/subject/SubjectBadge";
 import Button from "../../components/common/button/Button";
 import TextArea from "../../components/common/input/TextArea";
 import AssignmentCard from "../../components/feature/assignment/AssignmentCard";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Mentee {
   id: number;
@@ -273,9 +274,25 @@ const MentorFeedbackPage = () => {
           />
         </div>
         <div className="max-h-[466px] flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-100 shrink-0">
-          <div className="flex flex-col gap-2">
-            {selectedAssignment && <SubjectBadge subject={selectedAssignment.subject} />}
-            <p className="heading-6 font-weight-700 text-gray-800">{selectedAssignment ? selectedAssignment.title : "종합 피드백"}</p>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-2">
+              {selectedAssignment && <SubjectBadge subject={selectedAssignment.subject} />}
+              <p className="heading-6 font-weight-700 text-gray-800">{selectedAssignment ? selectedAssignment.title : "종합 피드백"}</p>
+            </div>
+            <div className="flex gap-100">
+              <button
+                className="text-xs font-weight-500 text-gray-700 flex items-center hover:bg-gray-50 rounded-full py-50 pl-75 pr-100 cursor-pointer"
+                onClick={() => {}}
+              >
+                <ChevronLeft width={16} height={16} />이전
+              </button>
+              <button
+                className="text-xs font-weight-500 text-gray-700 flex items-center hover:bg-gray-50 rounded-full py-50 pl-100 pr-75 cursor-pointer"
+                onClick={() => {}}
+              >
+                다음 <ChevronRight width={16} height={16} />
+              </button>
+            </div>
           </div>
           <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             {/* 에디터: 부모 높이에 맞추고, 내용은 내부 스크롤 */}
