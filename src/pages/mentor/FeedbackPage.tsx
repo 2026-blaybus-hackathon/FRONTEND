@@ -64,6 +64,9 @@ const MentorFeedbackPage = () => {
     }
   );
 
+  const { mutate: writeTaskFeedback } = useWriteTaskFeedback(selectedMentee ?? 0, selectedTaskId ?? 0);
+  const { mutate: writeTotalFeedback } = useWriteTotalFeedback(selectedMentee ?? 0);
+
   // 검색어로 멘티 이름 필터링
   const filteredMentees = useMemo(() => {
     if (!mentees) return undefined;
@@ -71,18 +74,16 @@ const MentorFeedbackPage = () => {
     return mentees.filter((m) => m.name.includes(search.trim()));
   }, [mentees, search]);
 
+  // 선택된 과제 조회
   const selectedTask = useMemo(() => {
     return menteeDetail?.tasks.find((task) => task.taskId === selectedTaskId);
   }, [menteeDetail, selectedTaskId]);
 
-  const editorMode = selectedTaskId !== null ? "task" : "total";
-  const isEditing = editorMode === "task" ? selectedTask?.feedback !== null : menteeDetail?.totalFeedback !== null;
-  const isTotalFeedbackCompleted = menteeDetail?.totalFeedback !== null;
-  
+  const editorMode = selectedTaskId !== null ? "task" : "total"; // 피드백 모드 (과제 피드백 / 종합 피드백)
+  const isEditing = editorMode === "task" ? selectedTask?.feedback !== null : menteeDetail?.totalFeedback !== null; // 피드백 수정 여부
+  const isTotalFeedbackCompleted = menteeDetail?.totalFeedback !== null; // 종합 피드백 완료 여부
 
-  const { mutate: writeTaskFeedback } = useWriteTaskFeedback(selectedMentee ?? 0, selectedTaskId ?? 0);
-  const { mutate: writeTotalFeedback } = useWriteTotalFeedback(selectedMentee ?? 0);
-
+  // 피드백 등록 핸들러
   const handleEnrollTaskFeedback = () => {
     if (selectedTaskId === null) return;
     writeTaskFeedback({
@@ -110,6 +111,7 @@ const MentorFeedbackPage = () => {
     } 
   }
 
+  // 이전 핸들러
   const handleMovePrevious = () => {
     if (selectedMentee === null) return;
     if (selectedTaskId === null) {
@@ -125,6 +127,7 @@ const MentorFeedbackPage = () => {
     }
   }
 
+  // 다음 핸들러
   const handleMoveNext = () => {
     if (selectedMentee === null) return;
     if (selectedTaskId === null) {
@@ -148,7 +151,7 @@ const MentorFeedbackPage = () => {
     ? (filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? 0) >= (filteredMentees?.length ?? 1) - 1
     : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) >= (menteeDetail?.tasks.length ?? 1) - 1;
 
-
+  // 미디어 쿼리에 따라 페이지 사이즈 조정
   useEffect(() => {
     const mqXl = window.matchMedia("(min-width: 1640px)");
     const mq2xl = window.matchMedia("(min-width: 1920px)");
@@ -164,6 +167,7 @@ const MentorFeedbackPage = () => {
     };
   }, []);
 
+  // 그림자 업데이트
   useEffect(() => {
     const container = assignmentListRef.current;
     if (!container) return;
@@ -201,9 +205,11 @@ const MentorFeedbackPage = () => {
     };
   }, [selectedMentee, selectedTaskId]);
 
+  // 페이지 계산
   const lastPage = Math.ceil((filteredMentees ? filteredMentees.length : 0) / pageSize);
   const effectivePage = Math.min(page, Math.max(0, lastPage - 1));
  
+  // 검색 핸들러
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     setPage(0); // 검색 시 첫 페이지로 이동
