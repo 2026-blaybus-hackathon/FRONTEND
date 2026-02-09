@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useMenteeTasks, useCreateMenteeTask, useUpdateMenteeTask, useDeleteMenteeTask, useUpdateMenteeTaskCompletion, useUpdateMenteeStudyTime, useUpdateMenteeTaskComment } from '../../hooks/useMenteeTasks';
 import { useUnreadFeedbackCount } from '../../hooks/useMenteeFeedbacks';
 import AddTaskModal from '../../components/feature/dashboard/AddTaskModal';
@@ -10,6 +11,7 @@ import { FILTERS } from '../../static/subjects';
 import '../../styles/pages/mentee-dashboard.css';
 
 const MenteeDashboardPage = () => {
+  const [searchParams] = useSearchParams();
   const [selectedDate, setSelectedDate] = useState(new Date().getDate());
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +19,11 @@ const MenteeDashboardPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [detailTask, setDetailTask] = useState<Task | null>(null);
+  const [showTotalFeedbackModal, setShowTotalFeedbackModal] = useState(false);
+
+  // Query parameter에서 date와 showTotalFeedback 가져오기
+  const dateParam = searchParams.get('date');
+  const showTotalFeedbackParam = searchParams.get('showTotalFeedback');
 
   // 선택된 날짜 문자열 생성
   const selectedDateStr = useMemo(() => {
@@ -180,7 +187,7 @@ const MenteeDashboardPage = () => {
         isCompleted: true
       });
     } catch (error) {
-      console.error('Failed to submit task detail:', error);
+      // 에러 처리
     }
   };
 
@@ -191,6 +198,27 @@ const MenteeDashboardPage = () => {
   const filteredTasks = selectedFilter === '전체' 
     ? tasks 
     : tasks.filter(task => task.subject === selectedFilter);
+
+  // URL에서 date 파라미터가 있으면 해당 날짜로 이동
+  useEffect(() => {
+    if (dateParam) {
+      try {
+        const date = new Date(dateParam);
+        if (!isNaN(date.getTime())) {
+          setSelectedDate(date.getDate());
+        }
+      } catch (error) {
+        // 잘못된 날짜 형식 무시
+      }
+    }
+  }, [dateParam]);
+
+  // URL에서 showTotalFeedback 파라미터가 있으면 종합 피드백 모달 열기
+  useEffect(() => {
+    if (showTotalFeedbackParam === 'true') {
+      setShowTotalFeedbackModal(true);
+    }
+  }, [showTotalFeedbackParam]);
 
   return (
     <div className="dashboard-container">
@@ -359,6 +387,55 @@ const MenteeDashboardPage = () => {
         onSubmit={handleSubmitTaskDetail}
         task={detailTask}
       />
+
+      {/* 종합 피드백 모달 (임시) */}
+      {showTotalFeedbackModal && (
+        <div className="modal-overlay" onClick={() => setShowTotalFeedbackModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            maxWidth: '600px',
+            width: '90%',
+          }}>
+            <h2 style={{ marginBottom: '16px', fontSize: '24px', fontWeight: '700' }}>
+              종합 피드백
+            </h2>
+            <p style={{ color: '#6B7280', marginBottom: '24px' }}>
+              {selectedDateInfo.month}월 {selectedDateInfo.date}일의 종합 피드백입니다.
+            </p>
+            <div style={{ 
+              background: '#F9FAFB', 
+              padding: '20px', 
+              borderRadius: '12px',
+              marginBottom: '24px',
+              minHeight: '200px',
+            }}>
+              <p style={{ color: '#374151' }}>
+                종합 피드백 내용이 여기에 표시됩니다.
+                <br /><br />
+                API: GET /api/v1/feedbacks/daily-planner/total-feedback?date={selectedDateStr}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowTotalFeedbackModal(false)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: '#6366F1',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

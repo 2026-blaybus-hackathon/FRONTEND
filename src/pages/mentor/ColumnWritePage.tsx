@@ -20,12 +20,10 @@ const ColumnWritePage = () => {
   const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
 
   const handleTempSave = () => {
-    console.log('[ColumnWrite] 임시 저장', { columnType, title, content });
     alert('임시 저장되었습니다.');
   };
 
   const handlePublish = () => {
-    console.log('[ColumnWrite] 발행', { columnType, title, content });
     alert('발행되었습니다.');
   };
 

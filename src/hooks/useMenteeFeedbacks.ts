@@ -16,17 +16,19 @@ interface FeedbackItem {
 
 /**
  * 멘티 피드백 목록 조회 훅
- * GET /api/v1/feedback/mentee/feedbacks
+ * GET /api/v1/feedbacks
  */
 export function useMenteeFeedbacks() {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: FEEDBACKS_QUERY_KEY,
     queryFn: async () => {
       try {
-        const response = await axios.get<{ feedbacks: FeedbackItem[] }>('/feedback/mentee/feedbacks');
-        return response.data.feedbacks || [];
+        const response = await axios.get<{ feedbacks: FeedbackItem[] }>('/feedbacks');
+        const feedbacks = Array.isArray(response.data) 
+          ? response.data 
+          : response.data.feedbacks || [];
+        return feedbacks;
       } catch (err) {
-        console.error('Failed to fetch feedbacks:', err);
         return [];
       }
     },
@@ -53,7 +55,6 @@ export function useUnreadFeedbackCount() {
         const response = await axios.get<{ count: number }>('/feedback/mentee/unread-count');
         return response.data.count || 0;
       } catch (err) {
-        console.error('Failed to fetch unread feedback count:', err);
         return 0;
       }
     },

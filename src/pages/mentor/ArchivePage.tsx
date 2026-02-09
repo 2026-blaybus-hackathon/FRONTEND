@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToastStore } from '../../stores/toastStore';
 import SubmittedTaskModal from '../../components/feature/dashboard/SubmittedTaskModal';
@@ -14,6 +14,11 @@ const MentorArchivePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const addToast = useToastStore((state) => state.addToast);
+
+  // 캐러셀 스크롤 관련 상태
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   // 멘티 목록 조회
   const { menteeList, isLoading: isLoadingMentees } = useMenteeList();
@@ -90,8 +95,41 @@ const MentorArchivePage = () => {
   // 현재 선택된 멘티 정보
   const currentMentee = menteeList.find((m) => m.id === selectedMentee);
 
-  // 캐러셀에 표시할 멘티 (최대 3명)
-  const displayedMentees = menteeList.slice(0, 3);
+  // 스크롤 가능 여부 체크
+  const checkScrollability = () => {
+    if (!carouselRef.current) return;
+    
+    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+  };
+
+  // 초기 로드 및 멘티 목록 변경 시 스크롤 가능 여부 체크
+  useEffect(() => {
+    checkScrollability();
+  }, [menteeList]);
+
+  // 좌측 스크롤
+  const scrollLeft = () => {
+    if (!carouselRef.current) return;
+    
+    const scrollAmount = carouselRef.current.clientWidth;
+    carouselRef.current.scrollBy({
+      left: -scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
+  // 우측 스크롤
+  const scrollRight = () => {
+    if (!carouselRef.current) return;
+    
+    const scrollAmount = carouselRef.current.clientWidth;
+    carouselRef.current.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F3F2FF' }}>
@@ -132,22 +170,31 @@ const MentorArchivePage = () => {
 
         {/* 멘티 캐러셀 */}
         <div className="flex items-center gap-5 my-10">
-          <button className="shrink-0">
+          <button 
+            className="shrink-0 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
+            onClick={scrollLeft}
+            disabled={!canScrollLeft}
+          >
             <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 12 12">
               <path d="M8 2L3 6l5 4V2z" />
             </svg>
           </button>
 
-          <div className="flex gap-6 flex-1">
+          <div 
+            ref={carouselRef}
+            className="flex gap-6 flex-1 overflow-x-auto scrollbar-hide"
+            onScroll={checkScrollability}
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
             {isLoadingMentees ? (
               <div className="flex-1 text-center py-8 text-gray-500">
                 멘티 목록을 불러오는 중...
               </div>
-            ) : displayedMentees.length > 0 ? (
-              displayedMentees.map((mentee) => (
+            ) : menteeList.length > 0 ? (
+              menteeList.map((mentee) => (
                 <div
                   key={mentee.id}
-                  className={`flex-1 bg-white rounded-2xl p-5 flex flex-col items-center ring-1 cursor-pointer transition-all ${
+                  className={`min-w-[calc(33.333%-1rem)] bg-white rounded-2xl p-5 flex flex-col items-center ring-1 cursor-pointer transition-all ${
                     selectedMentee === mentee.id
                       ? 'ring-purple-500 ring-2'
                       : 'ring-gray-100'
@@ -171,7 +218,11 @@ const MentorArchivePage = () => {
             )}
           </div>
 
-          <button className="shrink-0">
+          <button 
+            className="shrink-0 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
+            onClick={scrollRight}
+            disabled={!canScrollRight}
+          >
             <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 12 12">
               <path d="M4 2v8l5-4-5-4z" />
             </svg>
