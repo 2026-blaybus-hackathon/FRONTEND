@@ -3,6 +3,8 @@ import { Megaphone } from '../../icons';
 import { cn } from '../../libs/utils';
 import { useMenteeNotifications, useReadMenteeNotification, useReadAllMenteeNotifications } from '../../hooks/mentee/useMenteeNotification';
 import type { MenteeNotification } from '../../api/mentee';
+import { useToastStore } from '../../stores/toastStore';
+import { useEffect } from 'react';
 
 type NotificationFilterType = "all" | "feedback" | "report";
 
@@ -11,16 +13,27 @@ const VALID_TYPES: NotificationFilterType[] = ['feedback', 'report'];
 const NotificationCenterPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { addToast } = useToastStore();
 
   const rawType = searchParams.get('type');
   const filter: NotificationFilterType = VALID_TYPES.includes(rawType as NotificationFilterType)
     ? (rawType as NotificationFilterType)
     : 'all';
 
-  const { data: notifications, isLoading } = useMenteeNotifications();
+  const { data: notifications, isLoading, isError } = useMenteeNotifications();
   const { mutate: readNotificationMutation } = useReadMenteeNotification();
   const { mutate: readAllNotificationsMutation, isPending: isReadingAll } = useReadAllMenteeNotifications();
 
+  useEffect(() => {
+    if (isError) {
+      addToast({
+        title: "오류 발생",
+        message: "알림을 불러오는 중 오류가 발생했습니다.",
+        type: "error",
+      });
+    }
+  }, [isError, addToast]);
+  
   const filtered = filter === 'all'
     ? notifications
     : notifications?.filter((n) => {
@@ -47,14 +60,29 @@ const NotificationCenterPage = () => {
     readNotificationMutation(item.notificationId, {
       onSuccess: () => {
         navigate(path);
-      }
+      },
+      onError: () => {
+        addToast({
+          title: "오류 발생",
+          message: "알림을 읽지 못했습니다. 잠시후 다시 시도해주세요.",
+          type: "error",
+        });
+      },
     });
   };
 
   const handleReadAll = () => {
     const unreadIds = notifications?.filter((n) => !n.read).map((n) => n.notificationId) ?? [];
     if (unreadIds.length > 0) {
-      readAllNotificationsMutation(unreadIds);
+      readAllNotificationsMutation(unreadIds, {
+        onError: () => {
+          addToast({
+            title: "오류 발생",
+            message: "알림을 모두 읽지 못했습니다. 잠시후 다시 시도해주세요.",
+            type: "error",
+          });
+        },
+      });
     }
   };
 
@@ -205,3 +233,4 @@ const elapsedTime = (createdAt: string): string => {
 };
 
 export default NotificationCenterPage;
+
