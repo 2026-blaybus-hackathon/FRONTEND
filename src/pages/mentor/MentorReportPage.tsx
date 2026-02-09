@@ -7,6 +7,7 @@ import {
   Gift,
   AlertTriangle,
   CheckSquare,
+  X,
 } from 'lucide-react';
 import SearchInput from '../../components/common/input/SearchInput';
 import type { MenteeListItem } from '../../libs/types/mentee';
@@ -16,7 +17,6 @@ import { createMentorReport } from '../../api/mentor';
 import type { MentorReportPeriod, MenteeFeedbackItem } from '../../libs/types/mentor';
 import { useMenteeFeedbacksFromTasks } from '../../hooks/useMenteeFeedbacksFromTasks';
 import { DEFAULT_MENTEE_ASSIGNMENT_DETAIL } from '../../static/assignment';
-import FeedbackContentModal from '../../components/common/modal/FeedbackContentModal';
 import { cn } from '../../libs/utils';
 
 function todayYYYYMMDD(): string {
@@ -473,10 +473,49 @@ const MentorReportPage = () => {
         </nav>
       )}
 
-      <FeedbackContentModal
-        feedback={selectedFeedback}
-        onClose={() => setSelectedFeedback(null)}
-      />
+      {/* 최근 피드백 상세 모달 (최근 제공 과제와 동일한 스타일) */}
+      {selectedFeedback && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setSelectedFeedback(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="feedback-detail-modal-title"
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+              <h2 id="feedback-detail-modal-title" className="text-lg font-bold text-gray-900 m-0 truncate pr-4">
+                {selectedFeedback.taskTitle} 피드백
+              </h2>
+              <button
+                type="button"
+                onClick={() => setSelectedFeedback(null)}
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100"
+                aria-label="닫기"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1 min-h-0 flex flex-col gap-4">
+              {selectedFeedback.summary?.trim() ? (
+                <div>
+                  <p className="text-xs font-medium text-gray-500 m-0 mb-1">요약</p>
+                  <p className="text-sm text-gray-800 whitespace-pre-wrap m-0">{selectedFeedback.summary}</p>
+                </div>
+              ) : null}
+              <div className="p-3 bg-[var(--color-primary-50)] rounded-lg border border-[var(--color-primary-100)]">
+                <p className="text-xs font-medium text-[var(--color-primary-700)] m-0 mb-1">상세 코멘트</p>
+                <p className="text-sm text-gray-800 whitespace-pre-wrap m-0">
+                  {selectedFeedback.comment?.trim() || '작성된 코멘트가 없습니다.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
