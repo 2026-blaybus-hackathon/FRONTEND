@@ -24,6 +24,11 @@ export interface MentorTaskItem {
   title: string;
   images: MentorTaskImage[];
   feedback: MentorTaskFeedback;
+  subject?: string;
+  taskType?: string;
+  feedbackStatus?: 'PENDING' | 'COMPLETED';
+  createdAt?: string;
+  fileUrl?: string;
 }
 
 /** 페이지네이션된 과제 목록 */

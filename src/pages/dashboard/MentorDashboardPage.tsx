@@ -18,9 +18,32 @@ interface RecentTask {
   submittedAt: string;
 }
 
+interface MenteeSummary {
+  menteeId: number;
+  name: string;
+  school: string;
+  grade: string;
+  profileImageUrl?: string;
+}
+
 interface DashboardResponse {
-  stats: DashboardStats;
-  recentTasks: RecentTask[];
+  stats: {
+    totalMenteeCount: number;
+    averageProgress: number;
+    progressChange: number;
+    pendingFeedbackCount: number;
+  };
+  mentees: MenteeSummary[];
+  recentTasks: Array<{
+    taskId: number;
+    title: string;
+    menteeName: string;
+    schoolAndGrade: string;
+    targetSchool?: string;
+    targetDate?: string;
+    date: string;
+    isFeedbackCompleted: boolean;
+  }>;
 }
 
 const MentorDashboardPage = () => {
@@ -34,14 +57,19 @@ const MentorDashboardPage = () => {
     queryFn: async () => {
       try {
         const response = await axios.get<DashboardResponse>('/dashboard/mentor/dashboard');
-        return response.data ?? { stats: { totalMentees: 0, completionRate: 0, consecutiveStudyDays: 0 }, recentTasks: [] };
-      } catch {
-        return { stats: { totalMentees: 0, completionRate: 0, consecutiveStudyDays: 0 }, recentTasks: [] };
+        return response.data;
+      } catch (error) {
+        console.error('Failed to fetch dashboard:', error);
+        return null;
       }
     },
   });
 
-  const stats = dashboardData?.stats || {
+  const stats = dashboardData?.stats ? {
+    totalMentees: dashboardData.stats.totalMenteeCount,
+    completionRate: dashboardData.stats.averageProgress,
+    consecutiveStudyDays: dashboardData.stats.progressChange,
+  } : {
     totalMentees: 0,
     completionRate: 0,
     consecutiveStudyDays: 0,
@@ -49,13 +77,14 @@ const MentorDashboardPage = () => {
 
   const recentTasks = dashboardData?.recentTasks ?? [];
   const recentSubmissions = recentTasks.map((task) => {
-    const submittedAt = task?.submittedAt ? new Date(task.submittedAt) : new Date();
+    const date = task?.date ? new Date(task.date) : new Date();
     return {
       id: task.taskId,
       title: task.title ?? '',
-      date: Number.isNaN(submittedAt.getTime()) ? '-' : submittedAt.toLocaleDateString('ko-KR'),
+      date: Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('ko-KR'),
       menteeName: task.menteeName ?? '',
-      subject: task.subject ?? '',
+      schoolAndGrade: task.schoolAndGrade ?? '',
+      isFeedbackCompleted: task.isFeedbackCompleted,
     };
   });
 
@@ -151,20 +180,21 @@ const MentorDashboardPage = () => {
 
           {/* 하단 섹션 */}
           <div className="bottom-row">
-            {/* 과제 제공 */}
+            {/* 미작성 피드백 */}
             <section className="content-section half">
               <div className="section-header">
-                <h2 className="section-title">과제 제공</h2>
-                <button className="more-btn">⋯</button>
+                <h2 className="section-title">미작성 피드백</h2>
+                <span className="badge">{dashboardData?.stats.pendingFeedbackCount || 0}개</span>
               </div>
-              <div className="list-items">
-                {assignments.map((item) => (
-                  <div key={item.id} className="list-item">
-                    <span>{item.subject}</span>
-                    <span>{item.mentor}</span>
-                  </div>
-                ))}
-              </div>
+              {dashboardLoading ? (
+                <div className="loading-state">로딩 중...</div>
+              ) : (dashboardData?.stats.pendingFeedbackCount || 0) === 0 ? (
+                <div className="empty-state">모든 피드백을 작성했습니다!</div>
+              ) : (
+                <div className="list-items">
+                  <div className="empty-state">피드백 목록은 보관함에서 확인하세요</div>
+                </div>
+              )}
             </section>
 
             {/* 최근 제출 과제 */}
@@ -183,9 +213,11 @@ const MentorDashboardPage = () => {
                     <div key={item.id} className="submission-item">
                       <div className="submission-title">{item.title}</div>
                       <div className="submission-date">
-                        {item.menteeName} · {item.date}
+                        {item.menteeName} · {item.schoolAndGrade}
                       </div>
-                      <div className="submission-status">제출 완료</div>
+                      <div className="submission-status">
+                        {item.isFeedbackCompleted ? '피드백 완료' : '피드백 대기'}
+                      </div>
                     </div>
                   ))}
                 </div>
