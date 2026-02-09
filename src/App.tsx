@@ -14,6 +14,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MentorFeedbackPage from './pages/mentor/FeedbackPage';
 import MentorArchivePage from './pages/mentor/ArchivePage';
 import AssignmentManagementPage from './pages/mentor/AssignmentManagementPage';
+import AssignmentTaskListPage from './pages/mentor/AssignmentTaskListPage';
 import LearningMaterialPage from './pages/mentor/LearningMaterialPage';
 import ColumnWritePage from './pages/mentor/ColumnWritePage';
 import MentorReportPage from './pages/mentor/MentorReportPage';
@@ -64,7 +65,10 @@ function App() {
             <Route index element={<Navigate to="mentee" replace />} />
             <Route path="mentee" element={<MentorDashboardPage />} />
             <Route path="feedback" element={<MentorFeedbackPage />} />
-            <Route path="assignment" element={<AssignmentManagementPage />} />
+            <Route path="assignment" element={<Outlet />}>
+              <Route index element={<AssignmentManagementPage />} />
+              <Route path="tasks" element={<AssignmentTaskListPage />} />
+            </Route>
             <Route path="material" element={<Outlet />}>
               <Route index element={<LearningMaterialPage />} />
               <Route path="column" element={<ColumnWritePage />} />
