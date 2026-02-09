@@ -47,7 +47,7 @@ const NotificationCenterPage = () => {
       case 'TASK_FEEDBACK':
         return '과제 피드백이 도착했습니다!';
       case 'PLANNER_FEEDBACK':
-        return '플래너 피드백이 도착했습니다!';
+        return '종합 피드백이 도착했습니다!';
       case 'REPORT':
         return '리포트가 도착했습니다!';
     }
