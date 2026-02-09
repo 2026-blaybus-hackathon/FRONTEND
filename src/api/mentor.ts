@@ -1,5 +1,6 @@
 import axios from '../libs/axios';
 import type { MenteeListItem, MenteeResponse } from '../libs/types/mentee';
+import type { subjectTypes, imageTypes } from '../types';
 import type {
   MentorMenteeTasksResponse,
   MentorTaskAssignmentRequest,
@@ -167,5 +168,74 @@ export async function assignTask(
       'Content-Type': false as unknown as string,
     },
   });
+  return response.data;
+}
+
+/**
+ * 멘토 피드백 페이지 용 조회 및 작성 API
+ */
+
+// 멘토 피드백 페이지 내 멘티 상태
+export type MentorFeedbackMenteeStatus = "PENDING" | "COMPLETED";
+// 멘토 피드백 페이지 내 과제 상태
+export type MentorFeedbackTaskStatus = "PENDING" | "COMPLETED" | "NOT_SUBMITTED";
+
+// 멘토 피드백 페이지 내 멘티 리스트
+export interface MentorFeedbackMenteeListItem {
+    id: number;
+    name: string;
+    profileUrl: string;
+    schoolName: string;
+    grade: string;
+    status: MentorFeedbackMenteeStatus;
+}
+
+export type MentorFeedbackMenteeList = MentorFeedbackMenteeListItem[]
+
+export interface MentorFeedbackTask {
+  taskId: number;
+  subject: subjectTypes.Subject;
+  title: string;
+  time: number;
+  date: string;
+  status: boolean;
+  menteeComment: string;
+  feedbackStatus: MentorFeedbackTaskStatus;
+  images: imageTypes.Image[];
+  feedback: string;
+}
+
+export interface MentorFeedbackMenteeDetail {
+tasks: MentorFeedbackTask[];
+totalFeedback: string;
+}
+
+export async function getMentorFeedbackMenteeList(): Promise<MentorFeedbackMenteeList> {
+  const response = await axios.get<MentorFeedbackMenteeList>('/feedback/mentor/mentees');
+  return response.data;
+}
+
+export async function getMentorFeedbackMenteeDetail(menteeId: number): Promise<MentorFeedbackMenteeDetail> {
+  const response = await axios.get<MentorFeedbackMenteeDetail>(`/feedback/mentor/mentees/${menteeId}`);
+  return response.data;
+}
+
+export interface WriteMentorTaskFeedbackPayload {
+  content: string;
+}
+
+export interface WriteMentorTotalFeedbackPayload {
+  menteeId: number;
+  content: string;
+}
+
+// 피드백 작성
+export async function writeMentorTaskFeedback(taskId: number, payload: WriteMentorTaskFeedbackPayload): Promise<void> {
+  const response = await axios.post<void>(`/feedback/mentor/task/${taskId}`, payload);
+  return response.data;
+}
+
+export async function writeMentorTotalFeedback(payload: WriteMentorTotalFeedbackPayload): Promise<void> {
+  const response = await axios.post<void>(`/feedback/mentor/mentees/daily-planner/total-feedback`, payload);
   return response.data;
 }
