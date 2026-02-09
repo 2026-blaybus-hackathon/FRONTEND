@@ -150,7 +150,7 @@ const ReportPage = () => {
             <section className="flex flex-col" aria-label="멘토 총평">
               <h3 className="text-100 font-semibold text-gray-900 mb-2">멘토 총평</h3>
               <p className="max-h-[50vh] text-sm text-gray-700 leading-relaxed text-justify overflow-y-auto">
-                &ldquo;{report?.overallReview}
+                {report?.overallReview ? `“${report?.overallReview}”` : ''}
               </p>
             </section>
 
