@@ -71,15 +71,31 @@ export async function getMenteeReport(period: MenteeReportPeriod, reportDate: st
  * 멘티 알림 조회
  */
 
-export interface MenteeNotificationResponse {
+export type MenteeNotificationType = "TASK_FEEDBACK"| "TOTAL_FEEDBACK" | "REPORT";
+
+export interface MenteeNotification {
 	notificationId: number;
 	title: string;
 	time: string;
 	read: boolean;
 	type: "TASK_FEEDBACK"| "TOTAL_FEEDBACK" | "REPORT";
 	taskId?: number;
-	dateId?: number;
-	reportId?: number;
+	date?: number;
+	report?: {
+        date: string;
+        period: MenteeReportPeriod;
+    }
+}
+
+type MenteeNotificationResponse = MenteeNotification[];
+
+export async function getMenteeNotifications(): Promise<MenteeNotificationResponse> {
+    const response = await axios.get<MenteeNotificationResponse>('/notifications/mentee');
+    return response.data;
+}
+
+export async function readMenteeNotification(notificationId: number): Promise<void> {
+    await axios.post(`/notifications/mentee/${notificationId}/read`);
 }
 
 

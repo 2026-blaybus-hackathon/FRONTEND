@@ -1,103 +1,56 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Megaphone } from '../../icons';
 import { cn } from '../../libs/utils';
+import { useMenteeNotifications, useReadMenteeNotification } from '../../hooks/mentee/useMenteeNotification';
+import type { MenteeNotification } from '../../api/mentee';
 
-export type NotificationType = 'all' | 'feedback' | 'report' | 'notice';
+type NotificationFilterType = "all" | "feedback" | "report";
 
-export interface NotificationItem {
-  id: string;
-  type: NotificationType;
-  title: string;
-  body: string;
-  createdAt: string;
-  read: boolean;
-  link?: string;
-}
-
-/** 상대 시간 케이스 확인용 목업: 방금 / N분 / N시간 / 어제 / N일 전 */
-const getMockNotifications = (): NotificationItem[] => {
-  const now = Date.now();
-  const ms = (n: number) => n * 1000;
-  const min = (n: number) => n * 60 * 1000;
-  const hour = (n: number) => n * 60 * 60 * 1000;
-  const day = (n: number) => n * 24 * 60 * 60 * 1000;
-  const toIso = (t: number) => new Date(t).toISOString();
-
-  const yesterday = new Date(now);
-  yesterday.setDate(yesterday.getDate() - 1);
-  yesterday.setHours(10, 30, 0, 0);
-
-  return [
-    {
-      id: '1',
-      type: 'feedback',
-      title: '새로운 피드백이 도착했습니다 (방금)',
-      body: '멘토님의 과제물을 확인하고 학습을 완료하세요.',
-      createdAt: toIso(now - ms(30)),
-      read: false,
-      link: '/mentee/review',
-    },
-    {
-      id: '2',
-      type: 'feedback',
-      title: '과제 제출 안내 (N분)',
-      body: '제출 마감 30분 전입니다.',
-      createdAt: toIso(now - min(5)),
-      read: false,
-      link: '/mentee/dashboard',
-    },
-    {
-      id: '3',
-      type: 'report',
-      title: '주간 리포트 도착 (N시간)',
-      body: '이번 주 학습 요약을 확인하세요.',
-      createdAt: toIso(now - hour(2)),
-      read: true,
-      link: '/mentee/dashboard',
-    },
-    {
-      id: '4',
-      type: 'notice',
-      title: '어제 공지 (어제)',
-      body: '학습 보관함에 새로운 자료가 추가되었습니다.',
-      createdAt: yesterday.toISOString(),
-      read: true,
-    },
-    {
-      id: '5',
-      type: 'notice',
-      title: '시스템 점검 안내 (N일 전)',
-      body: '지난주 시스템 점검이 완료되었습니다.',
-      createdAt: toIso(now - day(3)),
-      read: true,
-    },
-  ];
-};
-
-const MOCK_NOTIFICATIONS = getMockNotifications();
+const VALID_TYPES: NotificationFilterType[] = ['feedback', 'report'];
 
 const NotificationCenterPage = () => {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
-  const [filter, setFilter] = useState<'all' | 'feedback' | 'report' | 'notice'>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const rawType = searchParams.get('type');
+  const filter: NotificationFilterType = VALID_TYPES.includes(rawType as NotificationFilterType)
+    ? (rawType as NotificationFilterType)
+    : 'all';
+
+  const { data: notifications } = useMenteeNotifications();
+  const { mutate: readNotificationMutation } = useReadMenteeNotification();
 
   const filtered = filter === 'all'
     ? notifications
-    : notifications.filter((n) => n.type === filter);
+    : notifications?.filter((n) => {
+        if (filter === 'feedback') return n.type === 'TASK_FEEDBACK' || n.type === 'TOTAL_FEEDBACK';
+        if (filter === 'report') return n.type === 'REPORT';
+        return true;
+      });
 
-  const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  const handleClickFilter = (type: NotificationFilterType) => {
+    if (type === 'all') {
+      searchParams.delete('type');
+      setSearchParams(searchParams, { replace: true });
+    } else {
+      setSearchParams({ type }, { replace: true });
+    }
   };
 
-  const handleNotificationClick = (item: NotificationItem) => {
-    handleMarkAsRead(item.id);
-    if (item.link) navigate(item.link);
+  const handleNotificationClick = (item: MenteeNotification) => {
+    const path = item.type === 'REPORT' ?
+    `/mentee/report?date=${item.report?.date}&period=${item.report?.period}` :
+    item.type === 'TASK_FEEDBACK' ?
+    `/mentee/review?taskId=${item.taskId}` :
+    `/mentee/dashboard?date=${item.date}&showTotalFeedback=true`;
+    readNotificationMutation(item.notificationId, {
+      onSuccess: () => {
+        navigate(path);
+      }
+    });
   };
 
-  const getTypeLabel = (type: NotificationType) => {
+  const getTypeLabel = (type: NotificationFilterType) => {
     switch (type) {
       case 'all':
         return '전체';
@@ -105,10 +58,6 @@ const NotificationCenterPage = () => {
         return '피드백';
       case 'report':
         return '리포트';
-      case 'notice':
-        return '공지사항';
-      default:
-        return '-';
     }
   };
 
@@ -140,16 +89,16 @@ const NotificationCenterPage = () => {
                   'subtitle-2 font-weight-500 bg-white gap-1.5 rounded-full py-2 px-4 text-sm font-medium transition-all whitespace-nowrap sm:flex-initial sm:justify-start sm:px-5',
                   filter === type ? 'bg-primary-500 text-white' : 'bg-white text-gray-600 hover:shadow-100 hover:translate-y-[-1px]'
                 )}
-                onClick={() => setFilter(type as NotificationType)}
+                onClick={() => handleClickFilter(type as NotificationFilterType)}
                 aria-pressed={filter === type}
               >
-                {getTypeLabel(type as NotificationType)}
+                {getTypeLabel(type as NotificationFilterType)}
               </button>
             ))
           }
         </div>
         <div className="w-full overflow-hidden rounded-xl bg-white" aria-label="알림 목록">
-          {filtered.length === 0 ? (
+          {filtered?.length === 0 ? (
             <div className="flex min-h-0 flex-col items-center justify-center px-6 py-12 text-center sm:min-h-[320px] sm:px-10 sm:py-20">
               <div className="mx-auto mb-6 flex items-center justify-center opacity-20">
                 <Megaphone className="h-12 w-12 text-gray-900 sm:h-20 sm:w-20" aria-hidden />
@@ -165,8 +114,8 @@ const NotificationCenterPage = () => {
             </div>
           ) : (
             <ul className="m-0 list-none p-0 flex flex-col px-400">
-              {filtered.map((item, idx) => (
-                <li key={item.id}>
+              {filtered?.map((item, idx) => (
+                <li key={item.notificationId}>
                   <article
                     className={cn(
                       'flex cursor-pointer py-200 lg:py-300 items-center bg-white text-left transition-colors',
@@ -180,14 +129,14 @@ const NotificationCenterPage = () => {
                         handleNotificationClick(item);
                       }
                     }}
-                    aria-label={`${item.title}, ${getTypeLabel(item.type)}, ${item.createdAt}`}
+                    aria-label={`${item.title} ${item.time}`}
                   >
                     <NotificationStatusBadge status={item.read ? 'read' : 'unread'} />
                     <div className="min-w-0 flex-1">
                       <h2 className={cn("mb-1 lg:mb-2.5 heading-6 font-weight-500", item.read ? 'text-gray-500' : 'text-black')}>
                         {item.title}
                       </h2>
-                      <p className="text-[12px] text-gray-300 font-weight-500">{elapsedTime(item.createdAt)}</p>
+                      <p className="text-[12px] text-gray-300 font-weight-500">{elapsedTime(item.time)}</p>
                     </div>
                   </article>
                   {idx !== filtered.length - 1 && <div className="w-full h-[1px] bg-gray-50" />}
