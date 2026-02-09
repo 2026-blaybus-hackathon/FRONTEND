@@ -1,5 +1,6 @@
 import axios from '../libs/axios';
 import type { MenteeListItem, MenteeResponse } from '../libs/types/mentee';
+import type { mentorTypes } from '../types';
 import type {
   MentorMenteeTasksResponse,
   MentorTaskAssignmentRequest,
@@ -81,4 +82,37 @@ export async function assignTask(
     console.log('[assignTask] error', ax.response?.status, ax.response?.data, 'headers:', ax.config?.headers);
     throw err;
   }
+}
+
+/**
+ * 멘토 피드백 페이지 용 조회 및 작성 API
+ */
+export async function getMentorFeedbackMenteeList(): Promise<mentorTypes.MentorFeedbackMenteeList> {
+  const response = await axios.get<mentorTypes.MentorFeedbackMenteeList>('/feedback/mentor/mentees');
+  return response.data;
+}
+
+export async function getMentorFeedbackMenteeDetail(menteeId: number): Promise<mentorTypes.MentorFeedbackMenteeDetail> {
+  const response = await axios.get<mentorTypes.MentorFeedbackMenteeDetail>(`/feedback/mentor/mentees/${menteeId}`);
+  return response.data;
+}
+
+export interface WriteMentorTaskFeedbackPayload {
+  content: string;
+}
+
+export interface WriteMentorTotalFeedbackPayload {
+  menteeId: number;
+  totalFeedback: string;
+}
+
+// 피드백 작성
+export async function writeMentorTaskFeedback(taskId: number, payload: WriteMentorTaskFeedbackPayload): Promise<void> {
+  const response = await axios.post<void>(`/feedback/mentor/task/${taskId}`, payload);
+  return response.data;
+}
+
+export async function writeMentorTotalFeedback(payload: WriteMentorTotalFeedbackPayload): Promise<void> {
+  const response = await axios.post<void>(`/feedback/mentor/mentees/daily-planner/total-feedback`, payload);
+  return response.data;
 }
