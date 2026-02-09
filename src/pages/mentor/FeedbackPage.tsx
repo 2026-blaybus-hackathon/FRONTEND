@@ -291,8 +291,7 @@ const MentorFeedbackPage = () => {
                   "오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요."
                   }
                 ariaLabel="피드백 입력"
-                className="min-h-68px"
-                rows={3}
+                className="h-full"
               />
             }
           </div>
