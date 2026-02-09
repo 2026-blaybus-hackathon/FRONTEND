@@ -108,6 +108,13 @@ const MentorFeedbackPage = () => {
     writeTotalFeedback({
       content: feedback,
       menteeId: selectedMentee,
+    }, {
+      onError: () => {
+        addToast({
+          message: "피드백 등록 중 오류가 발생했습니다.",
+          type: "error",
+        });
+      },
     });
   }
 
