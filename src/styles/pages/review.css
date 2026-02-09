@@ -142,6 +142,41 @@
 }
 
 /* 히스토리 카드 */
+.history-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.filter-btn {
+  padding: 8px 20px;
+  border: 1px solid #E5E7EB;
+  background: white;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  border-color: #6366F1;
+  color: #6366F1;
+}
+
+.filter-btn.active {
+  background: #6366F1;
+  border-color: #6366F1;
+  color: white;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
 .history-card {
   background: white;
   border: 1px solid #E5E7EB;
@@ -154,6 +189,7 @@
 .history-card:hover {
   border-color: #6366F1;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  transform: translateY(-2px);
 }
 
 .history-card-header {
@@ -161,6 +197,20 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+}
+
+.history-subject-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.history-date {
+  font-size: 12px;
+  color: #9CA3AF;
 }
 
 .history-subject {
@@ -194,8 +244,26 @@
   font-size: 16px;
   font-weight: 600;
   color: #111827;
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
   line-height: 1.4;
+}
+
+.history-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-study-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6B7280;
+}
+
+.history-study-time svg {
+  color: #9CA3AF;
 }
 
 .history-info {
@@ -204,4 +272,41 @@
   align-items: center;
   font-size: 13px;
   color: #6B7280;
+}
+
+/* 로딩 스피너 */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* 반응형 추가 */
+@media (max-width: 768px) {
+  .history-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .history-filters {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-btn {
+    white-space: nowrap;
+  }
 }

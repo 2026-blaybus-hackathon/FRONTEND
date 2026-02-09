@@ -28,6 +28,17 @@ export async function getMenteeList(): Promise<MenteeListItem[]> {
   return (response.data ?? []).map(toMenteeListItem);
 }
 
+/**
+ * 멘티 이름 검색 (서버 사이드)
+ * GET /users/mentor/mentees/search?name={name}
+ */
+export async function searchMentees(name: string): Promise<MenteeListItem[]> {
+  const response = await axios.get<MenteeResponse[]>('/users/mentor/mentees/search', {
+    params: { name },
+  });
+  return (response.data ?? []).map(toMenteeListItem);
+}
+
 export interface GetMentorMenteeTasksParams {
   page?: number;
   size?: number;
