@@ -24,6 +24,7 @@ const ReportPage = () => {
     { enabled: !!date && !!period },
   );
 
+  // 에러 처리
   useEffect(() => {
     if (isReportError) {
       addToast({
@@ -34,6 +35,7 @@ const ReportPage = () => {
     }
   }, [isReportError, addToast]);
 
+  // 성과율 데이터
   const pillsData = useMemo(() => {
     if (!report) return undefined;
     const total = {
@@ -47,6 +49,7 @@ const ReportPage = () => {
     return [total, ...subjects];
   }, [report]);
 
+  // 주/월 탭 클릭 이벤트
   const handlePeriodButtonClick = (buttonPeriod: MenteeReportPeriod) => {
     if (period === buttonPeriod) return;
     
@@ -56,6 +59,7 @@ const ReportPage = () => {
     }, { replace: true });
   };
 
+  // 날짜와 기간이 설정되지 않았을 때 기본값 설정
   useEffect(() => {
     if (date && period) return;
     setSearchParams({
@@ -63,8 +67,6 @@ const ReportPage = () => {
       period: "WEEKLY",
     }, { replace: true });
   }, [date, period, setSearchParams]);
-
- 
 
   return (
     <div
