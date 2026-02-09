@@ -71,20 +71,17 @@ export async function getMenteeReport(period: MenteeReportPeriod, reportDate: st
  * 멘티 알림 조회
  */
 
-export type MenteeNotificationType = "TASK_FEEDBACK"| "TOTAL_FEEDBACK" | "REPORT";
+export type MenteeNotificationType = "TASK_FEEDBACK"| "PLANNER_FEEDBACK" | "REPORT";
 
 export interface MenteeNotification {
-	notificationId: number;
-	title: string;
-	time: string;
-	read: boolean;
-	type: "TASK_FEEDBACK"| "TOTAL_FEEDBACK" | "REPORT";
-	taskId?: number;
-	date?: number;
-	report?: {
-        date: string;
-        period: MenteeReportPeriod;
-    }
+	id: number;
+    type: MenteeNotificationType;
+    taskId?: number;
+    plannerDate: string; // YYYY-MM-DD
+    reportPeriod: MenteeReportPeriod;
+    reportStartDate: string; // YYYY-MM-DD
+	isRead: boolean;
+	createdDateTime: string; // "2026-02-09T17:14:02.010Z"
 }
 
 type MenteeNotificationResponse = MenteeNotification[];

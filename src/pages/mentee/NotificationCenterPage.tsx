@@ -2,7 +2,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Megaphone } from '../../icons';
 import { cn } from '../../libs/utils';
 import { useMenteeNotifications, useReadMenteeNotification, useReadAllMenteeNotifications } from '../../hooks/mentee/useMenteeNotification';
-import type { MenteeNotification } from '../../api/mentee';
+import type { MenteeNotification, MenteeNotificationType } from '../../api/mentee';
 import { useToastStore } from '../../stores/toastStore';
 import { useEffect } from 'react';
 
@@ -37,10 +37,21 @@ const NotificationCenterPage = () => {
   const filtered = filter === 'all'
     ? notifications
     : notifications?.filter((n) => {
-        if (filter === 'feedback') return n.type === 'TASK_FEEDBACK' || n.type === 'TOTAL_FEEDBACK';
+        if (filter === 'feedback') return n.type === 'TASK_FEEDBACK' || n.type === 'PLANNER_FEEDBACK';
         if (filter === 'report') return n.type === 'REPORT';
         return true;
       });
+
+  const getNotificationTypeTitle = (type: MenteeNotificationType) => {
+    switch (type) {
+      case 'TASK_FEEDBACK':
+        return '과제 피드백이 도착했습니다!';
+      case 'PLANNER_FEEDBACK':
+        return '플래너 피드백이 도착했습니다!';
+      case 'REPORT':
+        return '리포트가 도착했습니다!';
+    }
+  };
 
   const handleClickFilter = (type: NotificationFilterType) => {
     if (type === 'all') {
@@ -53,11 +64,11 @@ const NotificationCenterPage = () => {
 
   const handleNotificationClick = (item: MenteeNotification) => {
     const path = item.type === 'REPORT' ?
-    `/mentee/report?date=${item.report?.date}&period=${item.report?.period}` :
+    `/mentee/report?date=${item.reportStartDate}&period=${item.reportPeriod}` :
     item.type === 'TASK_FEEDBACK' ?
     `/mentee/review?taskId=${item.taskId}` :
-    `/mentee/dashboard?date=${item.date}&showTotalFeedback=true`;
-    readNotificationMutation(item.notificationId, {
+    `/mentee/dashboard?date=${item.plannerDate}&showTotalFeedback=true`;
+    readNotificationMutation(item.id, {
       onSuccess: () => {
         navigate(path);
       },
@@ -72,7 +83,7 @@ const NotificationCenterPage = () => {
   };
 
   const handleReadAll = () => {
-    const unreadIds = notifications?.filter((n) => !n.read).map((n) => n.notificationId) ?? [];
+    const unreadIds = notifications?.filter((n) => !n.isRead).map((n) => n.id) ?? [];
     if (unreadIds.length > 0) {
       readAllNotificationsMutation(unreadIds, {
         onError: () => {
@@ -113,7 +124,7 @@ const NotificationCenterPage = () => {
       <button
         type="button"
         className="w-fit h-fit flex h-10.5 justify-end px-200 py-100 cursor-pointer rounded-300 hover:bg-primary-100 disabled:opacity-50 disabled:cursor-not-allowed"
-        disabled={isReadingAll || !notifications?.some((n) => !n.read)}
+        disabled={isReadingAll || !notifications?.some((n) => !n.isRead)}
         onClick={handleReadAll}
       >
         <p className="subtitle-1 font-weight-500 text-primary-500">모두 읽음 처리</p>
@@ -171,7 +182,7 @@ const NotificationCenterPage = () => {
           ) : (
             <ul className="m-0 list-none p-0 flex flex-col px-400">
               {filtered?.map((item, idx) => (
-                <li key={item.notificationId}>
+                <li key={item.id}>
                   <article
                     className={cn(
                       'flex cursor-pointer py-200 lg:py-300 items-center bg-white text-left transition-colors',
@@ -185,14 +196,14 @@ const NotificationCenterPage = () => {
                         handleNotificationClick(item);
                       }
                     }}
-                    aria-label={`${item.title} ${item.time}`}
+                    aria-label={`${item.type} ${item.createdDateTime}`}
                   >
-                    <NotificationStatusBadge status={item.read ? 'read' : 'unread'} />
+                    <NotificationStatusBadge status={item.isRead ? 'read' : 'unread'} />
                     <div className="min-w-0 flex-1">
-                      <h2 className={cn("mb-1 lg:mb-2.5 heading-6 font-weight-500", item.read ? 'text-gray-500' : 'text-black')}>
-                        {item.title}
+                      <h2 className={cn("mb-1 lg:mb-2.5 heading-6 font-weight-500", item.isRead ? 'text-gray-500' : 'text-black')}>
+                        {getNotificationTypeTitle(item.type)}
                       </h2>
-                      <p className="text-[12px] text-gray-300 font-weight-500">{elapsedTime(item.time)}</p>
+                      <p className="text-[12px] text-gray-300 font-weight-500">{elapsedTime(item.createdDateTime)}</p>
                     </div>
                   </article>
                   {idx !== filtered.length - 1 && <div className="w-full h-[1px] bg-gray-50" />}
@@ -233,4 +244,3 @@ const elapsedTime = (createdAt: string): string => {
 };
 
 export default NotificationCenterPage;
-
