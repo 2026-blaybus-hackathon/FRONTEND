@@ -15,5 +15,6 @@ export function useMenteeReport(period: MenteeReportPeriod, reportDate: string, 
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
         ...options,
+        retry: 3
     });
 }
