@@ -13,7 +13,7 @@ export async function getMentorMenteeTasks(
 ): Promise<MentorMenteeTasksResponse> {
   const { page = 0, size = 20 } = params;
   const response = await axios.get<MentorMenteeTasksResponse>(
-    `/tasks/mentor/mentee/${menteeId}`,
+    `/tasks/mentees/${menteeId}`,
     { params: { page, size } }
   );
   return response.data;

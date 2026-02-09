@@ -3,6 +3,8 @@ import type { MenteeListItem, MenteeResponse } from '../libs/types/mentee';
 import type {
   MentorMenteeTasksResponse,
   MentorTaskAssignmentRequest,
+  TaskAssignmentResponse,
+  TaskByIdResponse,
   MenteeStatsResponse,
   MenteeStatsPeriod,
   MentorReportCreateRequest,
@@ -34,17 +36,36 @@ export interface GetMentorMenteeTasksParams {
 
 /**
  * 멘토용 특정 멘티 과제 목록 조회.
- * GET /tasks/mentor/mentee/:menteeId?page=0&size=20
+ * GET /tasks/mentees/:menteeId?page=0&size=20
+ * 백엔드는 List<TaskWithFeedbackResponse>를 반환하므로, 첫 요소를 사용해 단일 객체 형태로 정규화합니다.
  */
 export async function getMentorMenteeTasks(
   menteeId: number,
   params: GetMentorMenteeTasksParams = {}
 ): Promise<MentorMenteeTasksResponse> {
   const { page = 0, size = 20 } = params;
-  const response = await axios.get<MentorMenteeTasksResponse>(
-    `/tasks/mentor/mentee/${menteeId}`,
+  const response = await axios.get<MentorMenteeTasksResponse | MentorMenteeTasksResponse[]>(
+    `/tasks/mentees/${menteeId}`,
     { params: { page, size } }
   );
+  const raw = response.data;
+  // 백엔드가 배열로 반환하는 경우(멘토: 어제 과제 1건 등) 첫 요소 사용
+  const single = Array.isArray(raw) ? raw[0] : raw;
+  if (!single) {
+    return { menteeId, tasks: { content: [], page: 0, size: 0, totalPages: 0, totalElements: 0 } };
+  }
+  return {
+    menteeId: single.menteeId,
+    tasks: single.tasks ?? { content: [], page: 0, size: 0, totalPages: 0, totalElements: 0 },
+  };
+}
+
+/**
+ * 할 일 ID로 상세 조회.
+ * GET /tasks/:taskId
+ */
+export async function getTaskById(taskId: number): Promise<TaskByIdResponse> {
+  const response = await axios.get<TaskByIdResponse>(`/tasks/${taskId}`);
   return response.data;
 }
 
@@ -80,39 +101,27 @@ export async function createMentorReport(
 }
 
 /**
- * 멘티에게 과제 할당 (PDF 포함).
- * POST /tasks/mentor/assignment
- * - request: 과제 정보 JSON (필수)
- * - file: 학습 자료 PDF (선택, 복수 가능)
+ * 멘티에게 과제 할당 (자료실 연동).
+ * POST /tasks/mentor/assignment (multipart/form-data)
+ * - request: 과제 할당 요청 정보 JSON (필수)
+ * - file: 직접 파일 업로드 (materialId 없을 때 사용, 선택·복수 가능)
  */
 export async function assignTask(
   payload: MentorTaskAssignmentRequest,
   files?: File[]
-): Promise<unknown> {
-  console.log('[assignTask] payload:', payload);
-  console.log('[assignTask] files:', files?.length ?? 0, files?.map((f) => f.name));
-
+): Promise<TaskAssignmentResponse> {
   const formData = new FormData();
   const jsonString = JSON.stringify(payload);
-  const jsonFile = new File([jsonString], 'request.json', {
-    type: 'application/json; charset=UTF-8',
-  });
-  formData.append('request', jsonFile);
+  const jsonBlob = new Blob([jsonString], { type: 'application/json' });
+  formData.append('request', jsonBlob);
   if (files?.length) {
     files.forEach((file) => formData.append('file', file));
   }
 
-  try {
-    const response = await axios.post('/tasks/mentor/assignment', formData, {
-      headers: {
-        'Content-Type': false as unknown as string,
-      },
-    });
-    console.log('[assignTask] success', response.status, response.data);
-    return response.data;
-  } catch (err: unknown) {
-    const ax = err as { response?: { status: number; data: unknown }; config?: { headers?: unknown } };
-    console.log('[assignTask] error', ax.response?.status, ax.response?.data, 'headers:', ax.config?.headers);
-    throw err;
-  }
+  const response = await axios.post<TaskAssignmentResponse>('/tasks/mentor/assignment', formData, {
+    headers: {
+      'Content-Type': false as unknown as string,
+    },
+  });
+  return response.data;
 }
