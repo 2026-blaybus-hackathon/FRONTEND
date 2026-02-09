@@ -41,17 +41,56 @@ export interface MentorMenteeTasksResponse {
   tasks: MentorTaskPage;
 }
 
+/** GET /tasks/:taskId 상세 조회 응답 (TaskWithFeedbackResponse, tasks.content는 1건) */
+export interface TaskByIdResponse {
+  menteeId: number;
+  tasks: {
+    content: TaskDetailItem[];
+    page: number;
+    size: number;
+    totalPages: number;
+    totalElements: number;
+  };
+  totalFeedback: string | null;
+}
+
+/** 할 일 상세 항목 (백엔드 TaskDetail) */
+export interface TaskDetailItem {
+  taskId: number;
+  subject: string;
+  title: string;
+  time: number | null;
+  date: string;
+  status: boolean;
+  menteeComment: string | null;
+  feedbackStatus: string;
+  images: { url: string; name: string; sequence: number }[];
+  feedback: { feedbackId: number; content: string | null };
+}
+
 /** 과제 유형 (백엔드 TaskType) */
 export type MentorTaskType = 'COLUMN' | 'WEAKNESS_SOLUTION';
 
-/** POST /tasks/mentor/assignment 요청 (과제 정보 JSON) */
+/** POST /tasks/mentor/assignment 요청 (과제 정보 JSON, multipart request) */
 export interface MentorTaskAssignmentRequest {
   menteeId: number;
+  /** 자료실 ID. 있으면 자료실 내용을 복사해 할당, 없으면 직접 입력으로 일반 과제 할당 */
+  materialId?: number | null;
   taskType: MentorTaskType;
+  title: string;
+  content?: string | null;
+  subject: string;
+  date: string;
+}
+
+/** POST /tasks/mentor/assignment 200 응답 */
+export interface TaskAssignmentResponse {
+  id: number;
+  taskType: string;
   title: string;
   content: string;
   subject: string;
-  date: string;
+  studyDurationInMinutes: number;
 }
 
 /** 과제 제공 폼 상태 */
