@@ -87,16 +87,16 @@ export interface MenteeNotification {
 type MenteeNotificationResponse = MenteeNotification[];
 
 export async function getMenteeNotifications(): Promise<MenteeNotificationResponse> {
-    const response = await axios.get<MenteeNotificationResponse>('/notifications/mentee');
+    const response = await axios.get<MenteeNotificationResponse>('/notifications');
     return response.data;
 }
 
 export async function readMenteeNotification(notificationId: number): Promise<void> {
-    await axios.post(`/notifications/mentee/${notificationId}/read`);
+    await axios.patch(`/notifications/${notificationId}/read`);
 }
 
 export async function readAllMenteeNotifications(notificationIds: number[]): Promise<void> {
-    await Promise.all(notificationIds.map((id) => axios.post(`/notifications/mentee/${id}/read`)));
+    await Promise.all(notificationIds.map((id) => axios.patch(`/notifications/${id}/read`)));
 }
 
 
