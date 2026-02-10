@@ -284,31 +284,35 @@ const LearningMaterialPage = () => {
                     )}
                   </div>
                 </div>
-                {/* 파일 첨부 영역 */}
-                <div className="flex items-center justify-between gap-3 py-2.5 px-3 bg-gray-50 rounded-lg border border-gray-100">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <FileText className="w-5 h-5 text-gray-500 shrink-0" aria-hidden />
-                    <span className="text-sm text-gray-800 truncate">{item.originalFileName || '(파일 없음)'}</span>
+                {/* 파일 첨부 영역 (파일 없으면 숨김) */}
+                {(item.originalFileName || downloadUrl || item.fileUrl) && (
+                  <div className="flex items-center justify-between gap-3 py-2.5 px-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <FileText className="w-5 h-5 text-gray-500 shrink-0" aria-hidden />
+                      <span className="text-sm text-gray-800 truncate">
+                        {item.originalFileName || '첨부 파일'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {(downloadUrl || item.fileUrl) ? (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); handleDownload(item); }}
+                          disabled={downloadingId === item.id}
+                          className="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-700 disabled:opacity-50"
+                          aria-label="다운로드"
+                        >
+                          {downloadingId === item.id ? (
+                            <span className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" aria-hidden />
+                          ) : (
+                            <Download className="w-4 h-4" />
+                          )}
+                        </button>
+                      ) : null}
+                      <span className="text-sm text-gray-500">{formatMaterialDate(item.createdDateTime)}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {(downloadUrl || item.fileUrl) ? (
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); handleDownload(item); }}
-                        disabled={downloadingId === item.id}
-                        className="p-1.5 rounded text-gray-500 hover:bg-gray-200 hover:text-gray-700 disabled:opacity-50"
-                        aria-label="다운로드"
-                      >
-                        {downloadingId === item.id ? (
-                          <span className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" aria-hidden />
-                        ) : (
-                          <Download className="w-4 h-4" />
-                        )}
-                      </button>
-                    ) : null}
-                    <span className="text-sm text-gray-500">{formatMaterialDate(item.createdDateTime)}</span>
-                  </div>
-                </div>
+                )}
               </article>
             );
           })
