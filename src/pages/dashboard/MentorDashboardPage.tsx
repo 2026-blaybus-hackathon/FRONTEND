@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from '../../libs/axios';
 import { useMenteeList } from '../../hooks/useMenteeList';
 import '../../styles/pages/mentor-dashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 // interface DashboardStats {
 //   totalMentees: number;
@@ -47,8 +47,7 @@ interface DashboardResponse {
 }
 
 const MentorDashboardPage = () => {
-  const [selectedTab, setSelectedTab] = useState<'hub' | 'timeline'>('hub');
-
+  const navigate = useNavigate();
   const { menteeList, isLoading: menteeLoading } = useMenteeList();
 
   // 대시보드 통계 조회
@@ -58,7 +57,7 @@ const MentorDashboardPage = () => {
       try {
         const response = await axios.get<DashboardResponse>('/dashboard/mentor/dashboard');
         return response.data;
-      } catch (error) {
+      } catch {
         return null;
       }
     },
@@ -91,32 +90,6 @@ const MentorDashboardPage = () => {
     <div className="mentor-dashboard-layout">
       {/* 메인 컨텐츠 */}
       <main className="mentor-main">
-        {/* 헤더 */}
-        <header className="mentor-header">
-          <div className="header-tabs">
-            <button
-              className={`header-tab ${selectedTab === 'hub' ? 'active' : ''}`}
-              onClick={() => setSelectedTab('hub')}
-            >
-              Mentor Hub
-            </button>
-            <button
-              className={`header-tab ${selectedTab === 'timeline' ? 'active' : ''}`}
-              onClick={() => setSelectedTab('timeline')}
-            >
-              멘티 타임
-            </button>
-          </div>
-          <div className="header-actions">
-            <input type="text" placeholder="멘티 검색..." className="search-input" />
-            <button className="notification-btn">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </button>
-          </div>
-        </header>
-
         {/* 컨텐츠 */}
         <div className="mentor-content">
           {/* 통계 카드 */}
@@ -161,8 +134,8 @@ const MentorDashboardPage = () => {
                       <div className="mentee-subject">{mentee.subject}</div>
                     </div>
                     <div className="mentee-actions">
-                      <button className="action-btn">피드백 확인</button>
-                      <button className="action-btn primary">과제 제출</button>
+                      <button className="action-btn" onClick={() => navigate(`/mentor/feedback?menteeId=${mentee.id}`)}>피드백 작성</button>
+                      <button className="action-btn primary" onClick={() => navigate(`/mentor/assignment?menteeId=${mentee.id}`)}>과제 제공</button>
                     </div>
                   </div>
                 ))}
