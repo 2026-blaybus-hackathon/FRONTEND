@@ -24,14 +24,37 @@ const MentorArchivePage = () => {
   // 멘티 목록 조회
   const { menteeList, isLoading: isLoadingMentees } = useMenteeList();
 
-  // 선택된 멘티의 과제 목록 조회
-  const { tasks: tasksData, isLoading: isLoadingTasks } = useMentorMenteeTasks(selectedMentee, {
+  // 선택된 멘티의 과제 목록 조회 또는 전체 멘티 과제 조회
+  const { tasks: selectedMenteeTasks, isLoading: isLoadingSelectedTasks } = useMentorMenteeTasks(selectedMentee, {
     page: 0,
     size: 100,
     enabled: selectedMentee !== null,
   });
 
-  const tasks = tasksData?.content || [];
+  // 전체 멘티의 과제 목록 (선택 안 했을 때)
+  const allMenteesTasksQueries = menteeList.map((mentee) => 
+    useMentorMenteeTasks(mentee.id, {
+      page: 0,
+      size: 100,
+      enabled: selectedMentee === null,
+    })
+  );
+
+  // 전체 과제 합치기
+  const allTasks = selectedMentee 
+    ? (selectedMenteeTasks?.content || [])
+    : allMenteesTasksQueries.flatMap(query => {
+        const content = query.tasks?.content || [];
+        const mentee = menteeList.find(m => m.id === query.data?.menteeId);
+        return content.map(task => ({
+          ...task,
+          menteeName: mentee?.name,
+          menteeSubject: mentee?.subject,
+        }));
+      });
+
+  const isLoadingTasks = selectedMentee ? isLoadingSelectedTasks : allMenteesTasksQueries.some(q => q.isLoading);
+  const tasks = allTasks;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,9 +206,13 @@ const MentorArchivePage = () => {
 
           <div 
             ref={carouselRef}
-            className="flex gap-6 flex-1 overflow-x-auto scrollbar-hide"
+            className="flex gap-6 flex-1 overflow-x-auto"
             onScroll={checkScrollability}
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            style={{ 
+              scrollbarWidth: 'none', 
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch'
+            }}
           >
             {isLoadingMentees ? (
               <div className="flex-1 text-center py-8 text-gray-500">
@@ -299,7 +326,7 @@ const MentorArchivePage = () => {
             <div className="col-span-2 flex flex-col items-center justify-center py-20">
               <div className="text-gray-500">과제 목록을 불러오는 중...</div>
             </div>
-          ) : selectedMentee && filteredTasks.length > 0 ? (
+          ) : filteredTasks.length > 0 ? (
             filteredTasks.map((task) => (
             <div
               key={task.taskId}
@@ -347,6 +374,11 @@ const MentorArchivePage = () => {
                     {currentMentee.name} · {currentMentee.subject}
                   </div>
                 )}
+                {!currentMentee && (task as any).menteeName && (
+                  <div className="text-xs text-gray-500">
+                    {(task as any).menteeName} · {(task as any).menteeSubject}
+                  </div>
+                )}
               </div>
 
               {/* 액션 버튼 */}
@@ -369,10 +401,10 @@ const MentorArchivePage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <p className="text-gray-500 font-medium mb-1">
-                {selectedMentee ? '모든 피드백을 작성했어요!' : '모든 피드백을 작성했어요!'}
+                {filteredTasks.length === 0 && selectedTab === 'reminder' ? '모든 피드백을 작성했어요!' : '과제가 없습니다'}
               </p>
               <p className="text-sm text-gray-400">
-                {selectedMentee ? '학생이 이름을 검색해 과제를 확인하세요' : '학생의 이름을 지금 바로 검색해보세요'}
+                학생의 이름을 검색하거나 선택해서 과제를 확인하세요
               </p>
             </div>
           )}
