@@ -8,6 +8,7 @@ import TaskDetailModal from '../../components/feature/dashboard/TaskDetailModal'
 import TaskCard from '../../components/feature/dashboard/TaskCard';
 import type { taskTypes } from '../../types';
 import { FILTERS } from '../../static/subjects';
+import type { TaskItem } from '../../hooks/useMenteeTasks';
 
 type Task = taskTypes.Task;
 type TaskData = taskTypes.TaskData;
@@ -38,7 +39,10 @@ const MenteeDashboardPage = () => {
   }, [selectedDate]);
 
   // 과제 목록 조회
-  const { tasks: tasksData, isLoading } = useMenteeTasks(selectedDateStr);
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useMenteeTasks(selectedDateStr);
+  const tasksData: TaskItem[] = useMemo(() => {
+    return data?.pages?.flatMap(page => page.content) ?? [];
+  }, [data]);
   
   // 안 읽은 피드백 개수
   const { count: feedbackCount } = useUnreadFeedbackCount();
@@ -59,17 +63,17 @@ const MenteeDashboardPage = () => {
 
   // API 데이터를 Task 타입으로 변환
   const tasks: Task[] = useMemo(() => {
-    return tasksData.map((task) => ({
-      id: task.taskId,
-      title: task.title,
-      subject: task.subject,
+    return tasksData.map((task: TaskItem) => ({
+      id: task.task.id,
+      title: task.task.title,
+      subject: task.task.subject,
       status: task.isCompleted ? 'completed' : 'pending',
-      date: task.date,
-      dueTime: task.studyTime ? `${Math.floor(task.studyTime / 60)}시간 ${task.studyTime % 60}분` : '',
-      studyHours: task.studyTime ? Math.floor(task.studyTime / 60) : 0,
-      studyMinutes: task.studyTime ? task.studyTime % 60 : 0,
+      date: selectedDateStr,
+      dueTime: task.task.studyDurationInMinutes ? `${Math.floor(task.task.studyDurationInMinutes / 60)}시간 ${task.task.studyDurationInMinutes % 60}분` : '',
+      studyHours: task.task.studyDurationInMinutes ? Math.floor(task.task.studyDurationInMinutes / 60) : 0,
+      studyMinutes: task.task.studyDurationInMinutes ? task.task.studyDurationInMinutes % 60 : 0,
     }));
-  }, [tasksData]);
+  }, [tasksData, selectedDateStr]);
 
   // 현재 주의 날짜 계산
   const weekDays = useMemo(() => {
@@ -196,7 +200,7 @@ const MenteeDashboardPage = () => {
         taskId: taskDetail.id,
         isCompleted: true
       });
-    } catch (error) {
+    } catch {
       // 에러 처리
     }
   };
@@ -215,9 +219,9 @@ const MenteeDashboardPage = () => {
       try {
         const date = new Date(dateParam);
         if (!isNaN(date.getTime())) {
-          setSelectedDate(date.getDate());
+          setTimeout(() => setSelectedDate(date.getDate()), 0);
         }
-      } catch (error) {
+      } catch {
         // 잘못된 날짜 형식 무시
       }
     }
@@ -226,7 +230,7 @@ const MenteeDashboardPage = () => {
   // URL에서 showTotalFeedback 파라미터가 있으면 종합 피드백 모달 열기
   useEffect(() => {
     if (showTotalFeedbackParam === 'true') {
-      setShowTotalFeedbackModal(true);
+      setTimeout(() => setShowTotalFeedbackModal(true), 0);
     }
   }, [showTotalFeedbackParam]);
 
@@ -343,21 +347,34 @@ const MenteeDashboardPage = () => {
             <p className="empty-subtitle">우측 하단 버튼을 눌러 새로운 목표를 세워보세요!</p>
           </div>
         ) : (
-          <div className="tasks-grid">
-            {filteredTasks.map((task) => (
-              <TaskCard
-                key={task.id}
-                id={task.id}
-                title={task.title}
-                subject={task.subject}
-                status={task.status}
-                dueTime={task.dueTime}
-                onEdit={() => handleOpenEditModal(task)}
-                onDelete={() => handleDeleteTask(task.id)}
-                onDetail={() => handleOpenDetailModal(task)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="tasks-grid">
+              {filteredTasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  id={task.id}
+                  title={task.title}
+                  subject={task.subject}
+                  status={task.status}
+                  dueTime={task.dueTime}
+                  onEdit={() => handleOpenEditModal(task)}
+                  onDelete={() => handleDeleteTask(task.id)}
+                  onDetail={() => handleOpenDetailModal(task)}
+                />
+              ))}
+            </div>
+            {hasNextPage && (
+              <div className="load-more-wrapper">
+                <button
+                  className="load-more-btn"
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? '불러오는 중...' : '더 불러오기'}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
