@@ -4,6 +4,7 @@ import SubjectBadge from "../subject/SubjectBadge";
 import { cn } from "../../../libs/utils";
 import ImageModal from "../../common/modal/ImageModal";
 import type { imageTypes, subjectTypes } from "../../../types";
+import type { MentorFeedbackTaskStatus } from "../../../api/mentor";
 
 export interface AssignmentCardProps {
   title: string;
@@ -13,6 +14,7 @@ export interface AssignmentCardProps {
   time: number;
   menteeComment?: string;
   images?: imageTypes.Image[];
+  feedbackStatus: MentorFeedbackTaskStatus;
   folded?: boolean;
   onClick?: () => void;
   onBack?: () => void;
@@ -27,6 +29,7 @@ const AssignmentCard = memo(({
   time,
   menteeComment = "",
   images = [],
+  feedbackStatus = "PENDING",
   folded = true,
   onClick,
   onBack,
@@ -76,8 +79,8 @@ const AssignmentCard = memo(({
         </div>
         <div className="flex flex-col md:gap-50 justify-end align-center">
           <div className="w-full flex gap-200 text-50 font-bold text-gray-500 justify-end md:justify-start">
-            <p>{status ? "-.-.-" : date}</p>
-            <p>{status ? "미" : ""}완료</p>
+            <p>{status ? "-.-.-" : date.replace(/-/g, ".")}</p>
+            <p>{status ? (feedbackStatus === "PENDING" ? "미제출" : "제출") : "미제출"}</p>
           </div>
           <div className="w-fit h-6 px-100 flex gap-50 rounded-300 text-50 font-weight-500 bg-primary-100 text-primary-500 justify-center items-center">
             <Clock className="w-3.5 h-3.5 shrink-0" aria-hidden />

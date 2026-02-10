@@ -206,12 +206,12 @@ export interface MentorFeedbackTask {
   feedback: {
     feedbackId: number;
     content: string;
-  }
+  } | null;
 }
 
 export interface MentorFeedbackMenteeDetail {
-tasks: MentorFeedbackTask[];
-totalFeedback: string;
+  tasks: MentorFeedbackTask[];
+  totalFeedback: string | null;
 }
 
 export async function getMentorFeedbackMenteeList(): Promise<MentorFeedbackMenteeList> {

@@ -9,51 +9,6 @@ import {
     type MentorFeedbackMenteeDetail,
 } from "../../api/mentor";
 
-// ── Mock Data (테스트용 - USE_MOCK을 false로 바꾸면 실제 API 호출) ──
-const USE_MOCK_MENTEE_DETAIL = true;
-
-const mockMenteeDetail: MentorFeedbackMenteeDetail = {
-    tasks: [
-        {
-            taskId: 1,
-            subject: "MATH",
-            title: "이차방정식 풀이 연습",
-            time: 45,
-            date: "2026-02-10",
-            status: false,
-            menteeComment: "근의 공식이 잘 이해가 안 돼요.",
-            feedbackStatus: "PENDING",
-            images: [],
-            feedback: "",
-        },
-        {
-            taskId: 2,
-            subject: "ENGLISH",
-            title: "영어 독해 지문 분석",
-            time: 30,
-            date: "2026-02-10",
-            status: false,
-            menteeComment: "",
-            feedbackStatus: "COMPLETED",
-            images: [],
-            feedback: "전반적으로 잘 했습니다. 주어-동사 일치에 좀 더 신경 써주세요.",
-        },
-        {
-            taskId: 3,
-            subject: "KOREAN",
-            title: "비문학 지문 요약 연습",
-            time: 60,
-            date: "2026-02-10",
-            status: true,
-            menteeComment: "지문이 너무 어려웠어요.",
-            feedbackStatus: "PENDING",
-            images: [],
-            feedback: "",
-        },
-    ],
-    totalFeedback: null as unknown as string,
-};
-
 // ── Query Keys ──────────────────────────────────────────────
 export const mentorFeedbackKeys = {
     all: ['mentorFeedback'] as const,
@@ -76,12 +31,7 @@ export function useMentorMentees() {
 export function useMentorMenteeDetail(menteeId: number, date: string, options: { enabled?: boolean } = {}) {
     return useQuery({
         queryKey: mentorFeedbackKeys.menteeDetail(menteeId),
-        queryFn: USE_MOCK_MENTEE_DETAIL
-            ? async (): Promise<MentorFeedbackMenteeDetail> => {
-                await new Promise((r) => setTimeout(r, 500));
-                return mockMenteeDetail;
-            }
-            : () => getMentorFeedbackMenteeDetail(menteeId, date),
+        queryFn: () => getMentorFeedbackMenteeDetail(menteeId, date),
         staleTime: 1 * 60 * 1000,
         gcTime: 3 * 60 * 1000,
         retry: 1,
