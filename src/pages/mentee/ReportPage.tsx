@@ -8,6 +8,7 @@ import { useMenteeReport } from '../../hooks/mentee/useMenteeReport';
 import { subjectTypes } from '../../types';
 import type { MenteeReportPeriod } from '../../api/mentee';
 import { useToastStore } from '../../stores/toastStore';
+import { isAxiosError } from 'axios';
 
 export type SubjectWithAll = "ALL" | subjectTypes.Subject;
 export const REPORTDETAILS = ['keepContent', 'problemContent', 'tryContent'] as const;
@@ -19,21 +20,23 @@ const ReportPage = () => {
   const period = searchParams.get("period") as MenteeReportPeriod | null;
   const { addToast } = useToastStore();
 
-  const { data: report, isLoading: isReportLoading, isError: isReportError } = useMenteeReport(
+  const { data: report, isLoading: isReportLoading, isError: isReportError, error: reportError } = useMenteeReport(
     period as MenteeReportPeriod, date as string,
     { enabled: !!date && !!period },
   );
 
-  // 에러 처리
+  const is404Error = isReportError && isAxiosError(reportError) && reportError.response?.status === 404;
+
+  // 에러 처리 (404는 토스트 대신 UI에 표시)
   useEffect(() => {
-    if (isReportError) {
+    if (isReportError && !is404Error) {
       addToast({
         title: "리포트 조회 실패",
         message: "리포트를 불러오는 중 오류가 발생했습니다.",
         type: "error",
       });
     }
-  }, [isReportError, addToast]);
+  }, [isReportError, is404Error, addToast]);
 
   // 성과율 데이터
   const pillsData = useMemo(() => {
@@ -80,14 +83,28 @@ const ReportPage = () => {
     }, { replace: true });
   };
 
-  // 날짜와 기간이 설정되지 않았을 때 기본값 설정
+  // 날짜와 기간이 설정되지 않았을 때 기본값 설정 + 미래 날짜 리다이렉팅
   useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    // 미래 날짜 접근 시 오늘로 리다이렉팅
+    if (date && date > today) {
+      setSearchParams({
+        date: today,
+        period: period || "WEEKLY",
+      }, { replace: true });
+      return;
+    }
     if (date && period) return;
     setSearchParams({
-      date: new Date().toISOString().split('T')[0],
+      date: today,
       period: "WEEKLY",
     }, { replace: true });
   }, [date, period, setSearchParams]);
+
+  // 이전/다음 버튼 비활성화 여부
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isNextDisabled = !date || !period || getNewDate('next') > todayStr;
+  const isPrevDisabled = is404Error;
 
   return (
     <div
@@ -151,6 +168,11 @@ const ReportPage = () => {
             ))}
           </div>
         </article>
+      ) : is404Error ? (
+        /* 리포트 미존재 */
+        <article className="w-full flex items-center justify-center rounded-2xl bg-white py-600 px-500 border border-gray-100 min-h-[200px]">
+          <p className="text-200 font-medium text-gray-500">해당 리포트가 존재하지 않습니다.</p>
+        </article>
       ) : (
         /* 실제 콘텐츠 */
         <>
@@ -199,30 +221,37 @@ const ReportPage = () => {
             </section>
           </article>
 
-          {/* 주/월 이동 버튼 */}
-          <div className="h-fit flex justify-center gap-3">
-            <button
-              type="button"
-              className={cn(
-                "flex gap-100 items-center rounded-300 bg-primary-100 px-300 py-150 text-primary-500 transition-colors duration-300",
-                period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
+        </>
+      )}
+
+      {/* 주/월 이동 버튼 */}
+      {!isReportLoading && (
+        <div className="h-fit flex justify-center gap-3">
+          <button
+            type="button"
+            disabled={isPrevDisabled}
+            className={cn(
+              "flex gap-100 items-center rounded-300 px-300 py-150 transition-colors duration-300",
+              period === "WEEKLY" ? "bg-primary-100 text-primary-500" : "bg-grape-100 text-grape-500",
+              isPrevDisabled && "opacity-40 cursor-not-allowed",
             )}
             onClick={() => handlePeriodMoveButtonClick("prev")}
-            >
-              <span aria-hidden><ChevronLeftIcon /></span> 이전 {period === "WEEKLY" ? "주" : "달"}
-            </button>
-            <button
-              type="button"
-              className={cn(
-                "flex gap-100 items-center rounded-300 bg-primary-500 px-300 py-150 text-white transition-colors duration-300",
-                period === "WEEKLY" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
-              )}
-              onClick={() => handlePeriodMoveButtonClick("next")}
-            >
-              다음 {period === "WEEKLY" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
-            </button>
-          </div>
-        </>
+          >
+            <span aria-hidden><ChevronLeftIcon /></span> 이전 {period === "WEEKLY" ? "주" : "달"}
+          </button>
+          <button
+            type="button"
+            disabled={isNextDisabled}
+            className={cn(
+              "flex gap-100 items-center rounded-300 px-300 py-150 transition-colors duration-300",
+              period === "WEEKLY" ? "bg-primary-500 text-white" : "bg-grape-500 text-white",
+              isNextDisabled && "opacity-40 cursor-not-allowed",
+            )}
+            onClick={() => handlePeriodMoveButtonClick("next")}
+          >
+            다음 {period === "WEEKLY" ? "주" : "달"} <span aria-hidden><ChevronRightIcon /></span>
+          </button>
+        </div>
       )}
     </div>
   );
