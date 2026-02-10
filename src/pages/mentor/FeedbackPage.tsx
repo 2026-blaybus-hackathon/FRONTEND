@@ -360,9 +360,11 @@ const MentorFeedbackPage = () => {
             {/* 에디터: 부모 높이에 맞추고, 내용은 내부 스크롤 */}
             {
               mode === "view" ?
-              <p className="body-3 text-gray-700 whitespace-pre-wrap overflow-y-auto">{feedback}</p> :
+              <p className="body-3 text-gray-700 whitespace-pre-wrap overflow-y-auto">
+                {editorMode === "total" ? menteeDetail?.totalFeedback ?? "" : selectedTask?.feedback?.content ?? ""}
+              </p> :
               <TextArea
-                value={feedback}
+                value={editorMode === "total" ? menteeDetail?.totalFeedback ?? "" : selectedTask?.feedback?.content ?? ""}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder={
                   selectedTaskId !== null ?

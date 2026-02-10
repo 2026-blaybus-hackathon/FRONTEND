@@ -203,7 +203,10 @@ export interface MentorFeedbackTask {
   menteeComment: string;
   feedbackStatus: MentorFeedbackTaskStatus;
   images: imageTypes.Image[];
-  feedback: string;
+  feedback: {
+    feedbackId: number;
+    content: string;
+  }
 }
 
 export interface MentorFeedbackMenteeDetail {
