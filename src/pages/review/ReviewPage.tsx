@@ -21,7 +21,10 @@ const ReviewPage = () => {
 
   // 학습 히스토리 조회 (완료된 과제 목록)
   const today = new Date().toISOString().split('T')[0];
-  const { tasks, isLoading: isLoadingTasks } = useMenteeTasks(today);
+  const { data: tasksData, isLoading: isLoadingTasks } = useMenteeTasks(today);
+
+  // InfiniteQuery 데이터를 평탄화
+  const allTasks = tasksData?.pages.flatMap(page => page.content) || [];
 
   // 피드백 데이터 매핑
   const feedbacks = feedbacksData.map((fb) => ({
@@ -41,15 +44,15 @@ const ReviewPage = () => {
   }));
 
   // 학습 히스토리 데이터 (완료된 과제만)
-  const completedTasks = (tasks || [])
-    .filter((task: any) => task.isCompleted)
-    .map((task: any) => ({
-      id: task.taskId,
-      subject: task.subject || '과목',
-      title: task.title,
-      date: task.date ? new Date(task.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
-      studyTime: task.studyTime || 0,
-      isCompleted: task.isCompleted,
+  const completedTasks = allTasks
+    .filter((taskItem: any) => taskItem.isCompleted)
+    .map((taskItem: any) => ({
+      id: taskItem.task.id,
+      subject: taskItem.task.subject || '과목',
+      title: taskItem.task.title,
+      date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }),
+      studyTime: taskItem.task.studyDurationInMinutes || 0,
+      isCompleted: taskItem.isCompleted,
     }));
 
   const filteredHistory = selectedSubject === '전체' 
