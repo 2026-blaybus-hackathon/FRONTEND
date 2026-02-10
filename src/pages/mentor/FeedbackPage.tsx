@@ -290,7 +290,7 @@ const MentorFeedbackPage = () => {
       </div>
       
       {/* 학생 과제 확인 */}
-      {selectedMentee && <div className="w-full flex flex-1 flex-col-reverse md:flex-row gap-300 lg:min-h-0">
+      {selectedMentee && <div className="w-full flex flex-1 flex-col-reverse md:flex-row gap-300 md:max-h-[466px] lg:min-h-0">
         <div className="md:w-fit w-full relative lg:min-h-0">
           {/* 상단 안쪽 그림자: 스크롤 시 위에 더 있는 내용이 있음을 표시 */}
           <div
@@ -303,7 +303,7 @@ const MentorFeedbackPage = () => {
           />
           <div
             ref={assignmentListRef}
-            className="flex flex-col md:gap-300 gap-100 overflow-y-auto min-h-0 max-h-[min(400px,50vh)] lg:max-h-full"
+            className="flex flex-col md:gap-300 gap-100 overflow-y-auto min-h-0 max-h-[466px] lg:max-h-full"
           >
             {isLoadingMenteeDetail ? (
               Array.from({ length: 3 }).map((_, i) => (
