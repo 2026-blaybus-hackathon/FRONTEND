@@ -1,14 +1,12 @@
-/* 마이페이지 레이아웃 - 카드 스택 */
+/* ProfilePage 등에서 사용하는 마이페이지 관련 공통 스타일 */
 .my-page {
-    /* min-height: calc(100vh - 80px); */
-    /* padding: var(--spacing-6); */
-    /* background: var(--color-gray-50); */
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-4);
-    /* max-width: 480px; */
-    margin: 0 auto;
-
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin: 0 auto;
+  max-width: 480px;
+  width: 100%;
+  padding: var(--spacing-4);
 }
 
 .my-page .card {
@@ -20,7 +18,6 @@
   transition: box-shadow 0.2s ease;
 }
 
-/* 프로필 카드 */
 .my-page__profile {
   display: flex;
   align-items: center;
@@ -70,56 +67,7 @@
   line-height: var(--line-height-normal);
 }
 
-/* 메뉴 카드 */
-.my-page__menu-card {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  border: 1px solid var(--color-border);
-  background: var(--color-white);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-4) var(--spacing-6);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.my-page__menu-card:hover {
-  background: var(--color-gray-50);
-  box-shadow: var(--shadow-sm);
-}
-
-.my-page__menu-icon {
-  flex-shrink: 0;
-  color: var(--color-gray-600);
-}
-
-.my-page__menu-label {
-  font-weight: var(--font-weight-medium);
-}
-
-/* 로그아웃 카드 - 강조 */
-.my-page__menu-card--logout {
-  border-color: var(--color-primary-500);
-  border-width: 2px;
-}
-
-.my-page__menu-card--logout .my-page__menu-icon {
-  color: var(--color-primary-500);
-}
-
-.my-page__menu-card--logout:hover {
-  background: var(--color-primary-50);
-}
-
 @media (max-width: 768px) {
-  .my-page {
-    padding: var(--spacing-4);
-  }
-
   .my-page__profile {
     padding: var(--spacing-6);
     gap: var(--spacing-4);
