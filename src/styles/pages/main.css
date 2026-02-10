@@ -1,3 +1,160 @@
+/* 새로운 메인 페이지 스타일 */
+.main-page-new {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #F3F2FF;
+}
+
+/* 헤더 */
+.main-header-new {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.logo-icon-new {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  width: 64px;
+  height: 64px;
+}
+
+.main-title-new {
+  font-size: 48px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.02em;
+}
+
+.main-subtitle-new {
+  font-size: 16px;
+  color: #6B7280;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* 역할 선택 섹션 */
+.role-selection-new {
+  width: 100%;
+  max-width: 900px;
+}
+
+.selection-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  margin: 0 0 40px 0;
+}
+
+.role-cards-new {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+/* 역할 카드 */
+.role-card-new {
+  width: 360px;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #E5E7EB;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.role-card-new:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  border-color: #7C3AED;
+}
+
+.role-card-new:focus {
+  outline: 2px solid #7C3AED;
+  outline-offset: 2px;
+}
+
+/* 배지 */
+.role-badge-new {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+}
+
+.student-badge {
+  background: #EDE9FE;
+  color: #7C3AED;
+}
+
+.teacher-badge {
+  background: #FCE7F3;
+  color: #DB2777;
+}
+
+/* 역할 이름 */
+.role-name-new {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+/* 역할 설명 */
+.role-desc-new {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .main-header-new {
+    margin-bottom: 60px;
+  }
+
+  .main-title-new {
+    font-size: 36px;
+  }
+
+  .main-subtitle-new {
+    font-size: 14px;
+  }
+
+  .selection-title {
+    font-size: 18px;
+    margin-bottom: 32px;
+  }
+
+  .role-cards-new {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .role-card-new {
+    width: 100%;
+  }
+}
+
+/* 기존 스타일 유지 */
 .main-page {
   min-height: 100vh;
   display: flex;
@@ -8,7 +165,6 @@
   background: linear-gradient(135deg, #F0F9FF 0%, #F9FAFB 100%);
 }
 
-/* 헤더 */
 .main-header {
   text-align: center;
   margin-bottom: 60px;
@@ -42,7 +198,6 @@
   margin: 0;
 }
 
-/* 역할 선택 카드 */
 .role-selection {
   display: flex;
   gap: 32px;
@@ -124,7 +279,6 @@
   justify-content: center;
 }
 
-/* 로그인 버튼 */
 .role-button {
   width: 100%;
   padding: 14px 24px;
@@ -160,7 +314,6 @@
   transform: scale(1.02);
 }
 
-/* 돌아가기 버튼 */
 .back-button {
   padding: 12px 32px;
   background: white;
@@ -178,7 +331,6 @@
   border-color: #D1D5DB;
 }
 
-/* 반응형 */
 @media (max-width: 768px) {
   .main-header {
     margin-bottom: 40px;
