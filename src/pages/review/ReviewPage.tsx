@@ -21,7 +21,7 @@ const ReviewPage = () => {
 
   // 학습 히스토리 조회 (완료된 과제 목록)
   const today = new Date().toISOString().split('T')[0];
-  const { tasks, isLoading: isLoadingTasks } = useMenteeTasks(today);
+  const { tasks: tasksData, isLoading: isLoadingTasks } = useMenteeTasks(today);
 
   // 피드백 데이터 매핑
   const feedbacks = feedbacksData.map((fb) => ({
@@ -41,9 +41,9 @@ const ReviewPage = () => {
   }));
 
   // 학습 히스토리 데이터 (완료된 과제만)
-  const completedTasks = (tasks || [])
-    .filter((task: any) => task.isCompleted)
-    .map((task: any) => ({
+  const completedTasks = (tasksData || [])
+    .filter((task) => task.isCompleted)
+    .map((task) => ({
       id: task.taskId,
       subject: task.subject || '과목',
       title: task.title,
@@ -54,7 +54,7 @@ const ReviewPage = () => {
 
   const filteredHistory = selectedSubject === '전체' 
     ? completedTasks 
-    : completedTasks.filter((task: any) => task.subject === selectedSubject);
+    : completedTasks.filter((task) => task.subject === selectedSubject);
 
   const handleViewFeedback = (feedbackId: number) => {
     setSelectedFeedback(feedbackId);
@@ -70,12 +70,19 @@ const ReviewPage = () => {
   useEffect(() => {
     if (taskIdParam) {
       const taskId = Number(taskIdParam);
-      const feedback = feedbacks.find(f => f.id === taskId);
+      // taskId로 피드백 찾기
+      // API: GET /api/v1/feedback/mentee/tasks/{taskId}
+      // 현재는 feedbacks 목록에서 찾지만, 실제로는 별도 API 호출 필요
+      
+      // 임시: feedbacks 목록에서 taskId와 매칭되는 피드백 찾기
+      // (API 응답에 taskId가 포함되어야 함)
+      const feedback = feedbacks.find(f => f.id === taskId); // 임시로 id로 매칭
       if (feedback) {
         setSelectedFeedback(feedback.id);
         setActiveTab('feedback');
       }
     } else if (feedbackIdParam) {
+      // feedbackId로 직접 접근
       const feedbackId = Number(feedbackIdParam);
       const feedback = feedbacks.find(f => f.id === feedbackId);
       if (feedback) {
@@ -83,7 +90,7 @@ const ReviewPage = () => {
         setActiveTab('feedback');
       }
     }
-  }, [feedbackIdParam, taskIdParam, feedbacksData]);
+  }, [feedbackIdParam, taskIdParam, feedbacks]);
 
   return (
     <>
@@ -202,7 +209,7 @@ const ReviewPage = () => {
               </div>
             ) : (
               <div className="history-grid">
-                {filteredHistory.map((task: any) => (
+                {filteredHistory.map((task) => (
                   <div key={task.id} className="history-card">
                     <div className="history-card-header">
                       <span 
