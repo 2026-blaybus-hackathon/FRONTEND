@@ -24,7 +24,6 @@ export function useApi() {
             url,
             data
         })
-        console.log('login response', response.data)
         return {
             data: response.data,
             status: response.status,

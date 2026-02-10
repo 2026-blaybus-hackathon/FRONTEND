@@ -5,7 +5,6 @@ import EmailInput from "../../components/common/input/EmailInput";
 import PasswordInput from "../../components/common/input/PasswordInput";
 import { useApi } from "../../hooks/useApi";
 import useAuthStore from "../../stores/authStore";
-import Container from "../../components/common/Container";
 import type { LoginResponse } from "../../libs/types/apiResponse";
 import '../../styles/pages/auth.css';
 
@@ -67,13 +66,11 @@ const LoginPage = () => {
                     targetDate: data.targetDate,
                 };
                 
-                // URL 파라미터의 role 사용 (메인에서 선택한 역할)
-                const selectedRole = role || 'mentee';
-                
                 login(accessToken, profile);
                 
-                // 선택한 역할에 따라 다른 페이지로 이동
-                const dashboardPath = selectedRole === 'mentor' ? '/mentor/mentee' : '/mentee/dashboard';
+                // 서버에서 받은 role을 기준으로 리다이렉션
+                const userRole = data.role?.toLowerCase();
+                const dashboardPath = userRole === 'mentor' ? '/mentor/mentee' : '/mentee/dashboard';
                 navigate(dashboardPath);
             } else if (response.status === 401) {
                 setError("이메일 또는 비밀번호가 잘못되었습니다.");
@@ -85,11 +82,12 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            const selectedRole = role || 'mentee';
-            const dashboardPath = selectedRole === 'mentor' ? '/mentor/mentee' : '/mentee/dashboard';
+            // 이미 로그인되어 있으면 role에 맞는 대시보드로 이동
+            const userRole = useAuthStore.getState().role?.toLowerCase();
+            const dashboardPath = userRole === 'mentor' ? '/mentor/mentee' : '/mentee/dashboard';
             navigate(dashboardPath);
         }
-    }, [isLoggedIn, navigate, role]);
+    }, [isLoggedIn, navigate]);
 
     const isMentor = role === 'mentor';
 
