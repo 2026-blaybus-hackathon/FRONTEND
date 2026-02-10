@@ -39,23 +39,8 @@ export function useMenteeFeedbacksFromTasks(
         summary: task.feedback.summary ?? '',
         comment: task.feedback.comment ?? '',
       }));
-    console.log('[useMenteeFeedbacksFromTasks] derived', {
-      menteeId,
-      taskCount: content.length,
-      feedbackCount: list.length,
-      feedbacks: list,
-    });
     return list;
   }, [menteeId, tasks?.content]);
-
-  console.log('[useMenteeFeedbacksFromTasks]', {
-    menteeId,
-    options,
-    isLoading,
-    isError,
-    error: error?.message,
-    feedbackCount: feedbacks.length,
-  });
 
   return {
     feedbacks,

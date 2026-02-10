@@ -15,6 +15,7 @@ import {
 } from '../../static/assignment';
 import { useMenteeList } from '../../hooks/useMenteeList';
 import { useRecentMenteeTasks } from '../../hooks/useRecentMenteeTasks';
+import { useMentorSubjectStats } from '../../hooks/useMentorSubjectStats';
 import { useMaterials } from '../../hooks/task/useMaterials';
 import { useAssignTask } from '../../hooks/task/useAssignTask';
 
@@ -26,6 +27,10 @@ const AssignmentManagementPage = () => {
 
   const { menteeList, isLoading: menteeLoading } = useMenteeList();
   const { recentTasks, isLoading: recentTasksLoading } = useRecentMenteeTasks(selectedMentee?.id ?? null);
+  const { subjectStats, overallAchievementRate, isLoading: statsLoading } = useMentorSubjectStats(
+    selectedMentee?.id ?? null,
+    { period: 'WEEKLY' }
+  );
   const { materials } = useMaterials();
   const { assignTask: submitAssignTask, isPending: assignPending } = useAssignTask();
 
@@ -217,16 +222,35 @@ const AssignmentManagementPage = () => {
                 </button>
               </div>
               <div className="pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-700 m-0 mb-2">이번 주 과제 달성률</p>
-                <p className="text-4xl font-bold text-[var(--color-primary-600)] m-0 mb-3">
-                  {selectedDetail?.achievementRate ?? 0}%
-                </p>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[var(--color-primary-500)] rounded-full transition-[width] duration-200"
-                    style={{ width: `${selectedDetail?.achievementRate ?? 0}%` }}
-                  />
-                </div>
+                <p className="text-sm font-medium text-gray-800 m-0 mb-3">이번 주 과목별 분석</p>
+                {statsLoading ? (
+                  <p className="text-sm text-gray-500 m-0">불러오는 중...</p>
+                ) : subjectStats.length > 0 ? (
+                  <>
+                    <p className="text-xs text-gray-500 m-0 mb-2">평균 달성률 {overallAchievementRate}%</p>
+                    <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden mb-3">
+                      <div
+                        className="h-full bg-[var(--color-primary-500)] rounded-full transition-[width] duration-200"
+                        style={{ width: `${overallAchievementRate}%` }}
+                      />
+                    </div>
+                    <ul className="list-none m-0 p-0 flex flex-col gap-2">
+                      {subjectStats.map((item) => {
+                        const label = SUBJECT_OPTIONS.find((o) => o.value === item.subject)?.label ?? item.subject;
+                        return (
+                          <li key={item.subject} className="flex justify-between items-center text-sm text-gray-600">
+                            <span>{label}</span>
+                            <span>
+                              {Math.floor(item.studyMinutes / 60)}h {item.studyMinutes % 60}분 · {item.achievementRate}%
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-500 m-0">과목별 데이터가 없습니다.</p>
+                )}
               </div>
               <div>
                 <div className="flex items-center justify-between gap-2 mt-6 mb-3">

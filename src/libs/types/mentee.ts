@@ -19,7 +19,7 @@ export interface MenteeResponse {
   subjects?: string[] | null;
 }
 
-/** GET /users/mentee/profile 응답 */
+/** GET /api/v1/users/profile 응답 */
 export interface MenteeProfileResponse {
   name: string;
   profileName: string | null;
@@ -30,7 +30,7 @@ export interface MenteeProfileResponse {
   targetDate: number | null; // D-day
 }
 
-/** PUT /users/mentee/profile 요청 */
+/** PUT /api/v1/users/profile 요청 */
 export interface UpdateMenteeProfileRequest {
   name: string;
   schoolName: string | null;

@@ -16,7 +16,6 @@ axiosInstance.interceptors.request.use(
         // FormData일 때 Content-Type 제거 → 브라우저가 multipart/form-data; boundary= 설정
         if (config.data instanceof FormData) {
             config.headers['Content-Type'] = false as unknown as string;
-            console.log('[axios] FormData request, Content-Type cleared', config.url, 'headers:', { ...config.headers });
         }
         // 쿠키에서 access_token 가져오기
         const accessToken = Cookies.get('access_token');

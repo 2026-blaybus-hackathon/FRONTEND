@@ -89,3 +89,196 @@
     font-size: 14px;
   }
 }
+
+/* 새로운 로그인 페이지 스타일 */
+.auth-page-new {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F3F2FF;
+  padding: 40px 20px;
+  position: relative;
+}
+
+/* 우측 상단 로고 */
+.auth-logo-top {
+  position: absolute;
+  top: 32px;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* 로그인 카드 컨테이너 */
+.auth-container-new {
+  width: 100%;
+  max-width: 480px;
+}
+
+.auth-card-new {
+  background: white;
+  border-radius: 16px;
+  padding: 48px 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* 뒤로가기 */
+.back-link-new {
+  display: inline-block;
+  margin-bottom: 32px;
+  color: #6B7280;
+  font-size: 14px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.back-link-new:hover {
+  color: #374151;
+}
+
+/* 헤더 */
+.auth-header-new {
+  margin-bottom: 32px;
+}
+
+.auth-title-new {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.auth-subtitle-new {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* 폼 */
+.auth-form-new {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group-new {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label-new {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-hint-new {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin: 4px 0 0 0;
+}
+
+.error-message-new {
+  font-size: 13px;
+  color: #EF4444;
+  margin: 4px 0 0 0;
+}
+
+/* 자동 로그인 & 비밀번호 찾기 */
+.form-options-new {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -8px;
+}
+
+.checkbox-label-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.checkbox-input-new {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: #7C3AED;
+}
+
+.forgot-password-new {
+  font-size: 14px;
+  color: #7C3AED;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgot-password-new:hover {
+  color: #6D28D9;
+  text-decoration: underline;
+}
+
+/* 버튼 스타일 오버라이드 */
+.login-button-new {
+  margin-top: 8px;
+  background: #7C3AED !important;
+  border-radius: 8px !important;
+  padding: 14px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.login-button-new:hover:not(:disabled) {
+  background: #6D28D9 !important;
+}
+
+.signup-button-new {
+  border-radius: 8px !important;
+  padding: 14px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  border: 1px solid #E5E7EB !important;
+}
+
+/* 반응형 */
+@media (max-width: 640px) {
+  .auth-logo-top {
+    top: 20px;
+    right: 20px;
+  }
+
+  .auth-card-new {
+    padding: 32px 24px;
+  }
+
+  .auth-title-new {
+    font-size: 24px;
+  }
+
+  .form-options-new {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

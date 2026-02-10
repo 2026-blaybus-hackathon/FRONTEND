@@ -4,7 +4,7 @@ import type { MentorTaskItem } from '../libs/types/mentor';
 
 const QUERY_KEY_PREFIX = ['recentMenteeTasks'] as const;
 
-const RECENT_LIMIT = 2;
+const RECENT_LIMIT = 3;
 
 /**
  * 과제 관리 등에서 "최근 제공 과제" 2개만 조회하는 훅.

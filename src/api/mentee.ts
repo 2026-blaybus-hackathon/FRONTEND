@@ -3,35 +3,34 @@ import type { subjectTypes } from "../types";
 import type { MenteeProfileResponse, UpdateMenteeProfileRequest } from '../libs/types/mentee';
 
 /**
- * 멘티 내 프로필 조회.
- * GET /users/mentee/profile
+ * 내 프로필 조회 (멘티/멘토 공통).
+ * GET /api/v1/users/profile
  */
-
 export async function getMenteeProfile(): Promise<MenteeProfileResponse> {
-    const response = await axios.get<MenteeProfileResponse>('/users/mentee/profile');
+    const response = await axios.get<MenteeProfileResponse>('/users/profile');
     return response.data;
 }
 
 /**
- * 멘티 프로필 수정.
- * PUT /users/mentee/profile
+ * 프로필 수정 (멘티/멘토 공통).
+ * PUT /api/v1/users/profile
  */
 export async function updateMenteeProfile(
     body: UpdateMenteeProfileRequest
   ): Promise<void> {
-    await axios.put('/users/mentee/profile', body);
+    await axios.put('/users/profile', body);
   }
   
 /**
- * 멘티 프로필 이미지 수정.
- * PATCH /users/mentee/profile-image (multipart/form-data)
+ * 프로필 이미지 수정 (멘티/멘토 공통).
+ * PATCH /api/v1/users/profile-image (multipart/form-data)
  */
 export async function updateMenteeProfileImage(file: File | null): Promise<void> {
     const formData = new FormData();
     if (file) {
         formData.append('profile', file);
     }
-    await axios.patch('/users/mentee/profile-image', formData, {
+    await axios.patch('/users/profile-image', formData, {
         headers: {
         'Content-Type': false as unknown as string,
         },

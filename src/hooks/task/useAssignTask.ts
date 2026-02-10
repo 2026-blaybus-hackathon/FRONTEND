@@ -19,11 +19,9 @@ export function useAssignTask() {
 
   const mutation = useMutation({
     mutationFn: ({ payload, files }: AssignTaskVariables) => {
-      console.log('[useAssignTask] mutate', { menteeId: payload.menteeId, title: payload.title });
       return assignTask(payload, files);
     },
     onSuccess: (data, variables) => {
-      console.log('[useAssignTask] onSuccess', data, variables.payload.menteeId);
       const menteeId = variables.payload.menteeId;
       queryClient.invalidateQueries({
         queryKey: [...RECENT_TASKS_QUERY_KEY_PREFIX, menteeId],
