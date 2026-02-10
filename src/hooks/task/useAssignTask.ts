@@ -21,13 +21,12 @@ export function useAssignTask() {
     mutationFn: ({ payload, files }: AssignTaskVariables) => {
       return assignTask(payload, files);
     },
-    onSuccess: (data, variables) => {
-      const menteeId = variables.payload.menteeId;
+    onSuccess: (_data, { payload }) => {
       queryClient.invalidateQueries({
-        queryKey: [...RECENT_TASKS_QUERY_KEY_PREFIX, menteeId],
+        queryKey: [...RECENT_TASKS_QUERY_KEY_PREFIX, payload.menteeId],
       });
       queryClient.invalidateQueries({
-        queryKey: [...MENTOR_MENTEE_TASKS_QUERY_KEY_PREFIX, menteeId],
+        queryKey: [...MENTOR_MENTEE_TASKS_QUERY_KEY_PREFIX, payload.menteeId],
       });
     },
   });

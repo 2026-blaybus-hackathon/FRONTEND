@@ -288,12 +288,15 @@ export interface MentorFeedbackTask {
   menteeComment: string;
   feedbackStatus: MentorFeedbackTaskStatus;
   images: imageTypes.Image[];
-  feedback: string;
+  feedback: {
+    feedbackId: number;
+    content: string;
+  } | null;
 }
 
 export interface MentorFeedbackMenteeDetail {
-tasks: MentorFeedbackTask[];
-totalFeedback: string;
+  tasks: MentorFeedbackTask[];
+  totalFeedback: string | null;
 }
 
 export async function getMentorFeedbackMenteeList(): Promise<MentorFeedbackMenteeList> {
@@ -302,7 +305,7 @@ export async function getMentorFeedbackMenteeList(): Promise<MentorFeedbackMente
 }
 
 export async function getMentorFeedbackMenteeDetail(menteeId: number): Promise<MentorFeedbackMenteeDetail> {
-  const response = await axios.get<MentorFeedbackMenteeDetail>(`/feedback/mentor/mentees/${menteeId}`);
+  const response = await axios.get<MentorFeedbackMenteeDetail>(`/tasks/mentor/${menteeId}`);
   return response.data;
 }
 
@@ -322,7 +325,7 @@ export async function writeMentorTaskFeedback(taskId: number, payload: WriteMent
   return response.data;
 }
 
-export async function writeMentorTotalFeedback(payload: WriteMentorTotalFeedbackPayload): Promise<void> {
-  const response = await axios.post<void>(`/feedback/mentor/mentees/daily-planner/total-feedback`, payload);
+export async function writeMentorTotalFeedback(date: string, payload: WriteMentorTotalFeedbackPayload): Promise<void> {
+  const response = await axios.patch<void>(`/feedback/mentor/daily-planner/total-feedback?date=${date}`, payload);
   return response.data;
 }
