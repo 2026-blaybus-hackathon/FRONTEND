@@ -26,7 +26,7 @@ export interface MentorTaskItem {
   feedback: MentorTaskFeedback;
   subject?: string;
   taskType?: string;
-  feedbackStatus?: 'PENDING' | 'COMPLETED';
+  feedbackStatus?: 'PENDING' | 'COMPLETED' | 'NOT_SUBMITTED';
   createdAt?: string;
   fileUrl?: string;
 }
