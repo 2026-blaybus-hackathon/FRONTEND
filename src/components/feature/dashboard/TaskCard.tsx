@@ -1,5 +1,6 @@
-import { SUBJECT_COLORS } from '../../../static/subjects';
 import '../../../styles/components/task-card.css';
+import type { subjectTypes } from '../../../types';
+import SubjectBadge from '../subject/SubjectBadge';
 
 interface TaskCardProps {
   id: number;
@@ -21,17 +22,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onDelete,
   onDetail,
 }) => {
-  const subjectColor = SUBJECT_COLORS[subject] || '#6B7280';
 
   return (
     <div className="task-card">
       <div className="task-card-header">
-        <span 
-          className="task-subject-badge" 
-          style={{ backgroundColor: `${subjectColor}20`, color: subjectColor }}
-        >
-          {subject}
-        </span>
+        <SubjectBadge subject={subject as subjectTypes.Subject} />
         <div className="task-actions">
           <button className="task-action-btn" onClick={onEdit}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

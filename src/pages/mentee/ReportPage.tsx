@@ -14,6 +14,8 @@ export type SubjectWithAll = "ALL" | subjectTypes.Subject;
 export const REPORTDETAILS = ['keepContent', 'problemContent', 'tryContent'] as const;
 export type ReportDetail = typeof REPORTDETAILS[number];
 
+const ALL_SUBJECTS: subjectTypes.Subject[] = ["KOREAN", "ENGLISH", "MATH"];
+
 const ReportPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const date = searchParams.get("date");
@@ -39,16 +41,20 @@ const ReportPage = () => {
   }, [isReportError, is404Error, addToast]);
 
   // 성과율 데이터
+
   const pillsData = useMemo(() => {
     if (!report) return undefined;
     const total = {
       subject: "ALL" as const,
       feedback: { hours: report.totalStudyMinutes, rate: report.totalAchievementRate },
     };
-    const subjects = report.subjectReports.map((subject) => ({
-      subject: subject.subject,
-      feedback: { hours: subject.studyMinutes, rate: subject.achievementRate },
-    }));
+    const subjects = ALL_SUBJECTS.map((subjectKey) => {
+      const found = report.subjectReports.find((s) => s.subject === subjectKey);
+      return {
+        subject: subjectKey,
+        feedback: { hours: found?.studyMinutes ?? 0, rate: found?.achievementRate ?? 0 },
+      };
+    });
     return [total, ...subjects];
   }, [report]);
 
