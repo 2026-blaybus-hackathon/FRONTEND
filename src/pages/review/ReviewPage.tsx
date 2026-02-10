@@ -21,7 +21,10 @@ const ReviewPage = () => {
 
   // 학습 히스토리 조회 (완료된 과제 목록)
   const today = new Date().toISOString().split('T')[0];
-  const { tasks: tasksData, isLoading: isLoadingTasks } = useMenteeTasks(today);
+  const { data: tasksData, isLoading: isLoadingTasks } = useMenteeTasks(today);
+
+  // InfiniteQuery 데이터를 평탄화
+  const allTasks = tasksData?.pages.flatMap(page => page.content) || [];
 
   // 피드백 데이터 매핑
   const feedbacks = feedbacksData.map((fb) => ({
@@ -41,20 +44,20 @@ const ReviewPage = () => {
   }));
 
   // 학습 히스토리 데이터 (완료된 과제만)
-  const completedTasks = (tasksData || [])
-    .filter((task) => task.isCompleted)
-    .map((task) => ({
-      id: task.taskId,
-      subject: task.subject || '과목',
-      title: task.title,
-      date: task.date ? new Date(task.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
-      studyTime: task.studyTime || 0,
-      isCompleted: task.isCompleted,
+  const completedTasks = allTasks
+    .filter((taskItem: any) => taskItem.isCompleted)
+    .map((taskItem: any) => ({
+      id: taskItem.task.id,
+      subject: taskItem.task.subject || '과목',
+      title: taskItem.task.title,
+      date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }),
+      studyTime: taskItem.task.studyDurationInMinutes || 0,
+      isCompleted: taskItem.isCompleted,
     }));
 
   const filteredHistory = selectedSubject === '전체' 
     ? completedTasks 
-    : completedTasks.filter((task) => task.subject === selectedSubject);
+    : completedTasks.filter((task: any) => task.subject === selectedSubject);
 
   const handleViewFeedback = (feedbackId: number) => {
     setSelectedFeedback(feedbackId);
@@ -70,19 +73,12 @@ const ReviewPage = () => {
   useEffect(() => {
     if (taskIdParam) {
       const taskId = Number(taskIdParam);
-      // taskId로 피드백 찾기
-      // API: GET /api/v1/feedback/mentee/tasks/{taskId}
-      // 현재는 feedbacks 목록에서 찾지만, 실제로는 별도 API 호출 필요
-      
-      // 임시: feedbacks 목록에서 taskId와 매칭되는 피드백 찾기
-      // (API 응답에 taskId가 포함되어야 함)
-      const feedback = feedbacks.find(f => f.id === taskId); // 임시로 id로 매칭
+      const feedback = feedbacks.find(f => f.id === taskId);
       if (feedback) {
         setSelectedFeedback(feedback.id);
         setActiveTab('feedback');
       }
     } else if (feedbackIdParam) {
-      // feedbackId로 직접 접근
       const feedbackId = Number(feedbackIdParam);
       const feedback = feedbacks.find(f => f.id === feedbackId);
       if (feedback) {
@@ -90,7 +86,7 @@ const ReviewPage = () => {
         setActiveTab('feedback');
       }
     }
-  }, [feedbackIdParam, taskIdParam, feedbacks]);
+  }, [feedbackIdParam, taskIdParam, feedbacksData]);
 
   return (
     <>
@@ -209,7 +205,7 @@ const ReviewPage = () => {
               </div>
             ) : (
               <div className="history-grid">
-                {filteredHistory.map((task) => (
+                {filteredHistory.map((task: any) => (
                   <div key={task.id} className="history-card">
                     <div className="history-card-header">
                       <span 
