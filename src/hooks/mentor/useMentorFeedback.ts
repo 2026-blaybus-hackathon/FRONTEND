@@ -13,8 +13,8 @@ import {
 export const mentorFeedbackKeys = {
     all: ['mentorFeedback'] as const,
     mentees: () => [...mentorFeedbackKeys.all, 'mentees'] as const,
-    menteeDetail: (menteeId: number, date: string) =>
-        [...mentorFeedbackKeys.all, 'menteeDetail', menteeId, date] as const,
+    menteeDetail: (menteeId: number) =>
+        [...mentorFeedbackKeys.all, 'menteeDetail', menteeId] as const,
 };
 
 // ── Queries ─────────────────────────────────────────────────
@@ -28,10 +28,10 @@ export function useMentorMentees() {
     });
 }
 
-export function useMentorMenteeDetail(menteeId: number, date: string, options: { enabled?: boolean } = {}) {
+export function useMentorMenteeDetail(menteeId: number, options: { enabled?: boolean } = {}) {
     return useQuery({
-        queryKey: mentorFeedbackKeys.menteeDetail(menteeId, date),
-        queryFn: () => getMentorFeedbackMenteeDetail(menteeId, date),
+        queryKey: mentorFeedbackKeys.menteeDetail(menteeId),
+        queryFn: () => getMentorFeedbackMenteeDetail(menteeId),
         staleTime: 1 * 60 * 1000,
         gcTime: 3 * 60 * 1000,
         retry: 1,
@@ -40,14 +40,14 @@ export function useMentorMenteeDetail(menteeId: number, date: string, options: {
 }
 
 // ── Mutations ───────────────────────────────────────────────
-export function useWriteTaskFeedback(menteeId: number, taskId: number, date: string) {
+export function useWriteTaskFeedback(menteeId: number, taskId: number) {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (payload: WriteMentorTaskFeedbackPayload) => writeMentorTaskFeedback(taskId, payload),
         onSuccess: () => {
             // 현재 캐시된 멘티 상세에서 과제 피드백 완료 여부 확인
             const cached = queryClient.getQueryData<MentorFeedbackMenteeDetail>(
-                mentorFeedbackKeys.menteeDetail(menteeId, date)
+                mentorFeedbackKeys.menteeDetail(menteeId)
             );
 
             if (cached) {
@@ -65,19 +65,19 @@ export function useWriteTaskFeedback(menteeId: number, taskId: number, date: str
             }
 
             queryClient.invalidateQueries({
-                queryKey: mentorFeedbackKeys.menteeDetail(menteeId, date),
+                queryKey: mentorFeedbackKeys.menteeDetail(menteeId),
             });
         },
     });
 }
 
-export function useWriteTotalFeedback(menteeId: number, date: string) {
+export function useWriteTotalFeedback(menteeId: number) {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (payload: WriteMentorTotalFeedbackPayload) => writeMentorTotalFeedback(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: mentorFeedbackKeys.menteeDetail(menteeId, date),
+                queryKey: mentorFeedbackKeys.menteeDetail(menteeId),
             });
         },
     });
