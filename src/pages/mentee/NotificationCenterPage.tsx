@@ -109,7 +109,7 @@ const NotificationCenterPage = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-end gap-250 lg:px-5 pb-[calc(var(--tabbar-height,60px)+24px)] sm:px-6 sm:py-8 sm:pb-[calc(var(--tabbar-height,60px)+40px)] lg:pb-32">
+    <div className="w-full flex flex-col items-end gap-250 lg:px-5 pb-[calc(var(--tabbar-height,60px)+24px)] sm:px-6 sm:py-8 sm:pb-[calc(var(--tabbar-height,60px)+40px)] lg:pb-32 lg:max-h-[calc(100vh-112px)] min-h-[calc(100vh-136px)]">
       <header className="w-full flex justify-between items-center">
         <div className="flex flex-col gap-2">
           <h1 className="text-400 font-semibold leading-tight text-gray-900 flex gap-200">

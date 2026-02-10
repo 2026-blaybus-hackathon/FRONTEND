@@ -1,5 +1,5 @@
 import SearchInput from "../../components/common/input/SearchInput";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { cn, getProfileImageUrl } from "../../libs/utils";
 import { Play, PlayReverse } from "../../icons";
 import IconButton from "../../components/common/button/IconButton";
@@ -10,53 +10,139 @@ import AssignmentCard from "../../components/feature/assignment/AssignmentCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMentorMentees, useMentorMenteeDetail, useWriteTaskFeedback, useWriteTotalFeedback } from "../../hooks/mentor/useMentorFeedback";
 import type { MentorFeedbackMenteeStatus } from "../../api/mentor";
+import { useSearchParams } from "react-router-dom";
+import { useToastStore } from "../../stores/toastStore";
 
 const MentorFeedbackPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [feedback, setFeedback] = useState("");
   const [search, setSearch] = useState("");
-  const [selectedMentee, setSelectedMentee] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(3);
   const [mode, setMode] = useState<"edit" | "view">("edit"); // 작성 모드(edit) / 조회 모드(view)
-  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [showTopShadow, setShowTopShadow] = useState(false);
   const [showBottomShadow, setShowBottomShadow] = useState(false);
   const assignmentListRef = useRef<HTMLDivElement>(null);
 
   const SCROLL_SHADOW_THRESHOLD = 10;
 
-  const { data: mentees } = useMentorMentees();
-  const { data: menteeDetail } = useMentorMenteeDetail(
+  // searchParams에서 menteeId, taskId 파싱
+  const selectedMentee = searchParams.get("menteeId") ? Number(searchParams.get("menteeId")) : null;
+  const selectedTaskId = searchParams.get("taskId") ? Number(searchParams.get("taskId")) : null;
+
+  const setSelectedMentee = useCallback((menteeId: number | null) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (menteeId !== null) {
+        next.set("menteeId", String(menteeId));
+      } else {
+        next.delete("menteeId");
+      }
+      // 멘티가 바뀌면 taskId는 초기화
+      next.delete("taskId");
+      return next;
+    });
+  }, [setSearchParams]);
+
+  const setSelectedTaskId = useCallback((taskId: number | null) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (taskId !== null) {
+        next.set("taskId", String(taskId));
+      } else {
+        next.delete("taskId");
+      }
+      return next;
+    });
+  }, [setSearchParams]);
+
+  const addToast = useToastStore((state) => state.addToast);
+
+  const { data: mentees, isLoading: isLoadingMentees, isError: isErrorMentees } = useMentorMentees();
+  const { data: menteeDetail, isLoading: isLoadingMenteeDetail, isError: isErrorMenteeDetail } = useMentorMenteeDetail(
     selectedMentee ?? 0,
     {
       enabled: selectedMentee !== null,
     }
   );
 
+  const { mutate: writeTaskFeedback } = useWriteTaskFeedback(selectedMentee ?? 0, selectedTaskId ?? 0);
+  const { mutate: writeTotalFeedback } = useWriteTotalFeedback(selectedMentee ?? 0);
+
+  useEffect(() => {
+    if (isErrorMentees || isErrorMenteeDetail) {
+      addToast({
+        message: "데이터를 불러오는 중 오류가 발생했습니다.",
+        type: "error",
+      });
+    }
+  }, [isErrorMentees, isErrorMenteeDetail, addToast]);
+
+  // 검색어로 멘티 이름 필터링
+  const filteredMentees = useMemo(() => {
+    if (!mentees) return undefined;
+    if (!search.trim()) return mentees;
+    return mentees.filter((m) => m.name.includes(search.trim()));
+  }, [mentees, search]);
+
+  // 선택된 과제 조회
   const selectedTask = useMemo(() => {
     return menteeDetail?.tasks.find((task) => task.taskId === selectedTaskId);
   }, [menteeDetail, selectedTaskId]);
 
-  const editorMode = selectedTaskId !== null ? "task" : "total";
-  const isEditing = editorMode === "task" ? selectedTask?.feedback !== null : menteeDetail?.totalFeedback !== null;
-  const isTotalFeedbackCompleted = menteeDetail?.totalFeedback !== null;
-  
+  const editorMode = selectedTaskId !== null ? "task" : "total"; // 피드백 모드 (과제 피드백 / 종합 피드백)
+  const isEditing = editorMode === "task" ? selectedTask?.feedback !== null : menteeDetail?.totalFeedback !== null; // 피드백 수정 여부
+  const isTotalFeedbackCompleted = menteeDetail?.totalFeedback !== null; // 종합 피드백 완료 여부
 
-  const { mutate: writeTaskFeedback } = useWriteTaskFeedback(selectedMentee ?? 0, selectedTaskId ?? 0);
-  const { mutate: writeTotalFeedback } = useWriteTotalFeedback(selectedMentee ?? 0);
+  // 선택된 멘티/과제가 바뀌거나 데이터가 로드되면 피드백 초기화
+  const feedbackInitValue = editorMode === "total"
+    ? menteeDetail?.totalFeedback ?? ""
+    : selectedTask?.feedback?.content ?? "";
+  const feedbackSyncKey = `${selectedMentee}-${selectedTaskId}-${feedbackInitValue}`;
+  const [prevFeedbackSyncKey, setPrevFeedbackSyncKey] = useState(feedbackSyncKey);
 
+  if (feedbackSyncKey !== prevFeedbackSyncKey) {
+    setPrevFeedbackSyncKey(feedbackSyncKey);
+    setFeedback(feedbackInitValue);
+    setMode(feedbackInitValue ? "view" : "edit");
+  }
+
+  // 피드백 등록 핸들러
   const handleEnrollTaskFeedback = () => {
     if (selectedTaskId === null) return;
     writeTaskFeedback({
       content: feedback,
+    }, {
+      onSuccess: () => {
+        setMode("view");
+      },
+      onError: () => {
+        addToast({
+          message: "피드백 등록 중 오류가 발생했습니다.",
+          type: "error",
+        });
+      },
     });
   }
 
   const handleEnrollTotalFeedback = () => {
     if (selectedMentee === null) return;
     writeTotalFeedback({
-      content: feedback,
-      menteeId: selectedMentee,
+      date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+      payload: {
+        content: feedback,
+        menteeId: selectedMentee,
+      },
+    }, {
+      onSuccess: () => {
+        setMode("view");
+      },
+      onError: () => {
+        addToast({
+          message: "피드백 등록 중 오류가 발생했습니다.",
+          type: "error",
+        });
+      },
     });
   }
 
@@ -72,12 +158,13 @@ const MentorFeedbackPage = () => {
     } 
   }
 
+  // 이전 핸들러
   const handleMovePrevious = () => {
     if (selectedMentee === null) return;
     if (selectedTaskId === null) {
-      const currentIndex = mentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
-      if (currentIndex > 0 && mentees) {
-        setSelectedMentee(mentees[currentIndex - 1].id);
+      const currentIndex = filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
+      if (currentIndex > 0 && filteredMentees) {
+        setSelectedMentee(filteredMentees[currentIndex - 1].id);
       }
     } else {
       const currentTaskIndex = menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? -1;
@@ -87,12 +174,13 @@ const MentorFeedbackPage = () => {
     }
   }
 
+  // 다음 핸들러
   const handleMoveNext = () => {
     if (selectedMentee === null) return;
     if (selectedTaskId === null) {
-      const currentIndex = mentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
-      if (mentees && currentIndex >= 0 && currentIndex < mentees.length - 1) {
-        setSelectedMentee(mentees[currentIndex + 1].id);
+      const currentIndex = filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? -1;
+      if (filteredMentees && currentIndex >= 0 && currentIndex < filteredMentees.length - 1) {
+        setSelectedMentee(filteredMentees[currentIndex + 1].id);
       }
     } else {
       const currentTaskIndex = menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? -1;
@@ -103,14 +191,14 @@ const MentorFeedbackPage = () => {
   }
 
   const isPrevDisabled = selectedTaskId === null
-  ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) <= 0
+  ? (filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? 0) <= 0
   : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) <= 0;
 
   const isNextDisabled = selectedTaskId === null
-    ? (mentees?.findIndex((m) => m.id === selectedMentee) ?? 0) >= (mentees?.length ?? 1) - 1
+    ? (filteredMentees?.findIndex((m) => m.id === selectedMentee) ?? 0) >= (filteredMentees?.length ?? 1) - 1
     : (menteeDetail?.tasks.findIndex((t) => t.taskId === selectedTaskId) ?? 0) >= (menteeDetail?.tasks.length ?? 1) - 1;
 
-
+  // 미디어 쿼리에 따라 페이지 사이즈 조정
   useEffect(() => {
     const mqXl = window.matchMedia("(min-width: 1640px)");
     const mq2xl = window.matchMedia("(min-width: 1920px)");
@@ -126,6 +214,7 @@ const MentorFeedbackPage = () => {
     };
   }, []);
 
+  // 그림자 업데이트
   useEffect(() => {
     const container = assignmentListRef.current;
     if (!container) return;
@@ -163,44 +252,59 @@ const MentorFeedbackPage = () => {
     };
   }, [selectedMentee, selectedTaskId]);
 
-  const lastPage = Math.ceil((mentees ? mentees.length : 0) / pageSize);
+  // 페이지 계산
+  const lastPage = Math.ceil((filteredMentees ? filteredMentees.length : 0) / pageSize);
   const effectivePage = Math.min(page, Math.max(0, lastPage - 1));
  
+  // 검색 핸들러
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
+    setPage(0); // 검색 시 첫 페이지로 이동
   }
 
   return (
-    <div className="flex flex-col gap-10 lg:max-h-[calc(100vh-112px)] lg:overflow-hidden">
+    <div className="flex flex-col gap-10 lg:max-h-[calc(100vh-112px)] min-h-[calc(100vh-136px)] lg:overflow-hidden">
       {/* 검색, 학생 리스트 */}
       <div className="flex flex-col gap-7.5 shrink-0">
         <SearchInput value={search} onChange={handleSearch} ariaLabel="search" className="w-45" />
         <div className="flex justify-between items-center">
           <IconButton variant="primary-line" Icon={<PlayReverse />} onClick={() => setPage(effectivePage - 1)} ariaLabel="previous page" disabled={effectivePage === 0}/>
           <div className="flex flex-1 flex-col sm:flex-row gap-100 lg:gap-500 justify-center">
-            {mentees?.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
-              <MenteeListCard
-                id={mentee.id}
-                key={mentee.id}
-                name={mentee.name}
-                profileImage={getProfileImageUrl(mentee.profileUrl)}
-                school={mentee.schoolName}
-                grade={mentee.grade}
-                status={mentee.status}
-                selected={selectedMentee === mentee.id}
-                onClick={() => {
-                  setSelectedMentee(mentee.id);
-                  setSelectedTaskId(null);
-              }}
-              />
-            ))}
+            {isLoadingMentees ? (
+              Array.from({ length: pageSize }).map((_, i) => (
+                <MenteeListCardSkeleton key={i} />
+              ))
+            ) : filteredMentees && filteredMentees.length > 0 ? (
+              filteredMentees.slice(effectivePage * pageSize, (effectivePage + 1) * pageSize).map((mentee) => (
+                <MenteeListCard
+                  id={mentee.id}
+                  key={mentee.id}
+                  name={mentee.name}
+                  profileImage={getProfileImageUrl(mentee.profileUrl)}
+                  school={mentee.schoolName}
+                  grade={mentee.grade}
+                  status={mentee.status}
+                  selected={selectedMentee === mentee.id}
+                  onClick={() => {
+                    setSelectedMentee(selectedMentee === mentee.id ? null : mentee.id);
+                  }}
+                />
+              ))
+            ) : (
+              // 레이아웃 높이 유지용 플레이스홀더
+              <div
+                className="w-full md:min-w-60 sm:w-fit md:h-32 py-150 lg:py-300 px-150 lg:px-250 flex items-center justify-center"
+              >
+                <p className="text-gray-300 heading-6">학생이 없습니다.</p>
+              </div>
+            )}
           </div>
           <IconButton variant="primary-line" Icon={<Play />} onClick={() => setPage(effectivePage + 1)} ariaLabel="next page" disabled={effectivePage >= lastPage - 1}/>
         </div>
       </div>
       
       {/* 학생 과제 확인 */}
-      {selectedMentee && <div className="w-full flex flex-1 flex-col-reverse md:flex-row gap-300 lg:min-h-0">
+      {selectedMentee && <div className="w-full flex flex-1 flex-col-reverse md:flex-row gap-300 md:max-h-[466px] lg:min-h-0">
         <div className="md:w-fit w-full relative lg:min-h-0">
           {/* 상단 안쪽 그림자: 스크롤 시 위에 더 있는 내용이 있음을 표시 */}
           <div
@@ -213,9 +317,13 @@ const MentorFeedbackPage = () => {
           />
           <div
             ref={assignmentListRef}
-            className="flex flex-col md:gap-300 gap-100 overflow-y-auto min-h-0 max-h-[min(400px,50vh)] lg:max-h-full"
+            className="flex flex-col md:gap-300 gap-100 overflow-y-auto min-h-0 max-h-[466px] lg:max-h-full"
           >
-            {selectedTask ? (
+            {isLoadingMenteeDetail ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <AssignmentCardSkeleton key={i} />
+              ))
+            ) : selectedTask ? (
               <AssignmentCard
                 {...selectedTask}
                 time={selectedTask.time}
@@ -244,6 +352,9 @@ const MentorFeedbackPage = () => {
             aria-hidden="true"
           />
         </div>
+        {isLoadingMenteeDetail ? (
+          <FeedbackEditorSkeleton />
+        ) : (
         <div className="max-h-[466px] flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-100 shrink-0">
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-2">
@@ -277,13 +388,15 @@ const MentorFeedbackPage = () => {
             {/* 에디터: 부모 높이에 맞추고, 내용은 내부 스크롤 */}
             {
               mode === "view" ?
-              <p className="body-3 text-gray-700 whitespace-pre-wrap overflow-y-auto">{feedback}</p> :
+              <p className="body-3 text-gray-700 whitespace-pre-wrap overflow-y-auto">
+                {feedback}
+              </p> :
               <TextArea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder={
                   selectedTaskId !== null ?
-                  "학생의 질문, 코멘트에 대한 답변이나 피드백을 남겨주세요." :
+                  (!isTotalFeedbackCompleted ? "종합 피드백을 먼저 남겨주세요." : "학생의 질문, 코멘트에 대한 답변이나 피드백을 남겨주세요." ):
                   "오늘의 과제 달성률과 전체적인 학습에 대해 피드백을 남겨주세요."
                   }
                 ariaLabel="피드백 입력"
@@ -298,12 +411,13 @@ const MentorFeedbackPage = () => {
               onClick={handleEnrollFeedback}
               ariaLabel="피드백 등록"
               className="font-weight-700"
-              disabled={!feedback}
+              disabled={mode === "edit" && !feedback}
             >
-              {isEditing ? "피드백 수정" : "피드백 등록"}
+              {mode === "view" ? "피드백 수정" : isEditing ? "피드백 재등록" : "피드백 등록"}
             </Button>
           </div>
         </div>
+        )}
       </div>}
     </div>
   );
@@ -332,7 +446,7 @@ const MenteeListCard = ({
   return (
     <div
       className={cn(
-        "w-full md:h-45 xl:min-w-60 xl:w-fit lg:h-32 flex flex-col gap-3 rounded-[12px] py-150 lg:py-300 px-150 lg:px-250 relative overflow-hidden",
+        "w-full md:min-w-60 sm:w-fit md:h-32 flex flex-col gap-3 rounded-[12px] py-150 lg:py-300 px-150 lg:px-250 relative overflow-hidden",
         "bg-white"
       )}
       onClick={onClick}
@@ -346,19 +460,17 @@ const MenteeListCard = ({
         aria-hidden
       />
       <div className="h-full relative z-10 flex flex-col justify-between">
-        <div className="flex gap-150 flex-row sm:flex-col md:flex-row items-center">
-          <div className="w-12 h-12 shrink-0 rounded-full overflow-hidden bg-primary-500 flex items-center justify-center text-white heading-4 font-weight-500">
-            {profileImage ? (
-              <img src={profileImage} alt={name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-            ) : (
-              name[0]
-            )}
-          </div>
+        <div className="flex gap-150 flex-row sm:flex-col md:flex-row">
+          {
+            profileImage ?
+            <img src={profileImage} alt={name} className="w-12 h-12 rounded-full object-cover" referrerPolicy="no-referrer" /> :
+            <div className="min-w-12 min-h-12 w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white heading-4 font-weight-500">{name[0]}</div>
+          }
           <div className="flex flex-col">
             <p className={cn("heading-6 md:heading-4 font-weight-500", selected ? "text-white" : "text-gray-800", "transition-all duration-300")}>{name}</p>
             <div className={cn("subtitle-1 md:heading-6 flex flex-wrap gap-x-50", selected ? "text-white" : "text-gray-300", "transition-all duration-300")}>
               <p>{school} </p>
-              <p>{grade}학년</p>
+              <p>{grade}</p>
             </div>
           </div>
         </div>
@@ -371,5 +483,58 @@ const MenteeListCard = ({
     </div>
   );
 }
+
+/* ── Skeleton Components ────────────────────────────────────── */
+
+const MenteeListCardSkeleton = () => (
+  <div className="w-full md:min-w-60 sm:w-fit md:h-32 flex flex-col gap-3 rounded-[12px] py-150 lg:py-300 px-150 lg:px-250 bg-white animate-pulse">
+    <div className="h-full flex flex-col justify-between">
+      <div className="flex gap-150 flex-row sm:flex-col md:flex-row">
+        <div className="min-w-12 min-h-12 w-12 h-12 rounded-full bg-gray-200" />
+        <div className="flex flex-col gap-1.5">
+          <div className="h-5 w-16 bg-gray-200 rounded" />
+          <div className="h-4 w-24 bg-gray-200 rounded" />
+        </div>
+      </div>
+      <div className="h-4 w-20 bg-gray-200 rounded self-end md:self-start" />
+    </div>
+  </div>
+);
+
+const AssignmentCardSkeleton = () => (
+  <div className="md:w-66 w-full shrink-0 bg-white rounded-600 py-150 px-200 gap-400 shadow-100 flex flex-col animate-pulse">
+    <div className="w-full gap-100 flex md:flex-col justify-between">
+      <div className="flex flex-col gap-50 md:gap-100">
+        <div className="h-5 w-14 bg-gray-200 rounded-full" />
+        <div className="h-5 w-32 bg-gray-200 rounded" />
+      </div>
+      <div className="flex flex-col md:gap-50 justify-end items-end md:items-start">
+        <div className="h-4 w-24 bg-gray-200 rounded" />
+        <div className="h-6 w-20 bg-gray-200 rounded-300" />
+      </div>
+    </div>
+  </div>
+);
+
+const FeedbackEditorSkeleton = () => (
+  <div className="max-h-[466px] flex-1 flex flex-col px-10 py-8 bg-white rounded-600 border-1 border-gray-100 gap-100 shrink-0 animate-pulse">
+    <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-2">
+        <div className="h-5 w-20 bg-gray-200 rounded" />
+        <div className="h-6 w-32 bg-gray-200 rounded" />
+      </div>
+      <div className="flex gap-100">
+        <div className="h-7 w-12 bg-gray-200 rounded-full" />
+        <div className="h-7 w-12 bg-gray-200 rounded-full" />
+      </div>
+    </div>
+    <div className="flex-1 min-h-0">
+      <div className="w-full h-full min-h-[300px] bg-gray-100 rounded-400" />
+    </div>
+    <div className="w-full flex justify-end shrink-0">
+      <div className="h-9 w-24 bg-gray-200 rounded-400" />
+    </div>
+  </div>
+);
 
 export default MentorFeedbackPage;
