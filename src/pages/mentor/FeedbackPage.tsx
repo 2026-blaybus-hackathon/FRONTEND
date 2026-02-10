@@ -58,17 +58,19 @@ const MentorFeedbackPage = () => {
 
   const addToast = useToastStore((state) => state.addToast);
 
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
   const { data: mentees, isLoading: isLoadingMentees, isError: isErrorMentees } = useMentorMentees();
   const { data: menteeDetail, isLoading: isLoadingMenteeDetail, isError: isErrorMenteeDetail } = useMentorMenteeDetail(
     selectedMentee ?? 0,
-    new Date().toISOString().split('T')[0], // YYYY-MM-DD
+    today,
     {
       enabled: selectedMentee !== null,
     }
   );
 
-  const { mutate: writeTaskFeedback } = useWriteTaskFeedback(selectedMentee ?? 0, selectedTaskId ?? 0);
-  const { mutate: writeTotalFeedback } = useWriteTotalFeedback(selectedMentee ?? 0);
+  const { mutate: writeTaskFeedback } = useWriteTaskFeedback(selectedMentee ?? 0, selectedTaskId ?? 0, today);
+  const { mutate: writeTotalFeedback } = useWriteTotalFeedback(selectedMentee ?? 0, today);
 
   useEffect(() => {
     if (isErrorMentees || isErrorMenteeDetail) {
