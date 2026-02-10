@@ -39,8 +39,8 @@ function App() {
       <BrowserRouter>
         <NotificationToasts />
         <Routes>
-          {/* 루트는 메인으로 리다이렉트 */}
-          <Route path="/" element={<Navigate to="/main" replace />} />
+          {/* 루트는 로그인으로 리다이렉트 */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
           
           {/* 로그인 전 메인 페이지 (사이드바 없음) */}
           <Route path="/main" element={<MainPage />} />
