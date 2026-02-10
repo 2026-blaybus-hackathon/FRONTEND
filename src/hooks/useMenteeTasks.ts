@@ -1,43 +1,82 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from '../libs/axios';
+import type { MentorTaskType } from '../libs/types/mentor';
+import type { subjectTypes } from '../types';
 
 const QUERY_KEY_PREFIX = ['menteeTasks'] as const;
 
-interface TaskItem {
-  taskId: number;
-  title: string;
-  subject: string;
+export interface TaskItem {
+  assignment: {
+    id: number;
+    originalFileName: string;
+    url: string;
+  }[];
   isCompleted: boolean;
-  studyTime?: number;
-  date: string;
+  isMentorAssigned: boolean;
+  task: {
+    id: number;
+    taskType: MentorTaskType;
+    title: string;
+    subject: subjectTypes.Subject;
+    studyDurationInMinutes: number;
+  }
+}
+
+export interface TaskListResponse {
+  content: TaskItem[];
+  hasNext: boolean;
 }
 
 /**
- * 멘티 과제 목록 조회 훅
- * GET /api/v1/tasks/mentee/list?date=YYYY-MM-DD
+ * 멘티 과제 목록 조회 훅 (커서 기반 페이지네이션)
+ * GET /api/v1/tasks/mentee/list?date=YYYY-MM-DD&lastId=...
  */
 export function useMenteeTasks(date: string) {
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: [...QUERY_KEY_PREFIX, date],
-    queryFn: async () => {
+    queryFn: async ({ pageParam }) => {
       try {
-        const response = await axios.get<{ tasks: TaskItem[] }>('/tasks/mentee/list', {
-          params: { date }
+        const params: Record<string, unknown> = { date };
+        if (pageParam != null) {
+          params.lastTaskId = pageParam;
+        }
+        const response = await axios.get<TaskListResponse>('/tasks/mentee/list', {
+          params,
         });
-        return response.data.tasks || [];
+        return response.data;
       } catch (err) {
         console.error('Failed to fetch tasks:', err);
-        return [];
+        return { content: [], hasNext: false } as TaskListResponse;
       }
+    },
+    initialPageParam: null as number | null,
+    getNextPageParam: (lastPage) => {
+      if (lastPage && lastPage.hasNext && lastPage.content.length > 0) {
+        const lastItem = lastPage.content[lastPage.content.length - 1];
+        return lastItem.task.id;
+      }
+      return undefined;
     },
   });
 
   return {
-    tasks: data ?? [],
+    data,
     isLoading,
     isError,
     error: error ?? null,
     refetch,
+    fetchNextPage,
+    hasNextPage: hasNextPage ?? false,
+    isFetchingNextPage,
   };
 }
 

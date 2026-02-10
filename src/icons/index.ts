@@ -12,3 +12,5 @@ export { User } from "./User";
 export { Users } from "./Users";
 export { Play } from "./Play";
 export { PlayReverse } from "./PlayReverse";
+export { Flag } from "./Flag";
+export { Bell } from "./Bell";

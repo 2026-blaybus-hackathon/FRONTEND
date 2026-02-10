@@ -378,6 +378,36 @@
   line-height: 1.5;
 }
 
+/* 더 불러오기 버튼 */
+.load-more-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0 40px;
+}
+
+.load-more-btn {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  border-color: #6366F1;
+  color: #6366F1;
+  background-color: #F5F3FF;
+}
+
+.load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* 플로팅 추가 버튼 */
 .floating-add-btn {
   position: fixed;

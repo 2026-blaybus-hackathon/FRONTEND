@@ -125,6 +125,16 @@ const MenteeNav = ({ isOpen }: { isOpen?: boolean }) => {
           ))}
         </ul>
       </div>
+
+      {/* 상담받기 - 제일 하단 고정 */}
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSfgdWIKLyMFdZdyLI9FaxO3ix1ZdLeKmta4TB-U0VwK1B6UCg/viewform"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-auto inline-flex items-center justify-center w-full py-3 text-sm font-bold text-white no-underline transition-colors hover:text-gray-200"
+      >
+        상담받기
+      </a>
     </Nav>
   );
 };
