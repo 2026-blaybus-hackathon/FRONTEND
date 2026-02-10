@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueries } from '@tanstack/react-query';
 import { useToastStore } from '../../stores/toastStore';
 import SubmittedTaskModal from '../../components/feature/dashboard/SubmittedTaskModal';
 import { useMenteeList } from '../../hooks/useMenteeList';
 import { getProfileImageUrl } from '../../libs/utils';
 import { useMentorMenteeTasks } from '../../hooks/useMentorMenteeTasks';
+import { getMentorMenteeTasks } from '../../api/mentor';
 
 const MentorArchivePage = () => {
   const navigate = useNavigate();
@@ -24,28 +26,28 @@ const MentorArchivePage = () => {
   // 멘티 목록 조회
   const { menteeList, isLoading: isLoadingMentees } = useMenteeList();
 
-  // 선택된 멘티의 과제 목록 조회 또는 전체 멘티 과제 조회
+  // 선택된 멘티의 과제 목록 조회
   const { tasks: selectedMenteeTasks, isLoading: isLoadingSelectedTasks } = useMentorMenteeTasks(selectedMentee, {
     page: 0,
     size: 100,
     enabled: selectedMentee !== null,
   });
 
-  // 전체 멘티의 과제 목록 (선택 안 했을 때)
-  const allMenteesTasksQueries = menteeList.map((mentee) => 
-    useMentorMenteeTasks(mentee.id, {
-      page: 0,
-      size: 100,
-      enabled: selectedMentee === null,
-    })
-  );
+  // 전체 멘티의 과제 목록 (선택 안 했을 때) - useQueries 사용
+  const allMenteesTasksQueries = useQueries({
+    queries: menteeList.map((mentee) => ({
+      queryKey: ['mentorMenteeTasks', mentee.id, 0, 100],
+      queryFn: () => getMentorMenteeTasks(mentee.id, { page: 0, size: 100 }),
+      enabled: selectedMentee === null && menteeList.length > 0,
+    })),
+  });
 
   // 전체 과제 합치기
   const allTasks = selectedMentee 
     ? (selectedMenteeTasks?.content || [])
-    : allMenteesTasksQueries.flatMap(query => {
-        const content = query.tasks?.content || [];
-        const mentee = menteeList.find(m => m.id === query.data?.menteeId);
+    : allMenteesTasksQueries.flatMap((query, index) => {
+        const content = query.data?.tasks?.content || [];
+        const mentee = menteeList[index];
         return content.map(task => ({
           ...task,
           menteeName: mentee?.name,
@@ -53,7 +55,10 @@ const MentorArchivePage = () => {
         }));
       });
 
-  const isLoadingTasks = selectedMentee ? isLoadingSelectedTasks : allMenteesTasksQueries.some(q => q.isLoading);
+  const isLoadingTasks = selectedMentee 
+    ? isLoadingSelectedTasks 
+    : allMenteesTasksQueries.some(q => q.isLoading);
+  
   const tasks = allTasks;
 
   const handleSearch = (e: React.FormEvent) => {
