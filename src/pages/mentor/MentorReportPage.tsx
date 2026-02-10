@@ -13,7 +13,9 @@ import SearchInput from '../../components/common/input/SearchInput';
 import type { MenteeListItem } from '../../libs/types/mentee';
 import { useMenteeList } from '../../hooks/useMenteeList';
 import { useMenteeStats } from '../../hooks/useMenteeStats';
+import { useMentorSubjectStats } from '../../hooks/useMentorSubjectStats';
 import { createMentorReport } from '../../api/mentor';
+import { SUBJECT_OPTIONS } from '../../static/assignment';
 import type { MentorReportPeriod, MenteeFeedbackItem } from '../../libs/types/mentor';
 import { useMenteeFeedbacksFromTasks } from '../../hooks/useMenteeFeedbacksFromTasks';
 import { DEFAULT_MENTEE_ASSIGNMENT_DETAIL } from '../../static/assignment';
@@ -43,16 +45,11 @@ function getPeriodLabel(dateStr: string, isWeekly: boolean): string {
   return `${year}년 ${month}월`;
 }
 
-/** 과목별 성과 목업 (API 연동 시 교체) */
-const MOCK_SUBJECT_STATS = [
-  { subject: '국어', achievementRate: 85, timeHours: 6, barColor: 'green' as const },
-  { subject: '수학', achievementRate: 75, timeHours: 12, barColor: 'blue' as const },
-  { subject: '영어', achievementRate: 95, timeHours: 2, barColor: 'red' as const },
-];
+const BAR_COLORS = ['bg-[var(--color-lime-500)]', 'bg-[var(--color-blue-500)]', 'bg-[var(--color-red-500)]'] as const;
 
-const REPORT_TABS: { id: 'weekly' | 'monthly'; label: string; period: MentorReportPeriod }[] = [
-  { id: 'weekly', label: '주간 리포트', period: 'WEEKLY' },
-  { id: 'monthly', label: '월간 리포트', period: 'MONTHLY' },
+const REPORT_TABS: { id: 'WEEKLY' | 'MONTHLY'; label: string; period: MentorReportPeriod }[] = [
+  { id: 'WEEKLY', label: '주간 리포트', period: 'WEEKLY' },
+  { id: 'MONTHLY', label: '월간 리포트', period: 'MONTHLY' },
 ];
 
 const textareaBase =
@@ -61,7 +58,7 @@ const textareaBase =
 const MentorReportPage = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedMentee, setSelectedMentee] = useState<MenteeListItem | null>(null);
-  const [activeTab, setActiveTab] = useState<'weekly' | 'monthly'>('weekly');
+  const [activeTab, setActiveTab] = useState<'WEEKLY' | 'MONTHLY'>('WEEKLY');
   const [totalReview, setTotalReview] = useState('');
   const [goodPoints, setGoodPoints] = useState('');
   const [improvePoints, setImprovePoints] = useState('');
@@ -82,7 +79,11 @@ const MentorReportPage = () => {
     isLoading: statsLoading,
   } = useMenteeStats(selectedMentee?.id ?? null, {
     date: statsDate,
-    period: activeTab === 'weekly' ? 'WEEK' : 'MONTH',
+    period: activeTab === 'WEEKLY' ? 'WEEK' : 'MONTH',
+  });
+  const { subjectStats, isLoading: subjectStatsLoading } = useMentorSubjectStats(selectedMentee?.id ?? null, {
+    reportDate: statsDate,
+    period: activeTab,
   });
 
   const filteredMentees = useMemo(() => {
@@ -110,7 +111,7 @@ const MentorReportPage = () => {
 
   const selectedDetail = selectedMentee ? DEFAULT_MENTEE_ASSIGNMENT_DETAIL : null;
   const studyTimeHours = Math.round(studyTimeMinutes / 60);
-  const periodLabel = activeTab === 'weekly'
+  const periodLabel = activeTab === 'WEEKLY'
     ? getPeriodLabel(statsDate, true)
     : getPeriodLabel(todayYYYYMMDD(), false);
 
@@ -141,9 +142,23 @@ const MentorReportPage = () => {
         tryContent,
         reportDate: getDateForWeekOffset(weekOffset),
       });
-      alert(activeTab === 'weekly' ? '주간 리포트가 등록되었습니다.' : '월간 리포트가 등록되었습니다.');
-    } catch (err) {
-      alert('리포트 등록에 실패했습니다. 다시 시도해 주세요.');
+      alert(activeTab === 'WEEKLY' ? '주간 리포트가 등록되었습니다.' : '월간 리포트가 등록되었습니다.');
+    } catch (err: unknown) {
+      const ax = err as {
+        response?: { status?: number; data?: { code?: number; message?: string } };
+        message?: string;
+      };
+      const data = ax.response?.data;
+      const isConflictReport = data?.code === -20000;
+      const alertMessage = isConflictReport
+        ? (data?.message ?? '이미 생성된 리포트가 존재합니다.')
+        : '리포트 등록에 실패했습니다. 다시 시도해 주세요.';
+      console.error('[MentorReportPage] handleSaveReport failed', {
+        status: ax.response?.status,
+        data: ax.response?.data,
+        message: ax.message,
+      });
+      alert(alertMessage);
     } finally {
       setSaving(false);
     }
@@ -161,7 +176,7 @@ const MentorReportPage = () => {
         </Link>
         <span className="mx-2">/</span>
         <span className="text-[var(--color-primary-500)] font-medium">
-          {activeTab === 'weekly' ? '주간 리포트' : '월간 리포트'}
+          {activeTab === 'WEEKLY' ? '주간 리포트' : '월간 리포트'}
         </span>
       </nav>
 
@@ -208,7 +223,7 @@ const MentorReportPage = () => {
           ))}
         </div>
         <span className="text-sm font-medium text-gray-600" aria-live="polite">
-          {activeTab === 'weekly' ? '해당 주: ' : '해당 월: '}
+          {activeTab === 'WEEKLY' ? '해당 주: ' : '해당 월: '}
           <strong className="text-gray-900">{periodLabel}</strong>
         </span>
       </div>
@@ -314,27 +329,33 @@ const MentorReportPage = () => {
 
             <div className="text-[0.8125rem] font-semibold text-gray-800 mb-3">과목별 분석</div>
             <ul className="list-none m-0 p-0 flex flex-col gap-3 mb-5">
-              {MOCK_SUBJECT_STATS.map((item) => (
-                <li key={item.subject}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="font-medium text-gray-700">{item.subject}</span>
-                    <span className="text-gray-600">
-                      {item.timeHours}h, {item.achievementRate}%
-                    </span>
-                  </div>
-                  <div className="h-2 rounded-full overflow-hidden bg-gray-200">
-                    <div
-                      className={cn(
-                        'h-full rounded-full min-w-[4px]',
-                        item.barColor === 'green' && 'bg-[var(--color-lime-500)]',
-                        item.barColor === 'blue' && 'bg-[var(--color-blue-500)]',
-                        item.barColor === 'red' && 'bg-[var(--color-red-500)]',
-                      )}
-                      style={{ width: `${item.achievementRate}%` }}
-                    />
-                  </div>
-                </li>
-              ))}
+              {subjectStatsLoading ? (
+                <li className="text-sm text-gray-500">불러오는 중…</li>
+              ) : subjectStats.length === 0 ? (
+                <li className="text-sm text-gray-500">과목별 데이터가 없습니다.</li>
+              ) : (
+                subjectStats.map((item, index) => {
+                  const label = SUBJECT_OPTIONS.find((o) => o.value === item.subject)?.label ?? item.subject;
+                  const timeHours = Math.floor(item.studyMinutes / 60);
+                  const barColor = BAR_COLORS[index % BAR_COLORS.length];
+                  return (
+                    <li key={item.subject}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="font-medium text-gray-700">{label}</span>
+                        <span className="text-gray-600">
+                          {timeHours}h, {item.achievementRate}%
+                        </span>
+                      </div>
+                      <div className="h-2 rounded-full overflow-hidden bg-gray-200">
+                        <div
+                          className={cn('h-full rounded-full min-w-[4px]', barColor)}
+                          style={{ width: `${item.achievementRate}%` }}
+                        />
+                      </div>
+                    </li>
+                  );
+                })
+              )}
             </ul>
 
             <div className="text-[0.8125rem] font-semibold text-gray-800 mb-3 flex justify-between items-center">
@@ -349,8 +370,8 @@ const MentorReportPage = () => {
               ) : feedbacks.length === 0 ? (
                 <li className="text-gray-400">최근 피드백이 없습니다.</li>
               ) : (
-                feedbacks.map((fb) => (
-                  <li key={fb.feedbackId}>
+                feedbacks.map((fb, index) => (
+                  <li key={fb.feedbackId ? `feedback-${fb.feedbackId}` : `task-${fb.taskId}-${index}`}>
                     <button
                       type="button"
                       className="text-left w-full py-1 pr-2 rounded hover:bg-gray-50 hover:text-[var(--color-primary-600)] transition-colors cursor-pointer border-none bg-transparent"
@@ -367,7 +388,7 @@ const MentorReportPage = () => {
           {/* 오른쪽: 주간/월간 리포트 작성 */}
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
             <h2 className="text-base font-bold text-gray-900 mb-4 m-0">
-              {activeTab === 'weekly' ? '주간 리포트 작성' : '월간 리포트 작성'}
+              {activeTab === 'WEEKLY' ? '주간 리포트 작성' : '월간 리포트 작성'}
             </h2>
 
             <div className="flex items-start gap-2 mb-4">
@@ -461,7 +482,7 @@ const MentorReportPage = () => {
       )}
 
       {/* 주간 네비게이션 (주간 리포트일 때만) */}
-      {selectedMentee && activeTab === 'weekly' && (
+      {selectedMentee && activeTab === 'WEEKLY' && (
         <nav className="flex items-center justify-center gap-4 py-4 mt-4" aria-label="주간 이동">
           <button
             type="button"
