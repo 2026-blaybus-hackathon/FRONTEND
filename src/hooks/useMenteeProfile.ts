@@ -10,7 +10,7 @@ const PROFILE_QUERY_KEY = ['menteeProfile'] as const;
 
 /**
  * 멘티 내 프로필 조회.
- * GET /users/mentee/profile
+ * GET /api/v1/users/profile
  * enabled: false면 요청하지 않음 (멘토 등)
  */
 export function useMenteeProfile(options?: { enabled?: boolean }) {
@@ -23,7 +23,7 @@ export function useMenteeProfile(options?: { enabled?: boolean }) {
 
 /**
  * 멘티 프로필 수정 뮤테이션.
- * PUT /users/mentee/profile
+ * PUT /api/v1/users/profile
  */
 export function useUpdateMenteeProfile() {
   const queryClient = useQueryClient();
@@ -37,7 +37,7 @@ export function useUpdateMenteeProfile() {
 
 /**
  * 멘티 프로필 이미지 수정 뮤테이션.
- * PATCH /users/mentee/profile-image
+ * PATCH /api/v1/users/profile-image
  */
 export function useUpdateMenteeProfileImage() {
   const queryClient = useQueryClient();

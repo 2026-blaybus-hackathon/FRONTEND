@@ -4,6 +4,7 @@ import type { subjectTypes, imageTypes } from '../types';
 import type {
   MentorMenteeTasksResponse,
   MentorTaskAssignmentRequest,
+  MentorTaskItem,
   TaskAssignmentResponse,
   TaskByIdResponse,
   MenteeStatsResponse,
@@ -28,6 +29,8 @@ function toMenteeListItem(mentee: MenteeResponse): MenteeListItem {
  */
 export async function getMenteeList(): Promise<MenteeListItem[]> {
   const response = await axios.get<MenteeResponse[]>('/users/mentor/mentees');
+  console.log('getMenteeList response', response.data);
+
   return (response.data ?? []).map(toMenteeListItem);
 }
 
@@ -49,8 +52,8 @@ export interface GetMentorMenteeTasksParams {
 
 /**
  * 멘토용 특정 멘티 과제 목록 조회.
- * GET /tasks/mentees/:menteeId?page=0&size=20
- * 백엔드는 List<TaskWithFeedbackResponse>를 반환하므로, 첫 요소를 사용해 단일 객체 형태로 정규화합니다.
+ * GET /api/v1/tasks/mentees?menteeId=62&page=0&size=20
+ * 백엔드는 List<TaskWithFeedbackResponse>를 반환하므로, 배열 요소들의 tasks.content를 합쳐 단일 목록으로 정규화합니다.
  */
 export async function getMentorMenteeTasks(
   menteeId: number,
@@ -58,18 +61,65 @@ export async function getMentorMenteeTasks(
 ): Promise<MentorMenteeTasksResponse> {
   const { page = 0, size = 20 } = params;
   const response = await axios.get<MentorMenteeTasksResponse | MentorMenteeTasksResponse[]>(
-    `/tasks/mentees/${menteeId}`,
-    { params: { page, size } }
+    '/tasks/mentees',
+    { params: { menteeId, page, size } }
   );
   const raw = response.data;
-  // 백엔드가 배열로 반환하는 경우(멘토: 어제 과제 1건 등) 첫 요소 사용
-  const single = Array.isArray(raw) ? raw[0] : raw;
-  if (!single) {
+  if (!raw) {
     return { menteeId, tasks: { content: [], page: 0, size: 0, totalPages: 0, totalElements: 0 } };
   }
+  const items = Array.isArray(raw) ? raw : [raw];
+  const seen = new Set<number>();
+  const content: MentorTaskItem[] = [];
+  let totalElements = 0;
+  for (const item of items) {
+    const taskPage = item.tasks;
+    if (!taskPage?.content) continue;
+    totalElements = Math.max(totalElements, taskPage.totalElements ?? taskPage.content.length);
+    for (const t of taskPage.content) {
+      if (t.taskId != null && !seen.has(t.taskId)) {
+        seen.add(t.taskId);
+        content.push(normalizeMentorTaskItem(t));
+      }
+    }
+  }
   return {
-    menteeId: single.menteeId,
-    tasks: single.tasks ?? { content: [], page: 0, size: 0, totalPages: 0, totalElements: 0 },
+    menteeId: items[0]?.menteeId ?? menteeId,
+    tasks: {
+      content,
+      page: 0,
+      size: content.length,
+      totalPages: content.length > 0 ? 1 : 0,
+      totalElements: totalElements || content.length,
+    },
+  };
+}
+
+/** API 과제 항목 → MentorTaskItem (feedbackStatus NOTSUBMITTED → NOT_SUBMITTED 등) */
+function normalizeMentorTaskItem(t: {
+  taskId: number;
+  title?: string;
+  subject?: string;
+  date?: string;
+  time?: number | null;
+  status?: boolean;
+  menteeComment?: string | null;
+  feedbackStatus?: string;
+  images?: { url?: string; name?: string; sequence?: number }[];
+  feedback?: { feedbackId?: number; content?: string | null };
+}): MentorTaskItem {
+  const feedbackStatus = t.feedbackStatus === 'NOTSUBMITTED' ? 'NOT_SUBMITTED' : (t.feedbackStatus as MentorTaskItem['feedbackStatus']);
+  return {
+    taskId: t.taskId,
+    title: t.title ?? '',
+    subject: t.subject,
+    images: Array.isArray(t.images) ? t.images.map((img) => ({ url: img.url ?? '', name: img.name ?? '', sequence: img.sequence ?? 0 })) : [],
+    feedback: {
+      feedbackId: t.feedback?.feedbackId ?? 0,
+      summary: t.feedback?.content ?? '',
+      comment: t.feedback?.content ?? '',
+    },
+    feedbackStatus: feedbackStatus ?? 'NOT_SUBMITTED',
   };
 }
 
@@ -102,6 +152,27 @@ export async function getMenteeStats(
   return response.data;
 }
 
+/** GET /reports/mentor/statistics 응답 항목 - 과목별 공부 시간·달성률 */
+export interface MentorSubjectStatsItem {
+  subject: string;
+  studyMinutes: number;
+  achievementRate: number;
+}
+
+/**
+ * 멘티 과목별 통계 조회 (이번 주/이번 달).
+ * GET /reports/mentor/statistics?menteeId=&period=WEEKLY|MONTHLY&reportDate=YYYY-MM-DD
+ */
+export async function getMentorSubjectStats(
+  menteeId: number,
+  params: { period: 'WEEKLY' | 'MONTHLY'; reportDate: string }
+): Promise<MentorSubjectStatsItem[]> {
+  const response = await axios.get<MentorSubjectStatsItem[]>('/reports/mentor/statistics', {
+    params: { menteeId, period: params.period, reportDate: params.reportDate },
+  });
+  return response.data ?? [];
+}
+
 /**
  * 멘토 주/월간 리포트 생성.
  * POST /reports/mentor
@@ -109,8 +180,23 @@ export async function getMenteeStats(
 export async function createMentorReport(
   payload: MentorReportCreateRequest
 ): Promise<unknown> {
-  const response = await axios.post('/reports/mentor', payload);
-  return response.data;
+  try {
+    const response = await axios.post('/reports/mentor', payload);
+    return response.data;
+  } catch (err: unknown) {
+    const ax = err as { response?: { status?: number; data?: unknown }; message?: string };
+    const body =
+      ax.response?.data != null
+        ? JSON.stringify(ax.response.data, null, 2)
+        : '(응답 body 없음)';
+    console.error('[createMentorReport] POST /reports/mentor 실패. 서버 응답 body:', body);
+    console.error('[createMentorReport] status:', ax.response?.status, 'payload:', {
+      menteeId: payload.menteeId,
+      period: payload.period,
+      reportDate: payload.reportDate,
+    });
+    throw err;
+  }
 }
 
 /**
@@ -233,6 +319,7 @@ export interface WriteMentorTotalFeedbackPayload {
 // 피드백 작성
 export async function writeMentorTaskFeedback(taskId: number, payload: WriteMentorTaskFeedbackPayload): Promise<void> {
   const response = await axios.post<void>(`/feedback/mentor/task/${taskId}`, payload);
+  
   return response.data;
 }
 

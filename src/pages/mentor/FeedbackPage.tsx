@@ -346,12 +346,14 @@ const MenteeListCard = ({
         aria-hidden
       />
       <div className="h-full relative z-10 flex flex-col justify-between">
-        <div className="flex gap-150 flex-row sm:flex-col md:flex-row">
-          {
-            profileImage ?
-            <img src={profileImage} alt={name} className="w-36 h-36 rounded-full object-cover" referrerPolicy="no-referrer" /> :
-            <div className="min-w-12 min-h-12 w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white heading-4 font-weight-500">{name[0]}</div>
-          }
+        <div className="flex gap-150 flex-row sm:flex-col md:flex-row items-center">
+          <div className="w-12 h-12 shrink-0 rounded-full overflow-hidden bg-primary-500 flex items-center justify-center text-white heading-4 font-weight-500">
+            {profileImage ? (
+              <img src={profileImage} alt={name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            ) : (
+              name[0]
+            )}
+          </div>
           <div className="flex flex-col">
             <p className={cn("heading-6 md:heading-4 font-weight-500", selected ? "text-white" : "text-gray-800", "transition-all duration-300")}>{name}</p>
             <div className={cn("subtitle-1 md:heading-6 flex flex-wrap gap-x-50", selected ? "text-white" : "text-gray-300", "transition-all duration-300")}>
