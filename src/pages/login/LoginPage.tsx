@@ -5,7 +5,6 @@ import EmailInput from "../../components/common/input/EmailInput";
 import PasswordInput from "../../components/common/input/PasswordInput";
 import { useApi } from "../../hooks/useApi";
 import useAuthStore from "../../stores/authStore";
-import Container from "../../components/common/Container";
 import type { LoginResponse } from "../../libs/types/apiResponse";
 import '../../styles/pages/auth.css';
 
