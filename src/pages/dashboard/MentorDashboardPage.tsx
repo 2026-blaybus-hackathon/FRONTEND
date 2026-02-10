@@ -1,8 +1,9 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from '../../libs/axios';
 import { useMenteeList } from '../../hooks/useMenteeList';
 import '../../styles/pages/mentor-dashboard.css';
+import { useNavigate } from 'react-router-dom';
+import { Bell, Flag, Users } from '../../icons';
 
 // interface DashboardStats {
 //   totalMentees: number;
@@ -47,8 +48,7 @@ interface DashboardResponse {
 }
 
 const MentorDashboardPage = () => {
-  const [selectedTab, setSelectedTab] = useState<'hub' | 'timeline'>('hub');
-
+  const navigate = useNavigate();
   const { menteeList, isLoading: menteeLoading } = useMenteeList();
 
   // 대시보드 통계 조회
@@ -58,21 +58,11 @@ const MentorDashboardPage = () => {
       try {
         const response = await axios.get<DashboardResponse>('/dashboard/mentor/dashboard');
         return response.data;
-      } catch (error) {
+      } catch {
         return null;
       }
     },
   });
-
-  const stats = dashboardData?.stats ? {
-    totalMentees: dashboardData.stats.totalMenteeCount,
-    completionRate: dashboardData.stats.averageProgress,
-    consecutiveStudyDays: dashboardData.stats.progressChange,
-  } : {
-    totalMentees: 0,
-    completionRate: 0,
-    consecutiveStudyDays: 0,
-  };
 
   const recentTasks = dashboardData?.recentTasks ?? [];
   const recentSubmissions = recentTasks.map((task) => {
@@ -89,52 +79,40 @@ const MentorDashboardPage = () => {
 
   return (
     <div className="mentor-dashboard-layout">
+      <header className="w-full flex justify-between items-center">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-400 font-semibold leading-tight text-gray-900 flex gap-200">
+            <span>👩🏻‍🎓</span><span>멘티 관리</span>
+          </h1>
+        </div>
+      </header>
+      
       {/* 메인 컨텐츠 */}
       <main className="mentor-main">
-        {/* 헤더 */}
-        <header className="mentor-header">
-          <div className="header-tabs">
-            <button
-              className={`header-tab ${selectedTab === 'hub' ? 'active' : ''}`}
-              onClick={() => setSelectedTab('hub')}
-            >
-              Mentor Hub
-            </button>
-            <button
-              className={`header-tab ${selectedTab === 'timeline' ? 'active' : ''}`}
-              onClick={() => setSelectedTab('timeline')}
-            >
-              멘티 타임
-            </button>
-          </div>
-          <div className="header-actions">
-            <input type="text" placeholder="멘티 검색..." className="search-input" />
-            <button className="notification-btn">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </button>
-          </div>
-        </header>
-
         {/* 컨텐츠 */}
         <div className="mentor-content">
           {/* 통계 카드 */}
           <div className="stats-row">
-            <div className="stat-box">
+            <div className="stat-box shadow-sm">
+              <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-400 flex justify-center items-center mb-2 shrink-0">
+                <Users width={16} height={16} />
+              </div>
+              <div className="heading-6">{dashboardLoading ? '-' : dashboardData?.stats.totalMenteeCount || 0}명</div>
               <div className="stat-label">나의 멘티 수</div>
-              <div className="stat-value">{dashboardLoading ? '-' : stats.totalMentees}명</div>
-              <div className="stat-desc">활동중 멘티 수</div>
             </div>
-            <div className="stat-box">
-              <div className="stat-label">과제 완료율</div>
-              <div className="stat-value">{dashboardLoading ? '-' : stats.completionRate}%</div>
-              <div className="stat-desc">지난주 대비 +5%</div>
+            <div className="stat-box shadow-sm">
+              <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-400 flex justify-center items-center mb-2 shrink-0">
+                <Flag />
+              </div>
+              <div className="heading-6">{dashboardLoading ? '-' : dashboardData?.stats.averageProgress || 0}%</div>
+              <div className="stat-label">이번 달 완료율</div>
             </div>
-            <div className="stat-box">
-              <div className="stat-label">연속 학습일수</div>
-              <div className="stat-value">{dashboardLoading ? '-' : stats.consecutiveStudyDays}일</div>
-              <div className="stat-desc">매일 꾸준히 학습하세요</div>
+            <div className="stat-box shadow-sm">
+              <div className="w-6 h-6 rounded-full bg-pink-100 text-pink-400 flex justify-center items-center mb-2 shrink-0">
+                <Bell />
+              </div>
+              <div className="heading-6">{dashboardLoading ? '-' : dashboardData?.stats.pendingFeedbackCount || 0}개</div>
+              <div className="stat-label">미완료 피드백 개수</div>
             </div>
           </div>
 
@@ -161,8 +139,8 @@ const MentorDashboardPage = () => {
                       <div className="mentee-subject">{mentee.subject}</div>
                     </div>
                     <div className="mentee-actions">
-                      <button className="action-btn">피드백 확인</button>
-                      <button className="action-btn primary">과제 제출</button>
+                      <button className="action-btn" onClick={() => navigate(`/mentor/feedback?menteeId=${mentee.id}`)}>피드백 작성</button>
+                      <button className="action-btn primary" onClick={() => navigate(`/mentor/assignment?menteeId=${mentee.id}`)}>과제 제공</button>
                     </div>
                   </div>
                 ))}
