@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ChevronRight, Minus, List } from 'lucide-react';
 import SearchInput from '../../components/common/input/SearchInput';
 import TaskDetailModal from '../../components/common/modal/TaskDetailModal';
-import type { MenteeListItem } from '../../libs/types/mentee';
 import { getProfileImageUrl } from '../../libs/utils';
 import type { AssignmentFormValues } from '../../libs/types/mentor';
 import type { LearningMaterialItem } from '../../libs/types/material';
@@ -18,17 +17,22 @@ import { useRecentMenteeTasks } from '../../hooks/useRecentMenteeTasks';
 import { useMentorSubjectStats } from '../../hooks/useMentorSubjectStats';
 import { useMaterials } from '../../hooks/task/useMaterials';
 import { useAssignTask } from '../../hooks/task/useAssignTask';
+import { useSearchParams } from 'react-router-dom';
 
 const AssignmentManagementPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const menteeIdParam = searchParams.get('menteeId');
+  const menteeId = menteeIdParam ? Number(menteeIdParam) : null;
+
   const [searchValue, setSearchValue] = useState('');
-  const [selectedMentee, setSelectedMentee] = useState<MenteeListItem | null>(null);
   const [formValues, setFormValues] = useState<AssignmentFormValues>(ASSIGNMENT_FORM_DEFAULT);
   const [selectedMaterialId, setSelectedMaterialId] = useState<number | null>(null);
 
   const { menteeList, isLoading: menteeLoading } = useMenteeList();
-  const { recentTasks, isLoading: recentTasksLoading } = useRecentMenteeTasks(selectedMentee?.id ?? null);
+  const selectedMentee = useMemo(() => menteeId ? menteeList.find((m) => m.id === menteeId) : null, [menteeList, menteeId]);
+  const { recentTasks, isLoading: recentTasksLoading } = useRecentMenteeTasks(menteeId ?? null);
   const { subjectStats, overallAchievementRate, isLoading: statsLoading } = useMentorSubjectStats(
-    selectedMentee?.id ?? null,
+    menteeId ?? null,
     { period: 'WEEKLY' }
   );
   const { materials } = useMaterials();
@@ -48,6 +52,18 @@ const AssignmentManagementPage = () => {
   }, [menteeList, searchValue]);
 
   const selectedDetail = selectedMentee ? DEFAULT_MENTEE_ASSIGNMENT_DETAIL : null;
+
+  const handleClickMentee = (menteeId: number | null) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (menteeId != null) {
+        next.set('menteeId', String(menteeId));
+      } else {
+        next.delete('menteeId');
+      }
+      return next;
+    });
+  };
 
   const handleCancel = () => {
     setFormValues(ASSIGNMENT_FORM_DEFAULT);
@@ -156,7 +172,7 @@ const AssignmentManagementPage = () => {
         </p>
       </section>
 
-      {!selectedMentee ? (
+      {selectedMentee == null ? (
         /* Step 1: 멘티 선택 */
         <div className="bg-white rounded-lg shadow-md p-6 max-w-[560px]">
           <h2 className="text-base font-semibold text-gray-800 m-0 mb-2">멘티 선택</h2>
@@ -172,7 +188,7 @@ const AssignmentManagementPage = () => {
                   <button
                     type="button"
                     className="w-full flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-md text-left cursor-pointer transition-colors hover:bg-gray-50 hover:border-gray-300"
-                    onClick={() => setSelectedMentee(mentee)}
+                    onClick={() => handleClickMentee(mentee.id)}
                   >
                     <div className="w-10 h-10 rounded-full bg-[var(--color-primary-500)] text-white text-base font-bold flex items-center justify-center shrink-0 overflow-hidden">
                       {getProfileImageUrl(mentee.profileUrl) ? (
@@ -216,7 +232,7 @@ const AssignmentManagementPage = () => {
                 <button
                   type="button"
                   className="text-sm text-[var(--color-primary-500)] bg-transparent border-none cursor-pointer underline p-0 hover:text-[var(--color-primary-600)]"
-                  onClick={() => setSelectedMentee(null)}
+                  onClick={() => handleClickMentee(null)}
                 >
                   멘티 변경
                 </button>
