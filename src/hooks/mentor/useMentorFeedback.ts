@@ -79,6 +79,9 @@ export function useWriteTotalFeedback(menteeId: number) {
             queryClient.invalidateQueries({
                 queryKey: mentorFeedbackKeys.menteeDetail(menteeId),
             });
+            queryClient.invalidateQueries({
+                queryKey: mentorFeedbackKeys.mentees(),
+            });
         },
     });
 }

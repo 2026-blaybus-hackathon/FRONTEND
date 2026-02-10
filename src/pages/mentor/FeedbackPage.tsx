@@ -104,6 +104,7 @@ const MentorFeedbackPage = () => {
   if (feedbackSyncKey !== prevFeedbackSyncKey) {
     setPrevFeedbackSyncKey(feedbackSyncKey);
     setFeedback(feedbackInitValue);
+    setMode(feedbackInitValue ? "view" : "edit");
   }
 
   // 피드백 등록 핸들러
@@ -111,6 +112,16 @@ const MentorFeedbackPage = () => {
     if (selectedTaskId === null) return;
     writeTaskFeedback({
       content: feedback,
+    }, {
+      onSuccess: () => {
+        setMode("view");
+      },
+      onError: () => {
+        addToast({
+          message: "피드백 등록 중 오류가 발생했습니다.",
+          type: "error",
+        });
+      },
     });
   }
 
@@ -123,6 +134,9 @@ const MentorFeedbackPage = () => {
         menteeId: selectedMentee,
       },
     }, {
+      onSuccess: () => {
+        setMode("view");
+      },
       onError: () => {
         addToast({
           message: "피드백 등록 중 오류가 발생했습니다.",
@@ -375,10 +389,10 @@ const MentorFeedbackPage = () => {
             {
               mode === "view" ?
               <p className="body-3 text-gray-700 whitespace-pre-wrap overflow-y-auto">
-                {editorMode === "total" ? menteeDetail?.totalFeedback ?? "" : selectedTask?.feedback?.content ?? ""}
+                {feedback}
               </p> :
               <TextArea
-                value={editorMode === "total" ? menteeDetail?.totalFeedback ?? "" : selectedTask?.feedback?.content ?? ""}
+                value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder={
                   selectedTaskId !== null ?
@@ -397,9 +411,9 @@ const MentorFeedbackPage = () => {
               onClick={handleEnrollFeedback}
               ariaLabel="피드백 등록"
               className="font-weight-700"
-              disabled={!feedback}
+              disabled={mode === "edit" && !feedback}
             >
-              {isEditing ? "피드백 수정" : "피드백 등록"}
+              {mode === "view" ? "피드백 수정" : isEditing ? "피드백 재등록" : "피드백 등록"}
             </Button>
           </div>
         </div>
