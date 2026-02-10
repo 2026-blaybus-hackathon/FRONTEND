@@ -108,7 +108,7 @@ const ReportPage = () => {
 
   return (
     <div
-      className="w-full h-full flex flex-col gap-6"
+      className="w-full h-full flex flex-col gap-6 lg:max-h-[calc(100vh-112px)] min-h-[calc(100vh-136px)]"
     >
       <header className="w-full flex justify-between items-center">
         <div className="flex flex-col gap-2">
