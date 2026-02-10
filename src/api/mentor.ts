@@ -29,7 +29,6 @@ function toMenteeListItem(mentee: MenteeResponse): MenteeListItem {
  */
 export async function getMenteeList(): Promise<MenteeListItem[]> {
   const response = await axios.get<MenteeResponse[]>('/users/mentor/mentees');
-  console.log('getMenteeList response', response.data);
 
   return (response.data ?? []).map(toMenteeListItem);
 }
