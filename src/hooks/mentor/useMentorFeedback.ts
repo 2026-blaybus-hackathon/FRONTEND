@@ -74,7 +74,7 @@ export function useWriteTaskFeedback(menteeId: number, taskId: number) {
 export function useWriteTotalFeedback(menteeId: number) {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (payload: WriteMentorTotalFeedbackPayload) => writeMentorTotalFeedback(payload),
+        mutationFn: ({ date, payload }: { date: string, payload: WriteMentorTotalFeedbackPayload }) => writeMentorTotalFeedback(date, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: mentorFeedbackKeys.menteeDetail(menteeId),

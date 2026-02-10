@@ -220,7 +220,7 @@ export async function getMentorFeedbackMenteeList(): Promise<MentorFeedbackMente
 }
 
 export async function getMentorFeedbackMenteeDetail(menteeId: number): Promise<MentorFeedbackMenteeDetail> {
-  const response = await axios.get<MentorFeedbackMenteeDetail>(`/task/mentor/${menteeId}`);
+  const response = await axios.get<MentorFeedbackMenteeDetail>(`/tasks/mentor/${menteeId}`);
   return response.data;
 }
 
@@ -239,7 +239,7 @@ export async function writeMentorTaskFeedback(taskId: number, payload: WriteMent
   return response.data;
 }
 
-export async function writeMentorTotalFeedback(payload: WriteMentorTotalFeedbackPayload): Promise<void> {
-  const response = await axios.post<void>(`/feedback/mentor/mentees/daily-planner/total-feedback`, payload);
+export async function writeMentorTotalFeedback(date: string, payload: WriteMentorTotalFeedbackPayload): Promise<void> {
+  const response = await axios.patch<void>(`/feedback/mentor/daily-planner/total-feedback?date=${date}`, payload);
   return response.data;
 }

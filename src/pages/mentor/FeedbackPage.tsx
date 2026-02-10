@@ -94,6 +94,18 @@ const MentorFeedbackPage = () => {
   const isEditing = editorMode === "task" ? selectedTask?.feedback !== null : menteeDetail?.totalFeedback !== null; // 피드백 수정 여부
   const isTotalFeedbackCompleted = menteeDetail?.totalFeedback !== null; // 종합 피드백 완료 여부
 
+  // 선택된 멘티/과제가 바뀌거나 데이터가 로드되면 피드백 초기화
+  const feedbackInitValue = editorMode === "total"
+    ? menteeDetail?.totalFeedback ?? ""
+    : selectedTask?.feedback?.content ?? "";
+  const feedbackSyncKey = `${selectedMentee}-${selectedTaskId}-${feedbackInitValue}`;
+  const [prevFeedbackSyncKey, setPrevFeedbackSyncKey] = useState(feedbackSyncKey);
+
+  if (feedbackSyncKey !== prevFeedbackSyncKey) {
+    setPrevFeedbackSyncKey(feedbackSyncKey);
+    setFeedback(feedbackInitValue);
+  }
+
   // 피드백 등록 핸들러
   const handleEnrollTaskFeedback = () => {
     if (selectedTaskId === null) return;
@@ -105,8 +117,11 @@ const MentorFeedbackPage = () => {
   const handleEnrollTotalFeedback = () => {
     if (selectedMentee === null) return;
     writeTotalFeedback({
-      content: feedback,
-      menteeId: selectedMentee,
+      date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+      payload: {
+        content: feedback,
+        menteeId: selectedMentee,
+      },
     }, {
       onError: () => {
         addToast({
