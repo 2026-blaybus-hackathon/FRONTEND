@@ -82,10 +82,10 @@ const AssignmentCard = memo(({
             <p>{status ? "-.-.-" : date.replace(/-/g, ".")}</p>
             <p>{status ? (feedbackStatus === "PENDING" ? "미제출" : "제출") : "미제출"}</p>
           </div>
-          <div className="w-fit h-6 px-100 flex gap-50 rounded-300 text-50 font-weight-500 bg-primary-100 text-primary-500 justify-center items-center">
+          {time && <div className="w-fit h-6 px-100 flex gap-50 rounded-300 text-50 font-weight-500 bg-primary-100 text-primary-500 justify-center items-center">
             <Clock className="w-3.5 h-3.5 shrink-0" aria-hidden />
             <p>{convertTimeToLabel(time)}</p>
-          </div>
+          </div>}
         </div>
       </div>
 
